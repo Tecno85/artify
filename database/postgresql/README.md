@@ -16,6 +16,14 @@ El backend todavía conserva la implementación MySQL original. La migración se
 | `seed.sql` | Datos mínimos para pruebas locales. |
 | `queries.md` | Inventario de consultas adaptadas o pendientes. |
 
+## Ejecución local prevista
+
+```bash
+createdb artify_db
+psql -d artify_db -f database/postgresql/schema.sql
+psql -d artify_db -f database/postgresql/seed.sql
+```
+
 ## Reglas
 
 - Mantener `database/artify_db.sql` como referencia del modelo MySQL original.
