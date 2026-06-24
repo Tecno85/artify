@@ -1,0 +1,557 @@
+/* ========== Fuentes personalizadas ========== */
+@font-face {
+  font-family: 'Paytone One';
+  src: url(../fonts/Paytone_One/PaytoneOne-Regular.ttf) format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inconsolata';
+  src: url(../fonts/Inconsolata/Inconsolata-VariableFont_wdth_wght.ttf)
+    format('truetype');
+  font-style: normal;
+}
+
+/* ========== Reset básico - box-sizing y limpieza de margenes ========== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========== Body ========== */
+body {
+  background: #151515;
+}
+
+/*--- Contenedor principal ---*/
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 50px;
+  padding: 40px;
+  min-height: 100vh;
+  width: 100%;
+  color: whitesmoke;
+  font-family: 'Inconsolata', sans-serif;
+  background: #0a0a0a;
+}
+
+/* ========== Header ========== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-family: 'Inconsolata', sans-serif;
+  padding: 0px 40px;
+}
+
+.header-img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-img img {
+  max-width: 30px;
+}
+
+.header-img p {
+  font-size: 1.1rem;
+}
+
+/* Enlaces Iniciar Sesión y Registrarse */
+.enlaces {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1rem;
+  letter-spacing: 1.4px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.enlace {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  color: aliceblue;
+  text-decoration: none;
+  gap: 8px;
+  padding: 8px 14px;
+  transition: all 0.5s ease;
+}
+
+.btn-editor {
+  border: 0.5px solid rgba(227, 72, 0, 0.7);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #e34800;
+  transform: translateX(-5px);
+}
+
+.btn:focus-visible {
+  outline: 2px solid #e34800;
+  outline-offset: 4px;
+}
+
+/* ==========  Main ========== */
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+  margin-bottom: 60px;
+}
+
+/* Bienvenida */
+.bienvenida {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.bienvenida img {
+  width: 150px;
+}
+
+.editor-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bienvenida h1 {
+  font-size: 3.5rem;
+  font-family: 'Paytone One', sans-serif;
+}
+
+.bienvenida p {
+  font-size: 1.2rem;
+  font-family: 'Inconsolata', sans-serif;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-areas: 'card-1 card-2 card-3';
+  gap: 70px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-family: 'Inconsolata', sans-serif;
+  border: 1px solid grey;
+  padding: 20px;
+  border-radius: 0.5rem;
+  transition: all 0.5s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.251);
+}
+
+.card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #e34800;
+  transform: translateY(-10px);
+}
+
+.card-1 {
+  grid-area: card-1;
+}
+
+.card-1 img {
+  width: 80px;
+}
+
+.card-2 {
+  grid-area: card-2;
+}
+
+.card-2 img {
+  width: 75px;
+}
+
+.card-3 {
+  grid-area: card-3;
+}
+
+.card-3 img {
+  width: 85px;
+}
+
+/* Footer */
+footer {
+  font-family: 'Inconsolata', sans-serif;
+}
+
+footer p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  letter-spacing: 1.2px;
+  font-size: 1rem;
+  padding: 2.5px;
+}
+
+p img {
+  padding: 0px 5px;
+}
+
+p b {
+  padding: 2px;
+}
+
+/* ========== MEDIA QUERY PARA 1920x1080 ========== */
+
+@media (max-width: 1920px) {
+  .container {
+    padding: 35px 40px;
+    gap: 40px;
+  }
+
+  header {
+    padding: 10px 35px;
+  }
+
+  .header-img img {
+    max-width: 28px;
+  }
+
+  .header-img p {
+    font-size: 1.05rem;
+  }
+
+  .enlaces {
+    font-size: 1.05rem;
+  }
+
+  main {
+    gap: 70px;
+    margin-bottom: 50px;
+  }
+
+  .bienvenida img {
+    width: 120px;
+  }
+
+  .bienvenida h1 {
+    font-size: 3rem;
+  }
+
+  .bienvenida p {
+    font-size: 1.1rem;
+  }
+
+  .cards {
+    gap: 50px;
+  }
+
+  .card {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .card h3 {
+    font-size: 1.05rem;
+  }
+
+  .card p {
+    font-size: 1rem;
+  }
+
+  .card-1 img {
+    width: 75px;
+  }
+
+  .card-2 img {
+    width: 70px;
+  }
+
+  .card-3 img {
+    width: 80px;
+  }
+
+  footer {
+    margin-top: 35px;
+  }
+
+  footer p {
+    font-size: 0.95rem;
+  }
+}
+
+/* ========== VENTANA DIVIDIDA ULTRAWIDE (~1280px) - Restaurar estilos originales ========== */
+@media (min-width: 1200px) and (max-width: 2500px) {
+  .container {
+    padding: 50px;
+    gap: 50px;
+  }
+
+  header {
+    padding: 0px 40px;
+  }
+
+  .header-img img {
+    max-width: 30px;
+  }
+
+  .header-img p {
+    font-size: 1.1rem;
+  }
+
+  .enlaces {
+    font-size: 1.1rem;
+  }
+
+  main {
+    gap: 80px;
+    margin-bottom: 40px;
+  }
+
+  .bienvenida img {
+    width: 150px;
+  }
+
+  .bienvenida h1 {
+    font-size: 3.5rem;
+  }
+
+  .bienvenida p {
+    font-size: 1.2rem;
+  }
+
+  .cards {
+    gap: 70px;
+  }
+
+  .card {
+    padding: 20px;
+    gap: 15px;
+  }
+
+  .card-1 img {
+    width: 80px;
+  }
+
+  .card-2 img {
+    width: 75px;
+  }
+
+  .card-3 img {
+    width: 85px;
+  }
+
+  footer p {
+    font-size: 1rem;
+  }
+}
+
+/* ========== MEDIA QUERY 1366×768 ========== */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .container {
+    padding: 25px 20px;
+    gap: 10px;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 8px 70px;
+    margin-bottom: 0;
+  }
+
+  .header-img img {
+    max-width: 26px;
+  }
+
+  .header-img p {
+    font-size: 0.95rem;
+  }
+
+  .enlaces {
+    font-size: 0.95rem;
+  }
+
+  main {
+    gap: 40px;
+    margin-bottom: 20px;
+  }
+
+  .bienvenida {
+    gap: 3px;
+  }
+
+  .bienvenida img {
+    width: 80px;
+  }
+
+  .bienvenida h1 {
+    font-size: 2.7rem;
+  }
+
+  .bienvenida p {
+    font-size: 0.97rem;
+  }
+
+  .cards {
+    gap: 35px;
+  }
+
+  .card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .card h3 {
+    font-size: 0.97rem;
+  }
+
+  .card p {
+    font-size: 0.95rem;
+  }
+
+  .card-1 img {
+    width: 65px;
+  }
+
+  .card-2 img {
+    width: 60px;
+  }
+
+  .card-3 img {
+    width: 70px;
+  }
+
+  footer {
+    margin-top: 30px;
+  }
+
+  footer p {
+    font-size: 0.9rem;
+    padding: 2px;
+  }
+}
+
+/* ========== MODO COMPACTO 1024px y menos ========== */
+@media (max-width: 1024px) {
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .enlaces {
+    gap: 5px;
+  }
+
+  main {
+    gap: 40px;
+  }
+
+  .bienvenida img {
+    width: 90px;
+  }
+
+  .bienvenida h1 {
+    font-size: 2.5rem;
+  }
+
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  footer {
+    margin-top: 0px;
+    padding-top: 0px;
+  }
+}
+
+/* ========== TABLETS 768px ========== */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 15px;
+    gap: 25px;
+  }
+
+  .header-img p {
+    font-size: 0.95rem;
+  }
+
+  .enlaces {
+    font-size: 0.95rem;
+  }
+
+  .bienvenida h1 {
+    font-size: 2rem;
+  }
+
+  .bienvenida p {
+    font-size: 1rem;
+  }
+
+  footer p {
+    font-size: 0.9rem;
+  }
+}
+
+/* ========== MÓVILES 480px ========== */
+@media (max-width: 480px) {
+  .container {
+    padding: 15px 10px;
+  }
+
+  .header-img img {
+    max-width: 25px;
+  }
+
+  .header-img p {
+    font-size: 0.85rem;
+  }
+
+  .enlaces {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+
+  .bienvenida img {
+    width: 70px;
+  }
+
+  .bienvenida h1 {
+    font-size: 1.8rem;
+  }
+
+  .bienvenida p {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  footer p {
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+}
+  

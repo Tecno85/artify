@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">Servicio MySQL activo</title>
+  <desc id="desc">Evidencia visual sanitizada del proceso MySQL activo y de una conexión correcta al servidor local.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #93c5fd; }
+      .text { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .ok { font: 700 15px Menlo, Consolas, monospace; fill: #86efac; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420" rx="18" />
+  <rect class="panel" x="70" y="54" width="840" height="312" rx="16" />
+  <rect class="bar" x="70" y="54" width="840" height="54" rx="16" />
+  <circle class="dot-red" cx="102" cy="81" r="7" />
+  <circle class="dot-yellow" cx="126" cy="81" r="7" />
+  <circle class="dot-green" cx="150" cy="81" r="7" />
+  <text class="title" x="490" y="88" text-anchor="middle">Terminal - servicio MySQL</text>
+  <text class="cmd" x="112" y="148">$ verificar proceso mysqld</text>
+  <text class="ok" x="112" y="188">Proceso activo: /usr/local/mysql/bin/mysqld</text>
+  <text class="text" x="112" y="226">Usuario del servicio: _mysql</text>
+  <text class="text" x="112" y="260">Directorio de datos: /usr/local/mysql/data</text>
+  <text class="cmd" x="112" y="304">$ conectar a 127.0.0.1:3306</text>
+  <text class="ok" x="112" y="338">Conexión autenticada correctamente.</text>
+</svg>

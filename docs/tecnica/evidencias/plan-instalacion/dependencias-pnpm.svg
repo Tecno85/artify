@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">Instalación de dependencias con pnpm</title>
+  <desc id="desc">Evidencia visual de la ejecución de pnpm install offline con dependencias ya actualizadas.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #9ae6b4; }
+      .text { font: 16px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .ok { font: 700 16px Menlo, Consolas, monospace; fill: #86efac; }
+      .note { font: 14px Arial, Helvetica, sans-serif; fill: #cbd5e1; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420" rx="18" />
+  <rect class="panel" x="70" y="54" width="840" height="302" rx="16" />
+  <rect class="bar" x="70" y="54" width="840" height="54" rx="16" />
+  <circle class="dot-red" cx="102" cy="81" r="7" />
+  <circle class="dot-yellow" cx="126" cy="81" r="7" />
+  <circle class="dot-green" cx="150" cy="81" r="7" />
+  <text class="title" x="490" y="88" text-anchor="middle">Terminal - backend</text>
+  <text class="cmd" x="112" y="148">$ cd backend</text>
+  <text class="cmd" x="112" y="184">$ pnpm install --offline --frozen-lockfile</text>
+  <text class="ok" x="112" y="228">Already up to date</text>
+  <text class="text" x="112" y="264">Done in 284ms using pnpm v11.1.1</text>
+  <text class="note" x="112" y="316">Evidencia: las dependencias del backend se encuentran instaladas y coherentes con el lockfile.</text>
+</svg>

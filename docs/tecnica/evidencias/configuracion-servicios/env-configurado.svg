@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="540" viewBox="0 0 980 540" role="img" aria-labelledby="title desc">
+  <title id="title">Variables de entorno configuradas para Artify</title>
+  <desc id="desc">Representación sanitizada del archivo backend .env; las contraseñas y secretos se encuentran ocultos.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .key { font: 16px Menlo, Consolas, monospace; fill: #93c5fd; }
+      .value { font: 16px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .secret { font: 16px Menlo, Consolas, monospace; fill: #fca5a5; }
+      .note { font: 14px Arial, Helvetica, sans-serif; fill: #cbd5e1; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="540" rx="18" />
+  <rect class="panel" x="70" y="42" width="840" height="456" rx="16" />
+  <rect class="bar" x="70" y="42" width="840" height="54" rx="16" />
+  <circle class="dot-red" cx="102" cy="69" r="7" />
+  <circle class="dot-yellow" cx="126" cy="69" r="7" />
+  <circle class="dot-green" cx="150" cy="69" r="7" />
+  <text class="title" x="490" y="76" text-anchor="middle">backend/.env - configuración sanitizada</text>
+  <text x="112" y="132"><tspan class="key">DB_HOST</tspan><tspan class="value">=localhost</tspan></text>
+  <text x="112" y="164"><tspan class="key">DB_USER</tspan><tspan class="value">=********</tspan></text>
+  <text x="112" y="196"><tspan class="key">DB_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
+  <text x="112" y="228"><tspan class="key">DB_NAME</tspan><tspan class="value">=artify_db</tspan></text>
+  <text x="112" y="260"><tspan class="key">ADMIN_USER</tspan><tspan class="value">=********</tspan></text>
+  <text x="112" y="292"><tspan class="key">ADMIN_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
+  <text x="112" y="324"><tspan class="key">TOKEN_SECRET</tspan><tspan class="secret">=********</tspan></text>
+  <text x="112" y="356"><tspan class="key">PORT</tspan><tspan class="value">=3000</tspan></text>
+  <text x="112" y="388"><tspan class="key">NODE_ENV</tspan><tspan class="value">=development</tspan></text>
+  <text class="note" x="112" y="444">Las credenciales y secretos reales no se incluyen en la evidencia ni en el repositorio.</text>
+</svg>

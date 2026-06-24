@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-labelledby="title desc">
+  <title id="title">Verificación de recursos del servidor para Artify</title>
+  <desc id="desc">Diagrama que resume procesador, memoria, almacenamiento, sistema operativo y conectividad de red para desplegar Artify.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #fbfdff; stroke: #c9d7e6; stroke-width: 2; }
+      .center { fill: #ecfdf5; stroke: #35a979; stroke-width: 2; }
+      .cpu { fill: #eef7ff; stroke: #78aeda; stroke-width: 2; }
+      .ram { fill: #f1f5ff; stroke: #8b9fe6; stroke-width: 2; }
+      .storage { fill: #fff7ed; stroke: #e59a2f; stroke-width: 2; }
+      .network { fill: #f0fdfa; stroke: #2aa8a0; stroke-width: 2; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #172033; }
+      .label { font: 700 15px Arial, Helvetica, sans-serif; fill: #253246; }
+      .text { font: 14px Arial, Helvetica, sans-serif; fill: #35465a; }
+      .small { font: 13px Arial, Helvetica, sans-serif; fill: #5c6e82; }
+      .line { stroke: #8aa0b8; stroke-width: 2.2; fill: none; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="980" height="520" rx="18" />
+  <rect class="panel" x="42" y="44" width="896" height="432" rx="18" />
+
+  <rect class="center" x="362" y="176" width="256" height="150" rx="16" />
+  <text class="title" x="490" y="224" text-anchor="middle">Servidor Artify</text>
+  <text class="text" x="490" y="256" text-anchor="middle">Backend Node.js</text>
+  <text class="text" x="490" y="278" text-anchor="middle">Base de datos MySQL</text>
+
+  <rect class="cpu" x="86" y="84" width="218" height="118" rx="14" />
+  <text class="label" x="195" y="122" text-anchor="middle">Procesador</text>
+  <text class="text" x="195" y="152" text-anchor="middle">Mínimo: 2 vCPU</text>
+  <text class="small" x="195" y="176" text-anchor="middle">Recomendado: 2-4 vCPU</text>
+
+  <rect class="ram" x="676" y="84" width="218" height="118" rx="14" />
+  <text class="label" x="785" y="122" text-anchor="middle">Memoria RAM</text>
+  <text class="text" x="785" y="152" text-anchor="middle">Mínimo: 2 GB</text>
+  <text class="small" x="785" y="176" text-anchor="middle">Recomendado: 4 GB</text>
+
+  <rect class="storage" x="86" y="300" width="218" height="118" rx="14" />
+  <text class="label" x="195" y="338" text-anchor="middle">Almacenamiento</text>
+  <text class="text" x="195" y="368" text-anchor="middle">Mínimo: 40 GB SSD</text>
+  <text class="small" x="195" y="392" text-anchor="middle">Recomendado: 80 GB SSD</text>
+
+  <rect class="network" x="676" y="300" width="218" height="118" rx="14" />
+  <text class="label" x="785" y="338" text-anchor="middle">Red y sistema</text>
+  <text class="text" x="785" y="368" text-anchor="middle">Linux servidor</text>
+  <text class="small" x="785" y="392" text-anchor="middle">HTTPS y conexión estable</text>
+
+  <path class="line" d="M304 160 C330 176, 342 196, 362 224" />
+  <path class="line" d="M676 160 C650 176, 638 196, 618 224" />
+  <path class="line" d="M304 360 C330 342, 342 320, 362 286" />
+  <path class="line" d="M676 360 C650 342, 638 320, 618 286" />
+</svg>

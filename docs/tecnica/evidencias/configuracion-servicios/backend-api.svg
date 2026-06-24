@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="460" viewBox="0 0 980 460" role="img" aria-labelledby="title desc">
+  <title id="title">Backend y API de Artify funcionando</title>
+  <desc id="desc">Salida real sanitizada del backend conectado a MySQL y de una consulta HTTP con respuesta 200.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #93c5fd; }
+      .text { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .ok { font: 700 15px Menlo, Consolas, monospace; fill: #86efac; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="460" rx="18" />
+  <rect class="panel" x="70" y="48" width="840" height="364" rx="16" />
+  <rect class="bar" x="70" y="48" width="840" height="54" rx="16" />
+  <circle class="dot-red" cx="102" cy="75" r="7" />
+  <circle class="dot-yellow" cx="126" cy="75" r="7" />
+  <circle class="dot-green" cx="150" cy="75" r="7" />
+  <text class="title" x="490" y="82" text-anchor="middle">Terminal - servidor de aplicaciones</text>
+  <text class="cmd" x="112" y="142">$ pnpm start</text>
+  <text class="text" x="112" y="178">$ node server.js</text>
+  <text class="ok" x="112" y="214">Servidor corriendo en http://localhost:3000</text>
+  <text class="ok" x="112" y="248">Conectado a MySQL correctamente</text>
+  <text class="cmd" x="112" y="300">$ consultar /api/v1/analytics/filtros-populares</text>
+  <text class="ok" x="112" y="336">HTTP 200</text>
+  <text class="text" x="112" y="374">Respuesta: {"ok": true, "mensaje": "Top filtros utilizados"}</text>
+</svg>

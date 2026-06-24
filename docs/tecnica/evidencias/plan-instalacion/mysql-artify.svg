@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">Base de datos MySQL verificada</title>
+  <desc id="desc">Evidencia visual de la base artify_db y sus tablas principales verificadas desde MySQL.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #9ae6b4; }
+      .text { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .ok { font: 700 15px Menlo, Consolas, monospace; fill: #86efac; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420" rx="18" />
+  <rect class="panel" x="70" y="54" width="840" height="312" rx="16" />
+  <rect class="bar" x="70" y="54" width="840" height="54" rx="16" />
+  <circle class="dot-red" cx="102" cy="81" r="7" />
+  <circle class="dot-yellow" cx="126" cy="81" r="7" />
+  <circle class="dot-green" cx="150" cy="81" r="7" />
+  <text class="title" x="490" y="88" text-anchor="middle">MySQL - verificación de base de datos</text>
+  <text class="cmd" x="112" y="144">$ node consulta-mysql-artify</text>
+  <text class="ok" x="112" y="180">Base seleccionada: artify_db</text>
+  <text class="ok" x="112" y="210">Tablas encontradas: 6</text>
+  <text class="text" x="112" y="244">CONFIGURACION    IMAGEN    OPERACION</text>
+  <text class="text" x="112" y="274">SESION_EDICION   USUARIO   v_usuarios_activos</text>
+  <text class="text" x="112" y="322">Evidencia: la base de datos del proyecto está disponible localmente.</text>
+</svg>

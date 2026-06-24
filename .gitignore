@@ -1,0 +1,101 @@
+# ----------------------------------------
+# 1. DEPENDENCIAS Y PAQUETES
+# ----------------------------------------
+node_modules/
+package-lock.json        # (Opcional: Descomenta si no quieres lock en el repo)
+artify-angular/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# ----------------------------------------
+# 2. ENTORNO Y CONFIGURACIÓN SENSIBLE
+# ----------------------------------------
+.env
+.env.local
+.env.*.local
+
+# ----------------------------------------
+# 3. BUILD Y DISTRIBUCIÓN
+# ----------------------------------------
+dist/
+dist-ssr/
+build/
+
+# ----------------------------------------
+# 4. LOGS Y TEMPORALES
+# ----------------------------------------
+# Logs de gestores de paquetes
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Archivos temporales de sistema/editores
+*.tmp
+*.swp
+*.swo
+*~
+*.bak
+*.backup
+
+# Archivo específico de VSCode (temp runner)
+tempCodeRunnerFile.js
+
+# ----------------------------------------
+# 5. SISTEMAS OPERATIVOS
+# ----------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ----------------------------------------
+# 6. EDITORES E IDES
+# ----------------------------------------
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json   # Excepción: Permitimos compartir recomendaciones
+
+# JetBrains (IntelliJ, WebStorm, etc.)
+.idea/
+
+# Otros (Sublime, Vim, etc.)
+*.sublime-*
+
+# ----------------------------------------
+# 7. BASE DE DATOS
+# ----------------------------------------
+*.db
+*.sqlite
+*.sqlite3
+
+# ----------------------------------------
+# 8. ARCHIVOS DE TEST (Opcionales)
+# ----------------------------------------
+coverage/
+.nyc_output/
+
+# ----------------------------------------
+# 9. ARCHIVOS DE RESPALDO
+# ----------------------------------------
+*.old
+*.backup

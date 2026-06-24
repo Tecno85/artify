@@ -1,0 +1,3 @@
+display_name: Artify SENA
+short_description: Guía operativa para trabajar con seguridad en Artify.
+default_prompt: Trabaja en Artify SENA conservando su arquitectura actual y mejorando código, documentación, pruebas o evidencias académicas según el contexto.

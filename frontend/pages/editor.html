@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor - Artify</title>
+    <link rel="icon" href="../assets/images/modx-icon.svg" type="image/svg" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/editor.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- ========== HEADER ========== -->
+      <header role="banner">
+        <section class="header-left">
+          <img
+            src="../assets/images/modx-icon.svg"
+            alt="Logo Artify"
+            class="logo"
+          />
+          <h1>Artify</h1>
+        </section>
+
+        <section class="header-center">
+          <span class="user-info">
+            <img src="../assets/icons/wmr.svg" alt="Usuario" />
+            <span id="userName">Usuario Invitado</span>
+          </span>
+        </section>
+
+        <section class="header-right">
+          <button class="btn-icon" id="btnConfig" aria-label="Configuración">
+            <img src="../assets/icons/gear.svg" alt="Configuración" />
+          </button>
+
+          <button class="btn-icon" id="btnPerfil" aria-label="Perfil">
+            <img src="../assets/icons/user.svg" alt="Perfil" />
+          </button>
+        </section>
+      </header>
+
+      <!-- ========== MAIN LAYOUT ========== -->
+      <main role="main" class="editor-layout">
+        <!-- ===== PANEL IZQUIERDO ===== -->
+        <aside class="panel-left" role="complementary">
+          <!-- Sección Archivo -->
+          <section class="tool-section">
+            <h2 class="section-title">Archivo</h2>
+
+            <button class="tool-btn" id="btnSubir">
+              <img src="../assets/icons/uploading.svg" alt="Subir" />
+              <span>Subir Imagen</span>
+            </button>
+            <input
+              type="file"
+              id="fileInput"
+              accept="image/jpeg,image/png,image/webp"
+              style="display: none"
+            />
+
+            <button class="tool-btn" id="btnDescargar" disabled>
+              <img src="../assets/icons/download.svg" alt="Descargar" />
+              <span>Descargar</span>
+            </button>
+          </section>
+
+          <!-- Sección Herramientas -->
+          <section class="tool-section">
+            <h2 class="section-title">Herramientas</h2>
+
+            <button class="tool-btn" id="btnConvertir" disabled>
+              <img src="../assets/icons/convertir_img.svg" alt="Convertir" />
+              <span>Convertir</span>
+            </button>
+
+            <button class="tool-btn" id="btnRecortar" disabled>
+              <img src="../assets/icons/crop.svg" alt="Recortar" />
+              <span>Recortar</span>
+            </button>
+
+            <button class="tool-btn" id="btnRedimensionar" disabled>
+              <img src="../assets/icons/resize.svg" alt="Redimensionar" />
+              <span>Redimensionar</span>
+            </button>
+
+            <button class="tool-btn" id="btnRotar" disabled>
+              <img src="../assets/icons/rotate.svg" alt="Rotar" />
+              <span>Rotar</span>
+            </button>
+
+            <!-- Filtros (Expandible) -->
+            <button class="tool-btn" id="btnFiltros" disabled>
+              <img src="../assets/icons/filter.svg" alt="Filtros" />
+              <span>Filtros</span>
+              <img
+                src="../assets/icons/chevron-down.svg"
+                alt="Expandir"
+                class="expand-icon"
+              />
+            </button>
+
+            <div class="submenu" id="submenuFiltros" style="display: none">
+              <button class="submenu-btn" data-filter="grayscale">
+                <span class="bullet">•</span> Blanco y Negro
+              </button>
+              <button class="submenu-btn" data-filter="sepia">
+                <span class="bullet">•</span> Sepia
+              </button>
+              <button class="submenu-btn" data-filter="brightness">
+                <span class="bullet">•</span> Brillo
+              </button>
+              <button class="submenu-btn" data-filter="contrast">
+                <span class="bullet">•</span> Contraste
+              </button>
+            </div>
+          </section>
+
+          <!-- Sección Historial -->
+          <section class="tool-section">
+            <h2 class="section-title">Historial</h2>
+
+            <button class="tool-btn" id="btnDeshacer" disabled>
+              <img src="../assets/icons/undo.svg" alt="Deshacer" />
+              <span>Deshacer</span>
+            </button>
+
+            <button class="tool-btn" id="btnRehacer" disabled>
+              <img src="../assets/icons/redo.svg" alt="Rehacer" />
+              <span>Rehacer</span>
+            </button>
+          </section>
+        </aside>
+
+        <!-- ===== CANVAS CENTRAL ===== -->
+        <section class="canvas-container">
+          <!-- Área de Drop Zone -->
+          <div class="drop-zone" id="dropZone">
+            <img
+              src="../assets/icons/picture.svg"
+              alt="Subir imagen"
+              class="drop-icon"
+            />
+            <p class="drop-text">Arrastra una imagen aquí</p>
+            <p class="drop-subtext">o haz clic en "Subir Imagen"</p>
+            <p class="drop-info">JPG, PNG o WebP - Máx. 10MB</p>
+          </div>
+
+          <!-- Canvas (se muestra cuando hay imagen) -->
+          <div class="canvas-wrapper" id="canvasWrapper" style="display: none">
+            <canvas id="mainCanvas"></canvas>
+
+            <!-- Controles de Zoom -->
+            <div class="zoom-controls">
+              <button class="zoom-btn" id="btnZoomOut" aria-label="Alejar">
+                <img src="../assets/icons/zoom-minus.svg" alt="Menos" />
+              </button>
+              <span class="zoom-level" id="zoomLevel">100%</span>
+              <button class="zoom-btn" id="btnZoomIn" aria-label="Acercar">
+                <img src="../assets/icons/zoom-plus.svg" alt="Más" />
+              </button>
+            </div>
+
+            <!-- Dimensiones de la imagen -->
+            <div class="image-dimensions" id="imageDimensions">
+              1920 x 1080 px
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== PANEL DERECHO ===== -->
+        <aside class="panel-right" role="complementary">
+          <h2 class="panel-title">Propiedades</h2>
+
+          <!-- Info de la imagen -->
+          <section
+            class="properties-section"
+            id="imageInfo"
+            style="display: none"
+          >
+            <h3 class="prop-subtitle">Información del Archivo</h3>
+
+            <div class="prop-item">
+              <span class="prop-label">Nombre:</span>
+              <span class="prop-value" id="propNombre">-</span>
+            </div>
+
+            <div class="prop-item">
+              <span class="prop-label">Tamaño:</span>
+              <span class="prop-value" id="propTamano">-</span>
+            </div>
+
+            <div class="prop-item">
+              <span class="prop-label">Dimensiones:</span>
+              <span class="prop-value" id="propDimensiones">-</span>
+            </div>
+
+            <div class="prop-item">
+              <span class="prop-label">Formato:</span>
+              <span class="prop-value" id="propFormato">-</span>
+            </div>
+          </section>
+
+          <!-- Controles según herramienta seleccionada -->
+          <section class="properties-section control" id="toolControls">
+            <h3 class="prop-subtitle">
+              <p>Control de Herramienta</p>
+            </h3>
+
+            <div id="dynamicControls">
+              <p class="no-tool-selected">
+                Selecciona una herramienta para ver sus opciones
+              </p>
+            </div>
+          </section>
+
+          <!-- Controles de Recortar (se muestran dinámicamente) -->
+          <div id="cropControls" style="display: none">
+            <div class="control-group">
+              <label for="cropRatio">Proporción:</label>
+              <select id="cropRatio" class="select-input">
+                <option value="free">Libre</option>
+                <option value="1:1">1:1 (Cuadrado)</option>
+                <option value="16:9">16:9 (Pantalla)</option>
+                <option value="4:3">4:3 (Clásico)</option>
+                <option value="3:2">3:2 (Foto)</option>
+              </select>
+            </div>
+            <button class="btn-apply" id="btnAplicarRecorte">
+              Aplicar Recorte
+            </button>
+          </div>
+
+          <!-- Controles de Redimensionar -->
+          <div id="resizeControls" style="display: none">
+            <div class="control-group">
+              <label for="resizeWidth">Ancho (px):</label>
+              <input
+                type="number"
+                id="resizeWidth"
+                class="number-input"
+                min="1"
+              />
+            </div>
+            <div class="control-group">
+              <label for="resizeHeight">Alto (px):</label>
+              <input
+                type="number"
+                id="resizeHeight"
+                class="number-input"
+                min="1"
+              />
+            </div>
+            <label class="checkbox-control">
+              <input type="checkbox" id="mantenerProporcion" checked />
+              <span>Mantener proporción</span>
+            </label>
+            <button class="btn-apply" id="btnAplicarRedimension">
+              Aplicar
+            </button>
+          </div>
+
+          <!-- Controles de Rotar -->
+          <div id="rotateControls" style="display: none">
+            <div class="control-group">
+              <label>Rotación:</label>
+              <div class="rotate-buttons">
+                <button class="btn-rotate" data-angle="90">90°</button>
+                <button class="btn-rotate" data-angle="180">180°</button>
+                <button class="btn-rotate" data-angle="270">270°</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controles de Filtros -->
+          <div id="filterControls" style="display: none">
+            <div class="control-group">
+              <label for="filterIntensity">Intensidad:</label>
+              <input
+                type="range"
+                id="filterIntensity"
+                class="slider-input"
+                min="0"
+                max="100"
+                value="100"
+              />
+              <span class="slider-value" id="filterIntensityValue">100%</span>
+            </div>
+            <button class="btn-apply" id="btnAplicarFiltro">
+              Aplicar Filtro
+            </button>
+          </div>
+
+          <!-- Controles de Convertir -->
+          <div id="convertControls" style="display: none">
+            <div class="control-group">
+              <label for="convertFormato">Convertir a formato:</label>
+              <select id="convertFormato" class="select-input">
+                <option value="png">PNG</option>
+                <option value="jpeg">JPEG</option>
+                <option value="webp">WebP</option>
+              </select>
+            </div>
+            <div class="control-group" id="convertCalidadGroup">
+              <label for="convertCalidad">Calidad de conversión:</label>
+              <select id="convertCalidad" class="select-input">
+                <option value="alta">Alta (100%)</option>
+                <option value="media">Media (80%)</option>
+                <option value="baja">Baja (60%)</option>
+              </select>
+            </div>
+            <button class="btn-apply" id="btnAplicarConversion">
+              Aplicar Conversión
+            </button>
+          </div>
+        </aside>
+      </main>
+
+      <!-- ========== BARRA INFERIOR ========== -->
+      <footer class="status-bar" role="contentinfo">
+        <div class="status-item">
+          <img src="../assets/icons/layers.svg" alt="Operaciones" />
+          <span id="operationsCount">0 operaciones</span>
+        </div>
+
+        <div class="status-item" id="transformInfo" style="display: none">
+          <img src="../assets/icons/arrows.svg" alt="Transformación" />
+          <span id="transformText">-</span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- ========== MODAL DE ADVERTENCIA DE RESOLUCIÓN ========== -->
+    <div id="modalResolucion" class="modal-resolucion" style="display: none">
+      <div class="modal-resolucion-content">
+        <div class="modal-resolucion-icon">⚠️</div>
+        <h2 class="modal-resolucion-title">Resolución no recomendada</h2>
+        <p class="modal-resolucion-message">
+          Artify está optimizado para dispositivos con una resolución mínima de
+          <strong>1366 x 768 píxeles</strong>.
+        </p>
+        <div class="modal-resolucion-info">
+          <p>
+            <strong>Tu resolución actual:</strong>
+            <span id="resolucionActual">-</span>
+          </p>
+          <p><strong>Resolución recomendada:</strong> 1366 x 768 o superior</p>
+        </div>
+        <p class="modal-resolucion-suggestion">
+          Para una mejor experiencia, te recomendamos:
+        </p>
+        <ul class="modal-resolucion-list">
+          <li>Usar un computador de escritorio o laptop</li>
+          <li>Usar una tablet grande en modo horizontal (iPad, Galaxy Tab)</li>
+          <li>Aumentar el zoom de tu navegador si usas un monitor pequeño</li>
+        </ul>
+        <div class="modal-resolucion-actions">
+          <button class="btn-modal-primary" onclick="cerrarModalResolucion()">
+            Entendido, continuar de todos modos
+          </button>
+          <button class="btn-modal-secondary" onclick="noVolverAMostrar()">
+            No volver a mostrar este mensaje
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MODAL DE CONFIGURACIÓN (RF-10) ========== -->
+    <div id="modalConfiguracion" class="modal-config" style="display: none">
+      <div class="modal-config-content">
+        <div class="modal-config-header">
+          <h2 class="modal-config-title">
+            <img
+              src="../assets/icons/configuration.svg"
+              alt="Icono de Configuración"
+            />
+            Configuración
+          </h2>
+          <div class="modal-config-actions">
+            <button
+              class="modal-config-close"
+              id="btnCerrarConfig"
+              aria-label="Cerrar"
+            >
+              <img src="../assets/icons/close.svg" alt="Icono Cerrar" />
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-config-body">
+          <!-- Sección: Preferencias de Editor -->
+          <section class="config-section">
+            <h3 class="config-section-title">
+              <img src="../assets/icons/editor.svg" alt="Editor" />
+              Preferencias de Editor
+            </h3>
+
+            <div class="config-item">
+              <label for="configCalidadExportacion" class="config-label"
+                >Calidad de exportación:</label
+              >
+              <select id="configCalidadExportacion" class="config-select">
+                <option value="alta">Alta (100%)</option>
+                <option value="media">Media (80%)</option>
+                <option value="baja">Baja (60%)</option>
+              </select>
+            </div>
+
+            <div class="config-item">
+              <label for="configFormatoDefecto" class="config-label"
+                >Formato por defecto para descargas:</label
+              >
+              <select id="configFormatoDefecto" class="config-select">
+                <option value="png">PNG</option>
+                <option value="jpeg">JPEG</option>
+                <option value="webp">WebP</option>
+              </select>
+            </div>
+
+            <div class="config-item">
+              <label class="config-label">
+                <input
+                  type="checkbox"
+                  id="configAutoguardado"
+                  class="config-checkbox"
+                />
+                <span>Activar autoguardado</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Sección: Información de Usuario -->
+          <section class="config-section">
+            <h3 class="config-section-title">
+              <img src="../assets/icons/user-plus.svg" alt="Usuario" />
+              Información de Usuario
+            </h3>
+
+            <div class="config-user-info">
+              <p>Nombre: <span id="configUserNombre">-</span></p>
+              <p>Email: <span id="configUserEmail">-</span></p>
+              <p>
+                Última sesión:
+                <span id="configUserUltimaSesion">-</span>
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div class="modal-config-footer">
+          <button class="btn-config-secondary" id="btnCancelarConfig">
+            Cancelar
+          </button>
+          <button class="btn-config-primary" id="btnGuardarConfig">
+            Guardar Cambios
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MODAL DE PERFIL / CERRAR SESIÓN (RF-11) ========== -->
+    <div id="modalPerfil" class="modal-perfil" style="display: none">
+      <div class="modal-perfil-content">
+        <div class="modal-perfil-header">
+          <h2 class="modal-perfil-title">Mi Perfil</h2>
+          <button
+            class="modal-perfil-close"
+            id="btnCerrarPerfil"
+            aria-label="Cerrar"
+          >
+            <img src="../assets/icons/close.svg" alt="Icono Cerrar" />
+          </button>
+        </div>
+
+        <div class="modal-perfil-body">
+          <div class="perfil-avatar">
+            <img
+              src="../assets/icons/wmr.svg"
+              alt="Avatar"
+              class="perfil-avatar-img"
+            />
+          </div>
+
+          <div class="perfil-info">
+            <h3 id="perfilNombre">Usuario Invitado</h3>
+            <p id="perfilEmail">invitado@artify.com</p>
+          </div>
+
+          <div class="perfil-stats">
+            <div class="perfil-stat">
+              <span class="perfil-stat-value" id="perfilImagenesEditadas"
+                >0</span
+              >
+              <span class="perfil-stat-label">Imágenes editadas</span>
+            </div>
+            <div class="perfil-stat">
+              <span class="perfil-stat-value" id="perfilOperaciones">0</span>
+              <span class="perfil-stat-label">Operaciones</span>
+            </div>
+            <div class="perfil-stat">
+              <span class="perfil-stat-value" id="perfilSesiones">1</span>
+              <span class="perfil-stat-label">Sesiones</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-perfil-footer">
+          <button class="btn-perfil-logout" id="btnCerrarSesion">
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MODAL DE CONFIRMACIÓN CERRAR SESIÓN ========== -->
+    <div id="modalConfirmarLogout" class="modal-confirm" style="display: none">
+      <div class="modal-confirm-content">
+        <h2 class="modal-confirm-title">
+          <img
+            src="../assets/icons/logout.svg"
+            alt="Icono cerrar sesión"
+          />¿Cerrar sesión?
+        </h2>
+        <p class="modal-confirm-message">
+          Estás a punto de cerrar tu sesión en Artify. Los cambios no guardados
+          se perderán.
+        </p>
+        <div class="modal-confirm-actions">
+          <button class="btn-confirm-cancel" id="btnCancelarLogout">
+            Cancelar
+          </button>
+          <button class="btn-confirm-primary" id="btnConfirmarLogout">
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/editor.js"></script>
+  </body>
+</html>

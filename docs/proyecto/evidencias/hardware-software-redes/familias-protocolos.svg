@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="924" height="480" viewBox="88 86 924 480" role="img" aria-labelledby="title desc">
+  <title id="title">Familia TCP/IP y modelo OSI</title>
+  <desc id="desc">Diagrama comparativo entre la familia TCP/IP, el modelo OSI y su relación con Artify.</desc>
+  <defs>
+    <style>
+      .section { font: 700 20px Arial, Helvetica, sans-serif; fill: #172033; }
+      .item { font: 400 15px Arial, Helvetica, sans-serif; fill: #334155; }
+      .tag { font: 700 12px Arial, Helvetica, sans-serif; fill: #3f4f63; }
+      .note { font: 400 15px Arial, Helvetica, sans-serif; fill: #3f4f63; }
+    </style>
+  </defs>
+  <rect x="88" y="86" width="924" height="480" rx="14" ry="14" fill="#e6edf5"/>
+
+  <rect x="118" y="116" width="404" height="328" rx="8" fill="#eef6ff" stroke="#b8d8f4"/>
+  <text x="150" y="164" class="section">TCP/IP</text>
+  <rect x="150" y="186" width="92" height="28" rx="14" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="172" y="205" class="tag">USO REAL</text>
+  <text x="150" y="250" class="item">IP: direccionamiento y enrutamiento</text>
+  <text x="150" y="286" class="item">TCP: entrega confiable</text>
+  <text x="150" y="322" class="item">UDP: transmisión rápida</text>
+  <text x="150" y="358" class="item">HTTP/HTTPS y DNS: servicios web</text>
+  <text x="150" y="394" class="item">Base práctica de la comunicación en Internet</text>
+
+  <rect x="578" y="116" width="404" height="328" rx="8" fill="#eefbf4" stroke="#b8dfc8"/>
+  <text x="610" y="164" class="section">Modelo OSI</text>
+  <rect x="610" y="186" width="142" height="28" rx="14" fill="#dcfce7" stroke="#86efac"/>
+  <text x="631" y="205" class="tag">REFERENCIA</text>
+  <text x="610" y="250" class="item">Aplicación, presentación y sesión</text>
+  <text x="610" y="286" class="item">Transporte y red</text>
+  <text x="610" y="322" class="item">Enlace de datos y capa física</text>
+  <text x="610" y="358" class="item">Permite analizar la comunicación por capas</text>
+  <text x="610" y="394" class="item">Ayuda a ubicar fallos y responsabilidades</text>
+
+  <rect x="118" y="484" width="864" height="52" rx="8" fill="#eaf0f7" stroke="#c5ceda"/>
+  <text x="150" y="514" class="note">En Artify, HTTP/HTTPS se ubica en la capa de aplicación y opera sobre la familia TCP/IP.</text>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-labelledby="title desc">
+  <title id="title">Estructura general del proyecto Artify</title>
+  <desc id="desc">Evidencia visual de las carpetas principales del proyecto Artify para el plan de instalación local.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #9ae6b4; }
+      .text { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .muted { font: 14px Menlo, Consolas, monospace; fill: #93a4b8; }
+      .accent { fill: #67e8f9; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="520" rx="18" />
+  <rect class="panel" x="60" y="52" width="860" height="416" rx="16" />
+  <rect class="bar" x="60" y="52" width="860" height="54" rx="16" />
+  <circle class="dot-red" cx="92" cy="79" r="7" />
+  <circle class="dot-yellow" cx="116" cy="79" r="7" />
+  <circle class="dot-green" cx="140" cy="79" r="7" />
+  <text class="title" x="490" y="86" text-anchor="middle">Terminal - estructura del proyecto</text>
+  <text class="cmd" x="92" y="140">$ find . -maxdepth 2 -type d ...</text>
+  <text class="text" x="92" y="176">.</text>
+  <text class="text" x="92" y="204">├── backend/</text>
+  <text class="text" x="92" y="232">├── database/</text>
+  <text class="text" x="92" y="260">├── docs/</text>
+  <text class="text" x="92" y="288">├── frontend/</text>
+  <text class="text" x="92" y="316">├── scripts/</text>
+  <text class="text" x="92" y="344">├── README.md</text>
+  <text class="text" x="92" y="372">├── CONTEXT.md</text>
+  <text class="text" x="92" y="400">└── .env.example</text>
+  <rect x="600" y="164" width="236" height="174" rx="12" fill="#0f766e" opacity="0.18" stroke="#2dd4bf" />
+  <text class="accent" x="718" y="202" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700">Componentes verificados</text>
+  <text class="muted" x="632" y="238">frontend: interfaz web</text>
+  <text class="muted" x="632" y="268">backend: API local</text>
+  <text class="muted" x="632" y="298">database: script SQL</text>
+</svg>

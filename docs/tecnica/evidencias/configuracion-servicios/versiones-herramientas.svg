@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
+  <title id="title">Versiones de herramientas verificadas para Artify</title>
+  <desc id="desc">Salida sanitizada de la verificación de Node.js, pnpm, MySQL y Git realizada en el equipo local.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .panel { fill: #111827; stroke: #334155; stroke-width: 2; }
+      .bar { fill: #1f2937; }
+      .dot-red { fill: #ef4444; }
+      .dot-yellow { fill: #f59e0b; }
+      .dot-green { fill: #22c55e; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #93c5fd; }
+      .value { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
+      .ok { font: 700 15px Menlo, Consolas, monospace; fill: #86efac; }
+    </style>
+  </defs>
+  <rect class="bg" width="980" height="420" rx="18" />
+  <rect class="panel" x="70" y="54" width="840" height="312" rx="16" />
+  <rect class="bar" x="70" y="54" width="840" height="54" rx="16" />
+  <circle class="dot-red" cx="102" cy="81" r="7" />
+  <circle class="dot-yellow" cx="126" cy="81" r="7" />
+  <circle class="dot-green" cx="150" cy="81" r="7" />
+  <text class="title" x="490" y="88" text-anchor="middle">Terminal - verificación de herramientas</text>
+  <text class="cmd" x="112" y="148">$ node --version</text>
+  <text class="value" x="370" y="148">v26.0.0</text>
+  <text class="cmd" x="112" y="194">$ pnpm --version</text>
+  <text class="value" x="370" y="194">11.1.1</text>
+  <text class="cmd" x="112" y="240">$ mysql --version</text>
+  <text class="value" x="370" y="240">MySQL Community Server 8.4.7</text>
+  <text class="cmd" x="112" y="286">$ git --version</text>
+  <text class="value" x="370" y="286">git 2.50.1</text>
+  <text class="ok" x="112" y="332">Resultado: herramientas disponibles en el equipo local.</text>
+</svg>

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro - Artify</title>
+    <link rel="icon" href="../assets/images/modx-icon.svg" type="image/svg" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/registro.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header role="banner">
+        <section class="header-img">
+          <img src="../assets/images/modx-icon.svg" alt="Logo Artify" />
+          <p>Editor de Imágenes Web</p>
+        </section>
+
+        <a href="../index.html" class="btn-volver">
+          <img src="../assets/icons/return.svg" alt="Flecha izquierda" />
+          Volver a Inicio
+        </a>
+      </header>
+
+      <!-- Main -->
+      <main role="main">
+        <!-- Card de Registro -->
+        <section class="registro-card">
+          <!-- Logo -->
+          <div class="logo-section">
+            <img
+              src="../assets/images/modx-icon.svg"
+              alt="Logo Artify"
+              class="logo"
+            />
+            <h1>Crear nueva cuenta</h1>
+            <p class="subtitle">Únete a Artify y empieza a editar</p>
+          </div>
+
+          <!-- Formulario -->
+          <form id="registroForm" novalidate>
+            <!-- ===== INFORMACIÓN PERSONAL ===== -->
+            <div class="form-section">
+              <h2 class="section-title">
+                <img src="../assets/icons/person.svg" alt="Usuario" />
+                Información Personal
+              </h2>
+
+              <!-- Nombres -->
+              <div class="form-group">
+                <label for="nombres" class="label-required">Nombres </label>
+                <input
+                  type="text"
+                  id="nombres"
+                  name="nombres"
+                  placeholder="Juan Carlos"
+                  minlength="2"
+                  maxlength="50"
+                  pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                  required
+                  autocomplete="given-name"
+                />
+                <span class="error-message" id="nombres-error"></span>
+              </div>
+
+              <!-- Apellidos -->
+              <div class="form-group">
+                <label for="apellidos" class="label-required">Apellidos </label>
+                <input
+                  type="text"
+                  id="apellidos"
+                  name="apellidos"
+                  placeholder="Pérez García"
+                  minlength="2"
+                  maxlength="50"
+                  pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
+                  required
+                  autocomplete="family-name"
+                />
+                <span class="error-message" id="apellidos-error"></span>
+              </div>
+
+              <!-- Grid 2 columnas para Cédula y Fecha -->
+              <div class="form-row">
+                <!-- Cédula -->
+                <div class="form-group">
+                  <label for="cedula" class="label-required">Cédula </label>
+                  <input
+                    type="text"
+                    id="cedula"
+                    name="cedula"
+                    placeholder="1234567890"
+                    minlength="6"
+                    maxlength="10"
+                    pattern="[0-9]+"
+                    required
+                  />
+                  <span class="error-message" id="cedula-error"></span>
+                </div>
+
+                <!-- Fecha de Nacimiento -->
+                <div class="form-group">
+                  <label for="fechaNacimiento" class="label-required"
+                    >Fecha de Nacimiento
+                  </label>
+                  <input
+                    type="date"
+                    id="fechaNacimiento"
+                    name="fechaNacimiento"
+                    max=""
+                    required
+                    autocomplete="bday"
+                  />
+                  <span class="error-message" id="fecha-error"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== CREDENCIALES ===== -->
+            <div class="form-section">
+              <h2 class="section-title">
+                <img src="../assets/icons/security.svg" alt="Candado" />
+                Credenciales de Acceso
+              </h2>
+
+              <!-- Email -->
+              <div class="form-group">
+                <label for="email" class="label-required"
+                  >Correo electrónico
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="editor@imagina.com"
+                  required
+                  autocomplete="email"
+                />
+                <span class="error-message" id="email-error"></span>
+              </div>
+
+              <!-- Contraseña -->
+              <div class="form-group">
+                <label for="password" class="label-required">Contraseña </label>
+                <div class="password-wrapper">
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    minlength="8"
+                    required
+                    autocomplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    aria-label="Mostrar contraseña"
+                    data-target="password"
+                  >
+                    <svg class="eye-icon" viewBox="0 0 24 24">
+                      <path
+                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                      ></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Indicador de fortaleza -->
+                <div class="password-strength">
+                  <div class="strength-bar">
+                    <div class="strength-fill" id="strength-fill"></div>
+                  </div>
+                  <span class="strength-text" id="strength-text"
+                    >Sin contraseña</span
+                  >
+                </div>
+
+                <span class="error-message" id="password-error"></span>
+                <span class="helper-text">
+                  Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número
+                </span>
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div class="form-group">
+                <label for="confirmPassword" class="label-required"
+                  >Confirmar Contraseña
+                </label>
+                <div class="password-wrapper">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="••••••••"
+                    minlength="8"
+                    required
+                    autocomplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    aria-label="Mostrar contraseña"
+                    data-target="confirmPassword"
+                  >
+                    <svg class="eye-icon" viewBox="0 0 24 24">
+                      <path
+                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                      ></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+                <span class="error-message" id="confirm-error"></span>
+              </div>
+            </div>
+
+            <!-- ===== TÉRMINOS ===== -->
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="terminos" name="terminos" required />
+                <span>
+                  Acepto los
+                  <a href="#" class="link-inline">términos y condiciones</a>
+                </span>
+              </label>
+              <span class="error-message" id="terminos-error"></span>
+            </div>
+
+            <!-- Botón Submit -->
+            <button type="submit" class="btn-primary">Registrarse</button>
+
+            <!-- Botones secundarios -->
+            <div class="buttons-row">
+              <button type="button" class="btn-secondary" id="btnCancelar">
+                Cancelar
+              </button>
+            </div>
+
+            <!-- Link a Login -->
+            <div class="login-link">
+              <p>
+                ¿Ya tienes cuenta?
+                <a href="./login.html">Inicia sesión</a>
+              </p>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          Desarrollado con
+          <img src="../assets/icons/heart.svg" alt="Icono de corazón" /> desde
+          <b>[</b>Valledupar<b>]</b> para el mundo.
+        </p>
+        <p>
+          <img
+            src="../assets/icons/copyright.svg"
+            alt="Icono de copyright"
+          />2025 Artify | DazaDev Solutions
+        </p>
+      </footer>
+    </div>
+    <!-- JavaScript -->
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/registro.js"></script>
+  </body>
+</html>

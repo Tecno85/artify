@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" viewBox="0 0 980 430" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitectura de despliegue de Artify</title>
+  <desc id="desc">Diagrama técnico que muestra la relación entre navegador, frontend, backend y base de datos MySQL para Artify.</desc>
+  <defs>
+    <style>
+      .bg { fill: #eef3f8; }
+      .band { fill: #fbfdff; stroke: #c9d7e6; stroke-width: 2; }
+      .client { fill: #eef7ff; stroke: #78aeda; stroke-width: 2; }
+      .front { fill: #f0f8ff; stroke: #4fa7d8; stroke-width: 2; }
+      .back { fill: #ecfdf5; stroke: #35a979; stroke-width: 2; }
+      .db { fill: #fff7ed; stroke: #e59a2f; stroke-width: 2; }
+      .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #172033; }
+      .text { font: 15px Arial, Helvetica, sans-serif; fill: #35465a; }
+      .small { font: 13px Arial, Helvetica, sans-serif; fill: #5c6e82; }
+      .arrow { stroke: #526a83; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead); }
+      .line { stroke: #c9d7e6; stroke-width: 1.5; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#526a83" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="980" height="430" rx="18" />
+  <rect class="band" x="40" y="42" width="900" height="346" rx="18" />
+
+  <rect class="client" x="78" y="130" width="178" height="138" rx="14" />
+  <text class="title" x="167" y="168" text-anchor="middle">Equipo cliente</text>
+  <text class="text" x="167" y="200" text-anchor="middle">Navegador moderno</text>
+  <text class="small" x="167" y="226" text-anchor="middle">Carga y edición</text>
+  <text class="small" x="167" y="248" text-anchor="middle">de imágenes</text>
+
+  <rect class="front" x="314" y="130" width="178" height="138" rx="14" />
+  <text class="title" x="403" y="168" text-anchor="middle">Frontend</text>
+  <text class="text" x="403" y="200" text-anchor="middle">HTML, CSS y</text>
+  <text class="text" x="403" y="222" text-anchor="middle">JavaScript Vanilla</text>
+  <text class="small" x="403" y="248" text-anchor="middle">Interfaz web</text>
+
+  <rect class="back" x="550" y="130" width="178" height="138" rx="14" />
+  <text class="title" x="639" y="168" text-anchor="middle">Backend</text>
+  <text class="text" x="639" y="200" text-anchor="middle">Node.js + Express</text>
+  <text class="small" x="639" y="226" text-anchor="middle">API y autenticación</text>
+  <text class="small" x="639" y="248" text-anchor="middle">Token firmado</text>
+
+  <rect class="db" x="786" y="130" width="138" height="138" rx="14" />
+  <text class="title" x="855" y="168" text-anchor="middle">MySQL</text>
+  <text class="text" x="855" y="200" text-anchor="middle">USUARIO</text>
+  <text class="small" x="855" y="226" text-anchor="middle">Datos persistentes</text>
+  <text class="small" x="855" y="248" text-anchor="middle">y sesiones</text>
+
+  <path class="arrow" d="M256 199 H314" />
+  <path class="arrow" d="M492 199 H550" />
+  <path class="arrow" d="M728 199 H786" />
+
+  <line class="line" x1="98" y1="310" x2="882" y2="310" />
+  <text class="small" x="167" y="342" text-anchor="middle">Usuario final</text>
+  <text class="small" x="403" y="342" text-anchor="middle">Servidor web</text>
+  <text class="small" x="639" y="342" text-anchor="middle">Servidor de aplicación</text>
+  <text class="small" x="855" y="342" text-anchor="middle">Base de datos</text>
+</svg>

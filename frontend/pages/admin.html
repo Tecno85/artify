@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel Admin - Artify</title>
+    <link rel="icon" href="../assets/images/modx-icon.svg" type="image/svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Paytone+One&family=Inconsolata:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/admin.css" />
+  </head>
+
+  <body>
+    <!-- ===== LOGIN DEL ADMINISTRADOR ===== -->
+    <div class="admin-login-overlay" id="loginOverlay">
+      <div class="admin-login-card">
+        <div class="login-logo">
+          <img src="../assets/images/modx-icon.svg" alt="Logo Artify" />
+          <h1>Artify</h1>
+          <p>Panel de Administración</p>
+        </div>
+
+        <div class="login-form">
+          <div class="form-group">
+            <label for="adminEmail">Correo</label>
+            <input
+              type="email"
+              id="adminEmail"
+              placeholder="admin@artify.com"
+              autocomplete="email"
+            />
+            <span class="error-message" id="adminEmail-error"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="adminPassword">Contraseña</label>
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="adminPassword"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="toggle-password"
+                id="toggleAdminPass"
+                aria-label="Mostrar contraseña"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <span class="error-message" id="adminPassword-error"></span>
+          </div>
+
+          <button class="btn-admin-login" id="btnAdminLogin">
+            <span>Ingresar al Panel</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL PRINCIPAL ===== -->
+    <div class="admin-wrapper" id="adminPanel" style="display: none">
+      <!-- HEADER -->
+      <header class="admin-header">
+        <div class="header-left">
+          <img
+            src="../assets/images/modx-icon.svg"
+            alt="Logo Artify"
+            class="header-logo"
+          />
+          <div>
+            <h1 class="header-title">Artify</h1>
+            <span class="header-subtitle">Panel de Administración</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="admin-badge">
+            <span class="badge-dot"></span>
+            <span id="adminName">Administrador</span>
+          </div>
+          <button class="btn-logout" id="btnLogout">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Cerrar Sesión
+          </button>
+        </div>
+      </header>
+
+      <!-- LAYOUT PRINCIPAL -->
+      <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+          <nav class="sidebar-nav">
+            <!-- <div class="nav-section-title">Gestión</div> -->
+            <a href="#" class="nav-item active" id="navUsuarios">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Usuarios
+              <span class="nav-badge" id="totalUsuariosBadge">0</span>
+            </a>
+          </nav>
+
+          <div class="sidebar-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="statActivos">0</span>
+              <span class="stat-label">Activos</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="statInactivos">0</span>
+              <span class="stat-label">Inactivos</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="admin-content">
+          <!-- TOOLBAR -->
+          <div class="content-toolbar">
+            <div class="toolbar-left">
+              <h2 class="content-title">Gestión de Usuarios</h2>
+              <span class="content-subtitle"
+                >CRUD completo sobre la tabla USUARIO</span
+              >
+            </div>
+            <div class="toolbar-right">
+              <div class="search-box">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Buscar usuario..."
+                />
+              </div>
+              <button class="btn-agregar" id="btnAgregarUsuario">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Agregar Usuario
+              </button>
+            </div>
+          </div>
+
+          <!-- TABLA DE USUARIOS -->
+          <div class="table-container">
+            <table class="admin-table" id="tablaUsuarios">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombres</th>
+                  <th>Apellidos</th>
+                  <th>Cédula</th>
+                  <th>Correo</th>
+                  <th>F. Nacimiento</th>
+                  <th>F. Registro</th>
+                  <th>Estado</th>
+                  <th>Rol</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaBody">
+                <tr class="loading-row">
+                  <td colspan="9">Cargando usuarios...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ===== MODAL AGREGAR / EDITAR USUARIO ===== -->
+    <div class="modal-overlay" id="modalUsuario" style="display: none">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modalTitulo">Agregar Usuario</h3>
+          <button class="modal-close" id="btnCerrarModal">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" id="usuarioId" />
+
+          <div class="modal-grid">
+            <div class="form-group">
+              <label for="modalNombres"
+                >Nombres <span class="required">*</span></label
+              >
+              <input type="text" id="modalNombres" placeholder="Juan Carlos" />
+              <span class="error-message" id="modalNombres-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="modalApellidos"
+                >Apellidos <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="modalApellidos"
+                placeholder="Pérez García"
+              />
+              <span class="error-message" id="modalApellidos-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="modalCedula"
+                >Cédula <span class="required">*</span></label
+              >
+              <input type="text" id="modalCedula" placeholder="1234567890" />
+              <span class="error-message" id="modalCedula-error"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="modalFechaNac">Fecha de Nacimiento</label>
+              <input type="date" id="modalFechaNac" />
+            </div>
+
+            <div class="form-group">
+              <label for="modalCorreo"
+                >Correo <span class="required">*</span></label
+              >
+              <input
+                type="email"
+                id="modalCorreo"
+                placeholder="usuario@artify.com"
+              />
+              <span class="error-message" id="modalCorreo-error"></span>
+            </div>
+
+            <div class="form-group" id="passwordGroup">
+              <label for="modalPassword"
+                >Contraseña <span class="required">*</span></label
+              >
+              <input
+                type="password"
+                id="modalPassword"
+                placeholder="••••••••"
+              />
+              <span class="error-message" id="modalPassword-error"></span>
+            </div>
+
+            <div class="form-group" id="estadoGroup" style="display: none">
+              <label for="modalEstado"
+                >Estado <span class="required">*</span></label
+              >
+              <select id="modalEstado">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="suspendido">Suspendido</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancelar" id="btnCancelarModal">Cancelar</button>
+          <button class="btn-guardar" id="btnGuardarUsuario">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MODAL CONFIRMAR ELIMINAR ===== -->
+    <div class="modal-overlay" id="modalEliminar" style="display: none">
+      <div class="modal-card modal-small">
+        <div class="modal-header danger">
+          <h3>Confirmar Eliminación</h3>
+          <button class="modal-close" id="btnCerrarEliminar">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="delete-warning">
+            ⚠️ ¿Estás seguro de que deseas eliminar al usuario
+            <strong id="nombreEliminar"></strong>?
+          </p>
+          <p class="delete-info">
+            Esta acción no se puede deshacer y eliminará todos sus datos
+            asociados.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancelar" id="btnCancelarEliminar">
+            Cancelar
+          </button>
+          <button class="btn-eliminar" id="btnConfirmarEliminar">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICACIÓN -->
+    <div class="admin-notificacion" id="adminNotificacion"></div>
+
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/admin.js"></script>
+  </body>
+</html>

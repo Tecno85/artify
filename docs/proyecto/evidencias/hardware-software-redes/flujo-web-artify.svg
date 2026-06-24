@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="330" viewBox="80 108 940 330" role="img" aria-labelledby="title desc">
+  <title id="title">Flujo web de Artify</title>
+  <desc id="desc">Diagrama del flujo entre navegador, frontend, backend y base de datos usando HTTP, API REST y conexión a MySQL.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="3.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,7 L10,3.5 z" fill="#475569"/>
+    </marker>
+    <style>
+      .card-title { font: 700 18px Arial, Helvetica, sans-serif; fill: #172033; text-anchor: middle; }
+      .card-text { font: 400 15px Arial, Helvetica, sans-serif; fill: #3f4f63; text-anchor: middle; }
+      .label { font: 700 14px Arial, Helvetica, sans-serif; fill: #3f4f63; text-anchor: middle; }
+      .note { font: 400 15px Arial, Helvetica, sans-serif; fill: #3f4f63; }
+    </style>
+  </defs>
+  <rect x="80" y="108" width="940" height="330" rx="14" ry="14" fill="#e6edf5"/>
+
+  <rect x="110" y="138" width="185" height="142" rx="8" fill="#eef6ff" stroke="#b8d8f4"/>
+  <rect x="181" y="166" width="42" height="30" rx="5" fill="#dbeafe" stroke="#93c5fd"/>
+  <line x1="189" y1="205" x2="215" y2="205" stroke="#93c5fd" stroke-width="4" stroke-linecap="round"/>
+  <text x="202.5" y="236" class="card-title">Navegador</text>
+  <text x="202.5" y="258" class="card-text">Usuario final</text>
+
+  <rect x="355" y="138" width="185" height="142" rx="8" fill="#edf2f7" stroke="#cbd5e1"/>
+  <rect x="426.5" y="166" width="42" height="30" rx="5" fill="#e2e8f0" stroke="#94a3b8"/>
+  <text x="447.5" y="187" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#475569">&lt;/&gt;</text>
+  <text x="447.5" y="236" class="card-title">Frontend</text>
+  <text x="447.5" y="258" class="card-text">HTML, CSS y JS</text>
+
+  <rect x="600" y="138" width="185" height="142" rx="8" fill="#eefbf4" stroke="#b8dfc8"/>
+  <rect x="671.5" y="166" width="42" height="30" rx="5" fill="#dcfce7" stroke="#86efac"/>
+  <text x="692.5" y="187" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#166534">API</text>
+  <text x="692.5" y="236" class="card-title">Backend</text>
+  <text x="692.5" y="258" class="card-text">Node.js + Express</text>
+
+  <rect x="845" y="138" width="145" height="142" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <ellipse cx="917" cy="170" rx="34" ry="12" fill="#ffedd5" stroke="#fdba74"/>
+  <path d="M883 170 V198 C883 205 898 210 917 210 C936 210 951 205 951 198 V170" fill="#ffedd5" stroke="#fdba74"/>
+  <text x="917.5" y="236" class="card-title">MySQL</text>
+  <text x="917.5" y="258" class="card-text">Persistencia</text>
+
+  <path d="M302 209 H346" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M547 209 H591" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M792 209 H836" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="324" y="188" class="label">HTTP</text>
+  <text x="569" y="188" class="label">API REST</text>
+  <text x="814" y="188" class="label">mysql2</text>
+
+  <rect x="110" y="326" width="880" height="76" rx="8" fill="#eaf0f7" stroke="#c5ceda"/>
+  <text x="142" y="360" class="note">El navegador consume la interfaz web, el frontend solicita datos al backend y el backend consulta MySQL.</text>
+  <text x="142" y="384" class="note">Este flujo resume la conectividad que se valida durante el alistamiento técnico de Artify.</text>
+</svg>

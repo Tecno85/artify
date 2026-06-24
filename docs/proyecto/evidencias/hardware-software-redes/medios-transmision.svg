@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="924" height="600" viewBox="88 82 924 600" role="img" aria-labelledby="title desc">
+  <title id="title">Medios de transmisión guiados y no guiados</title>
+  <desc id="desc">Diagrama que clasifica los medios de transmisión en guiados y no guiados, con definición, ejemplos, ventajas y relación con Artify.</desc>
+  <defs>
+    <style>
+      .section { font: 700 20px Arial, Helvetica, sans-serif; fill: #172033; }
+      .group { font: 700 14px Arial, Helvetica, sans-serif; fill: #26364a; }
+      .item { font: 400 15px Arial, Helvetica, sans-serif; fill: #334155; }
+      .caption { font: 400 15px Arial, Helvetica, sans-serif; fill: #526174; }
+      .label { font: 700 13px Arial, Helvetica, sans-serif; fill: #3f4f63; }
+      .note { font: 400 15px Arial, Helvetica, sans-serif; fill: #3f4f63; }
+    </style>
+  </defs>
+  <rect x="88" y="82" width="924" height="600" rx="14" ry="14" fill="#e6edf5"/>
+
+  <rect x="118" y="112" width="404" height="500" rx="8" fill="#fff7ed" stroke="#fed7aa"/>
+  <rect x="150" y="144" width="82" height="28" rx="14" fill="#ffedd5" stroke="#fdba74"/>
+  <text x="168" y="163" class="label">FÍSICOS</text>
+  <text x="150" y="208" class="section">Guiados</text>
+  <text x="150" y="238" class="caption">La señal viaja por un cable o fibra.</text>
+  <line x1="150" y1="268" x2="470" y2="268" stroke="#fed7aa" stroke-width="2"/>
+  <text x="150" y="306" class="group">Ejemplos y función</text>
+  <circle cx="162" cy="338" r="6" fill="#f97316"/>
+  <text x="184" y="343" class="item">Par trenzado: conecta equipos por Ethernet.</text>
+  <circle cx="162" cy="374" r="6" fill="#f97316"/>
+  <text x="184" y="379" class="item">Coaxial: usado en TV, Internet o enlaces</text>
+  <text x="184" y="401" class="item">específicos de telecomunicaciones.</text>
+  <circle cx="162" cy="436" r="6" fill="#f97316"/>
+  <text x="184" y="441" class="item">Fibra óptica: transmite con alta velocidad,</text>
+  <text x="184" y="463" class="item">menor interferencia y mayor distancia.</text>
+  <text x="150" y="512" class="group">Relación con Artify</text>
+  <text x="150" y="540" class="caption">Es conveniente para servidores, routers,</text>
+  <text x="150" y="562" class="caption">equipos institucionales y redes internas.</text>
+
+  <rect x="578" y="112" width="404" height="500" rx="8" fill="#eef6ff" stroke="#b8d8f4"/>
+  <rect x="610" y="144" width="136" height="28" rx="14" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="625" y="163" class="label">INALÁMBRICOS</text>
+  <text x="610" y="208" class="section">No guiados</text>
+  <text x="610" y="238" class="caption">La señal viaja por ondas electromagnéticas.</text>
+  <line x1="610" y1="268" x2="930" y2="268" stroke="#b8d8f4" stroke-width="2"/>
+  <text x="610" y="306" class="group">Ejemplos y función</text>
+  <circle cx="622" cy="338" r="6" fill="#2563eb"/>
+  <text x="644" y="343" class="item">Wi-Fi: acceso a redes locales sin cable.</text>
+  <circle cx="622" cy="374" r="6" fill="#2563eb"/>
+  <text x="644" y="379" class="item">Redes móviles: conexión a Internet desde</text>
+  <text x="644" y="401" class="item">operadores celulares.</text>
+  <circle cx="622" cy="436" r="6" fill="#2563eb"/>
+  <text x="644" y="441" class="item">Bluetooth: comunicación de corto alcance;</text>
+  <text x="644" y="463" class="item">no es el medio principal para Artify.</text>
+  <text x="610" y="512" class="group">Relación con Artify</text>
+  <text x="610" y="540" class="caption">Facilita el acceso del usuario final desde</text>
+  <text x="610" y="562" class="caption">portátiles, tabletas o teléfonos.</text>
+
+  <rect x="118" y="636" width="864" height="36" rx="8" fill="#eaf0f7" stroke="#c5ceda"/>
+  <text x="150" y="659" class="note">Para Artify, lo importante es que el navegador mantenga comunicación estable con frontend, backend y base de datos.</text>
+</svg>

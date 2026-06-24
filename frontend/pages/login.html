@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - Artify</title>
+    <link rel="icon" href="../assets/images/modx-icon.svg" type="image/svg" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/login.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header role="banner">
+        <section class="header-img">
+          <img src="../assets/images/modx-icon.svg" alt="Logo Artify" />
+          <p>Editor de Imágenes Web</p>
+        </section>
+
+        <a href="../index.html" class="btn-volver">
+          <img src="../assets/icons/return.svg" alt="Flecha izquierda" />
+          Volver a Inicio
+        </a>
+      </header>
+
+      <!-- Main -->
+      <main role="main">
+        <!-- Card de Login -->
+        <section class="login-card">
+          <!-- Logo -->
+          <div class="logo-section">
+            <img
+              src="../assets/images/modx-icon.svg"
+              alt="Logo Artify"
+              class="logo"
+            />
+            <h1>Iniciar Sesión</h1>
+            <p class="subtitle">Accede a tu cuenta de Artify</p>
+          </div>
+
+          <!-- Formulario -->
+          <form id="loginForm" novalidate>
+            <!-- Campo Email -->
+            <div class="form-group">
+              <label for="email">
+                <img src="../assets/icons/mail.svg" alt="Icono email" />
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="editor@imagina.com"
+                required
+                autocomplete="email"
+              />
+              <span class="error-message" id="email-error"></span>
+            </div>
+
+            <!-- Campo Contraseña -->
+            <div class="form-group">
+              <label for="password">
+                <img src="../assets/icons/lock.svg" alt="Icono candado" />
+                Contraseña
+              </label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="••••••••"
+                  minlength="8"
+                  required
+                  autocomplete="current-password"
+                />
+                <button
+                  type="button"
+                  class="toggle-password"
+                  aria-label="Mostrar contraseña"
+                >
+                  <!-- Icono de ojo usando SVG inline -->
+                  <svg id="eye-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                    ></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+              <span class="error-message" id="password-error"></span>
+            </div>
+
+            <!-- Recordar sesión -->
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="remember" name="remember" />
+                <span>Recordar sesión</span>
+              </label>
+            </div>
+
+            <!-- Botón Submit -->
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+
+            <!-- Enlaces adicionales -->
+            <div class="links-section">
+              <a href="#" class="link-secondary"> ¿Olvidaste tu contraseña? </a>
+              <p class="register-link">
+                ¿No tienes cuenta?
+                <a href="./registro.html">Regístrate aquí</a>
+              </p>
+            </div>
+          </form>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer>
+        <p>
+          Desarrollado con
+          <img src="../assets/icons/heart.svg" alt="Icono de corazón" /> desde
+          <b>[</b>Valledupar<b>]</b> para el mundo.
+        </p>
+        <p>
+          <img
+            src="../assets/icons/copyright.svg"
+            alt="Icono de copyright"
+          />2025 Artify | DazaDev Solutions
+        </p>
+      </footer>
+
+      <!-- JavaScript -->
+      <script src="../assets/js/auth.js"></script>
+      <script src="../assets/js/login.js"></script>
+    </div>
+  </body>
+</html>
