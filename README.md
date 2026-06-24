@@ -6,9 +6,9 @@
 ![Status](https://img.shields.io/badge/estado-activo-28ffce?style=for-the-badge)
 ![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
 ![Node](https://img.shields.io/badge/Node.js-22.13+-339933?style=for-the-badge&logo=node.js)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-en_migración-4169E1?style=for-the-badge&logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-migración_inicial-4169E1?style=for-the-badge&logo=postgresql)
 
-**Artify SENA PostgreSQL** es una variante experimental de Artify para migrar el backend desde MySQL hacia PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y tiene como objetivo usar Node.js + Express + PostgreSQL en el backend.
+**Artify SENA PostgreSQL** es una variante experimental de Artify que adapta el backend desde MySQL hacia PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa Node.js + Express + PostgreSQL en el backend.
 
 Proyecto experimental local para migración a PostgreSQL
 
@@ -16,7 +16,7 @@ Proyecto experimental local para migración a PostgreSQL
 
 ---
 
-> **Estado de migración:** el frontend ya fue copiado desde Artify SENA. El backend aún conserva código MySQL heredado y será migrado por fases hacia PostgreSQL.
+> **Estado de migración:** el frontend fue copiado desde Artify SENA y el backend ya cuenta con una migración inicial funcional a PostgreSQL. La variante continúa en revisión para ajustes de despliegue y validaciones adicionales.
 
 ---
 
@@ -30,6 +30,7 @@ Proyecto experimental local para migración a PostgreSQL
 - [Instalación y Configuración](#instalación-y-configuración)
 - [Uso](#uso)
 - [Pruebas](#pruebas)
+- [Despliegue](#despliegue)
 - [Funcionalidades Principales](#funcionalidades-principales)
 - [Panel de Administración](#panel-de-administración)
 - [Base de Datos](#base-de-datos)
@@ -56,12 +57,12 @@ Proyecto experimental local para migración a PostgreSQL
 - **Tema oscuro** moderno y profesional
 
 ### Backend y Autenticación
-- **Autenticación real** actualmente heredada de MySQL; pendiente migración a PostgreSQL
+- **Autenticación real** conectada a PostgreSQL mediante el paquete `pg`
 - **Sistema de roles**: administrador y usuario
 - **Redirección automática** según el rol al iniciar sesión
 - **Registro de operaciones** en base de datos
 - **Control de sesiones** con cierre automático por inactividad
-- **Configuración personalizada** por usuario; pendiente persistencia en PostgreSQL
+- **Configuración personalizada** persistida en PostgreSQL
 
 ### Panel de Administración
 - **CRUD completo** sobre la tabla USUARIO
@@ -87,8 +88,8 @@ Proyecto experimental local para migración a PostgreSQL
 |------------|---------|-----|
 | Node.js | 22.13+ | Entorno de ejecución |
 | Express | 5.2+ | Framework del servidor |
-| PostgreSQL | Por definir | Base de datos relacional objetivo |
-| pg | Por definir | Conector PostgreSQL para Node.js |
+| PostgreSQL | 15+ recomendado | Base de datos relacional |
+| pg | 8.16.3 | Conector PostgreSQL para Node.js |
 | bcryptjs | Latest | Encriptación de contraseñas |
 | dotenv | Latest | Variables de entorno |
 | cors | Latest | Control de acceso entre orígenes |
@@ -111,7 +112,7 @@ Proyecto experimental local para migración a PostgreSQL
 │  server.js monta middlewares, rutas y limpieza  │
 │  Módulos: config, controllers, routes, utils    │
 └────────────────────┬────────────────────────────┘
-                     │ pg (objetivo de migración)
+                     │ pg
 ┌────────────────────▼────────────────────────────┐
 │                 BASE DE DATOS                    │
 │            PostgreSQL — artify_db               │
@@ -192,6 +193,7 @@ Artify/
 │   │   ├── coding-standards.md
 │   │   ├── configuracion-servicios-artify.md
 │   │   ├── despliegue.md
+│   │   ├── despliegue-fullstack-postgresql.md
 │   │   ├── plan-instalacion-artify.md
 │   │   ├── plan-pruebas-autenticacion.md
 │   │   ├── verificacion-hardware-artify.md
@@ -257,7 +259,7 @@ NODE_ENV=development
 CREATE DATABASE artify_db;
 ```
 
-El esquema PostgreSQL se preparará en `database/postgresql/schema.sql`. Mientras la migración esté en curso, `database/artify_db.sql` se conserva solo como referencia del modelo MySQL original.
+El esquema PostgreSQL se encuentra en `database/postgresql/schema.sql`. El archivo `database/artify_db.sql` se conserva solo como referencia del modelo MySQL original.
 
 ### 5. Iniciar el backend
 
@@ -320,6 +322,52 @@ También puedes validar sintaxis del servidor con:
 ```bash
 cd backend
 pnpm run check
+```
+
+---
+
+## Despliegue
+
+Esta variante está preparada para separar frontend y backend:
+
+- El frontend puede publicarse como sitio estático en Netlify.
+- El backend puede publicarse como servicio Node.js en una plataforma compatible con PostgreSQL.
+- La base de datos debe estar disponible mediante una URL PostgreSQL segura.
+
+### Variable para conectar frontend y backend
+
+El frontend carga `frontend/assets/js/config.js` antes de `auth.js`. En local este archivo deja la API vacía para que el sistema use el fallback `http://localhost:3000`.
+
+En Netlify, el archivo se genera durante el build mediante `scripts/write-frontend-config.js`. Para apuntar el frontend al backend desplegado, define esta variable de entorno en Netlify:
+
+```env
+ARTIFY_API_URL=https://url-del-backend
+```
+
+Ejemplo:
+
+```env
+ARTIFY_API_URL=https://artify-api.onrender.com
+```
+
+No se deben incluir barras finales en la URL. El frontend construye las rutas agregando `/api/...`.
+
+### Variables del backend
+
+El backend requiere variables de entorno equivalentes a las usadas en local:
+
+```env
+DATABASE_URL=postgresql://usuario:contrasena@host:5432/artify_db
+DB_HOST=host
+DB_PORT=5432
+DB_USER=usuario
+DB_PASSWORD=contrasena
+DB_NAME=artify_db
+ADMIN_USER=admin@artify.com
+ADMIN_PASSWORD=contrasena_admin
+TOKEN_SECRET=secreto_largo_y_seguro
+PORT=3000
+NODE_ENV=production
 ```
 
 ---
@@ -428,6 +476,7 @@ La documentación del proyecto se encuentra organizada en la carpeta [`docs/`](.
 - [Base de datos](./docs/tecnica/base-datos.md)
 - [Configuración de servicios, base de datos y software para Artify](./docs/tecnica/configuracion-servicios-artify.md)
 - [Guía de despliegue y ejecución local](./docs/tecnica/despliegue.md)
+- [Guía de despliegue full-stack con PostgreSQL](./docs/tecnica/despliegue-fullstack-postgresql.md)
 - [Plan de instalación local de Artify](./docs/tecnica/plan-instalacion-artify.md)
 - [Verificación de hardware para Artify](./docs/tecnica/verificacion-hardware-artify.md)
 - [Alta disponibilidad y clústeres](./docs/tecnica/alta-disponibilidad-clusteres.md)
@@ -502,7 +551,7 @@ Las contribuciones son bienvenidas. Por favor:
 - [ ] Herramienta de texto sobre imágenes
 - [ ] Exportación a PDF
 - [ ] Procesamiento por lotes
-- [ ] Despliegue en producción (Railway)
+- [ ] Despliegue full-stack con frontend estático, backend Node.js y PostgreSQL
 - [ ] Integración con servicios en la nube
 
 ---

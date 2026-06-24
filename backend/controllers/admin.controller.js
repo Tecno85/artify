@@ -68,6 +68,7 @@ function crearUsuario(req, res) {
         (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
          usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
       VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
+      RETURNING usr_id_usuario
     `;
 
     db.query(

@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const { spawn } = require('node:child_process');
 
 const dotenv = require('dotenv');
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 
 dotenv.config({ quiet: true });
 
@@ -26,8 +26,10 @@ let tokenUsuario;
 let idSesion;
 
 function crearConexionDb() {
-  return mysql.createConnection({
+  return new Pool({
+    connectionString: process.env.DATABASE_URL,
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
@@ -93,11 +95,11 @@ async function obtenerUsuarioTemporal() {
   const db = await crearConexionDb();
 
   try {
-    const [rows] = await db.query(
+    const { rows } = await db.query(
       `SELECT usr_id_usuario, usr_correo, usr_contrasena,
               usr_ultimo_acceso, usr_sesion_activa
-       FROM USUARIO
-       WHERE usr_id_usuario = ?`,
+       FROM "USUARIO"
+       WHERE usr_id_usuario = $1`,
       [idUsuario]
     );
 
@@ -114,7 +116,7 @@ async function esperarActualizacionAcceso() {
   while (Date.now() - inicio < 3000) {
     usuario = await obtenerUsuarioTemporal();
 
-    if (usuario?.usr_ultimo_acceso && usuario.usr_sesion_activa === 1) {
+    if (usuario?.usr_ultimo_acceso && usuario.usr_sesion_activa === true) {
       return usuario;
     }
 
@@ -130,27 +132,29 @@ async function limpiarUsuarioTemporal() {
   }
 
   const db = await crearConexionDb();
+  const client = await db.connect();
 
   try {
-    await db.beginTransaction();
-    await db.query('DELETE FROM OPERACION WHERE opr_usr_id_usuario = ?', [
+    await client.query('BEGIN');
+    await client.query('DELETE FROM "OPERACION" WHERE opr_usr_id_usuario = $1', [
       idUsuario,
     ]);
-    await db.query('DELETE FROM SESION_EDICION WHERE ses_usr_id_usuario = ?', [
+    await client.query('DELETE FROM "SESION_EDICION" WHERE ses_usr_id_usuario = $1', [
       idUsuario,
     ]);
-    await db.query('DELETE FROM IMAGEN WHERE img_usr_id_usuario = ?', [
+    await client.query('DELETE FROM "IMAGEN" WHERE img_usr_id_usuario = $1', [
       idUsuario,
     ]);
-    await db.query('DELETE FROM CONFIGURACION WHERE cfg_usr_id_usuario = ?', [
+    await client.query('DELETE FROM "CONFIGURACION" WHERE cfg_usr_id_usuario = $1', [
       idUsuario,
     ]);
-    await db.query('DELETE FROM USUARIO WHERE usr_id_usuario = ?', [idUsuario]);
-    await db.commit();
+    await client.query('DELETE FROM "USUARIO" WHERE usr_id_usuario = $1', [idUsuario]);
+    await client.query('COMMIT');
   } catch (error) {
-    await db.rollback();
+    await client.query('ROLLBACK');
     throw error;
   } finally {
+    client.release();
     await db.end();
   }
 }
@@ -257,7 +261,7 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
 
   const usuarioAutenticado = await esperarActualizacionAcceso();
   assert.ok(usuarioAutenticado.usr_ultimo_acceso);
-  assert.equal(usuarioAutenticado.usr_sesion_activa, 1);
+  assert.equal(usuarioAutenticado.usr_sesion_activa, true);
 
   const authHeaders = {
     Authorization: `Bearer ${tokenUsuario}`,

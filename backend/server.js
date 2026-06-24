@@ -41,7 +41,7 @@ setInterval(
       SET ses_fecha_fin = NOW(),
           ses_estado_sesion = 'finalizada'
       WHERE ses_estado_sesion = 'activa'
-      AND ses_fecha_inicio < DATE_SUB(NOW(), INTERVAL 8 HOUR)
+      AND ses_fecha_inicio < NOW() - INTERVAL '8 hours'
     `;
 
     db.query(query, (err, result) => {

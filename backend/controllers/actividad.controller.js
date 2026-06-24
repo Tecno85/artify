@@ -100,6 +100,7 @@ function registrarOperacion(req, res) {
         (opr_usr_id_usuario, opr_ses_id_sesion, opr_tipo_operacion,
          opr_parametros, opr_fecha_hora, opr_orden_secuencial, opr_estado_operacion)
       VALUES (?, ?, ?, ?, NOW(), 1, 'completada')
+      RETURNING opr_id_operacion
     `;
 
     db.query(
@@ -188,6 +189,7 @@ function registrarImagen(req, res) {
        img_formato, img_ancho_original, img_alto_original,
        img_tamano_bytes, img_fecha_subida, img_estado_imagen)
     VALUES (?, ?, ?, ?, 0, 0, ?, NOW(), 'activa')
+    RETURNING img_id_imagen
   `;
 
   db.query(

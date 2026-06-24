@@ -6,7 +6,7 @@ Esta carpeta contiene los artefactos de trabajo para migrar Artify desde MySQL h
 
 Proyecto experimental creado a partir de `artify-sena`.
 
-El backend todavía conserva la implementación MySQL original. La migración se realizará de forma controlada en fases.
+El backend ya cuenta con una migración inicial funcional a PostgreSQL mediante `pg`. El esquema y las pruebas automatizadas se validaron contra una instancia temporal de PostgreSQL.
 
 ## Archivos previstos
 

@@ -44,7 +44,7 @@ function filtrosPopulares(req, res) {
 function horariosEdicion(req, res) {
   const query = `
     SELECT
-      HOUR(opr_fecha_hora) as hora,
+      EXTRACT(HOUR FROM opr_fecha_hora)::int as hora,
       COUNT(*) as cantidad_ediciones,
       COALESCE(
         ROUND(100 * COUNT(*) / NULLIF((SELECT COUNT(*) FROM OPERACION), 0), 2),
@@ -52,7 +52,7 @@ function horariosEdicion(req, res) {
       ) as porcentaje
     FROM OPERACION
     WHERE opr_estado_operacion = 'completada'
-    GROUP BY HOUR(opr_fecha_hora)
+    GROUP BY EXTRACT(HOUR FROM opr_fecha_hora)
     ORDER BY cantidad_ediciones DESC
   `;
 
@@ -122,13 +122,13 @@ function tasaConversion(req, res) {
     SELECT
       COALESCE(
         ROUND(
-          100 * SUM(CASE WHEN ses_cambios_guardados = 1 THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0),
+          100 * SUM(CASE WHEN ses_cambios_guardados = true THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0),
           2
         ),
         0
       ) as tasa_conversion_porcentaje,
       COUNT(*) as total_sesiones,
-      COALESCE(SUM(CASE WHEN ses_cambios_guardados = 1 THEN 1 ELSE 0 END), 0) as sesiones_exitosas
+      COALESCE(SUM(CASE WHEN ses_cambios_guardados = true THEN 1 ELSE 0 END), 0) as sesiones_exitosas
     FROM SESION_EDICION
     WHERE ses_estado_sesion = 'finalizada'
   `;

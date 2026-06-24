@@ -1,2 +1,3 @@
 [build]
+  command = "node scripts/write-frontend-config.js"
   publish = "frontend"

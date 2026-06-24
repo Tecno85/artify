@@ -17,6 +17,7 @@ function iniciarSesionEdicion(req, res) {
     INSERT INTO SESION_EDICION
       (ses_usr_id_usuario, ses_fecha_inicio, ses_estado_sesion)
     VALUES (?, NOW(), 'activa')
+    RETURNING ses_id_sesion
   `;
 
   db.query(query, [idUsuarioNormalizado], (err, result) => {
@@ -85,9 +86,10 @@ function cerrarSesionEdicion(req, res) {
 
       const queryInactiva = `
         UPDATE USUARIO u
-        INNER JOIN SESION_EDICION s ON u.usr_id_usuario = s.ses_usr_id_usuario
-        SET u.usr_sesion_activa = 0
+        SET usr_sesion_activa = false
+        FROM SESION_EDICION s
         WHERE s.ses_id_sesion = ?
+        AND u.usr_id_usuario = s.ses_usr_id_usuario
       `;
 
       db.query(queryInactiva, [idSesion], (errInactiva) => {

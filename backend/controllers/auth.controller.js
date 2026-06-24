@@ -45,7 +45,7 @@ function login(req, res) {
     const queryAcceso = `
       UPDATE USUARIO
       SET usr_ultimo_acceso = NOW(),
-          usr_sesion_activa = 1
+          usr_sesion_activa = true
       WHERE usr_id_usuario = ?
     `;
 
@@ -125,6 +125,7 @@ function registro(req, res) {
         (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
          usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
       VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
+      RETURNING usr_id_usuario
     `;
 
     db.query(

@@ -25,19 +25,19 @@ Resultado:
 | `tinyint(1)` | `boolean` |
 | `json` | `jsonb` |
 
-## Archivos prioritarios
+## Archivos Migrados en la Primera Iteración
 
-| Archivo | Prioridad | Motivo |
+| Archivo | Estado | Motivo |
 | --- | --- | --- |
-| `backend/config/db.js` | Alta | Cambiar de `mysql2` a `pg`. |
-| `backend/server.js` | Alta | Ajustar limpieza automática de sesiones. |
-| `backend/controllers/auth.controller.js` | Alta | Registro, login, actualización de acceso e inserts con ID. |
-| `backend/controllers/sesion.controller.js` | Alta | Inicio y cierre de sesiones. |
-| `backend/controllers/actividad.controller.js` | Alta | Registro de operaciones e imágenes. |
-| `backend/controllers/configuracion.controller.js` | Media | Guardado y lectura de configuración JSON. |
-| `backend/controllers/admin.controller.js` | Media | CRUD administrativo. |
-| `backend/controllers/analytics.controller.js` | Media | Agregaciones y funciones de fecha. |
-| `backend/tests/api.test.js` | Alta | Validación completa de la migración. |
+| `backend/config/db.js` | Migrado | Usa `pg`, pool de PostgreSQL, placeholders adaptados y compatibilidad con callbacks existentes. |
+| `backend/server.js` | Migrado | Ajusta limpieza automática de sesiones con intervalo compatible con PostgreSQL. |
+| `backend/controllers/auth.controller.js` | Migrado | Registro, login, actualización de acceso e inserts con `RETURNING`. |
+| `backend/controllers/sesion.controller.js` | Migrado | Inicio y cierre de sesiones con SQL compatible con PostgreSQL. |
+| `backend/controllers/actividad.controller.js` | Migrado | Registro de operaciones e imágenes con `RETURNING`. |
+| `backend/controllers/configuracion.controller.js` | Validado | Lectura y guardado de configuración JSON funcionan con `jsonb`. |
+| `backend/controllers/admin.controller.js` | Migrado | CRUD administrativo compatible con la capa PostgreSQL. |
+| `backend/controllers/analytics.controller.js` | Migrado | Agregaciones y funciones de fecha adaptadas. |
+| `backend/tests/api.test.js` | Migrado | Suite automatizada ejecutada contra PostgreSQL temporal. |
 
 ## Decisión inicial
 
