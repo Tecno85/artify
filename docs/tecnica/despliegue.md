@@ -95,6 +95,12 @@ Primero creo la base de datos:
 createdb artify_db
 ```
 
+Si `createdb` no está disponible, puedo crearla desde `psql` usando la base administrativa local:
+
+```bash
+psql -d postgres -c 'CREATE DATABASE artify_db;'
+```
+
 Luego cargo el esquema y los datos mínimos de referencia:
 
 ```bash
@@ -112,6 +118,15 @@ Al finalizar, verifico la base, las tablas y la vista:
 ```
 
 Si prefiero validar en un solo comando desde la terminal, puedo usar `psql -d artify_db -c "\\dt"` para tablas y `psql -d artify_db -c "\\dv"` para vistas.
+
+### Preparación para pruebas automatizadas
+
+Antes de ejecutar `pnpm test`, confirmo dos condiciones:
+
+1. Existe `backend/.env` con `DATABASE_URL` o las variables `DB_*`, además de `TOKEN_SECRET`, `ADMIN_USER` y `ADMIN_PASSWORD`.
+2. La base `artify_db` existe y ya recibió `schema.sql` y `seed.sql`.
+
+Si falta `backend/.env`, la suite puede fallar con secretos indefinidos, por ejemplo `TOKEN_SECRET`, `ADMIN_USER` o `ADMIN_PASSWORD`. Si falta la base o el esquema, `/health` puede responder, pero los endpoints que consultan PostgreSQL devuelven errores porque no encuentran la conexión, las tablas o la vista esperada.
 
 ---
 
@@ -187,6 +202,21 @@ pnpm test
 
 La suite actual valida autenticación, rutas protegidas, tokens, configuración básica, conexión con PostgreSQL y limpieza de usuarios temporales.
 
+Si `pnpm` informa que requiere Node.js `22.13` o superior, reviso primero qué binario está tomando la terminal:
+
+```bash
+node -v
+which node
+```
+
+En macOS con Homebrew puedo priorizar Node 22 para la sesión actual:
+
+```bash
+PATH=/opt/homebrew/opt/node@22/bin:$PATH pnpm test
+```
+
+En entornos restringidos, como validaciones ejecutadas desde herramientas con sandbox, Node puede no tener permiso para abrir sockets locales hacia PostgreSQL aunque `psql` sí funcione. En ese caso, la verificación válida es ejecutar la suite en una terminal normal del sistema con PostgreSQL activo y las variables de `backend/.env` configuradas.
+
 ### Verificación manual básica
 
 1. Abro `http://127.0.0.1:8080`.
@@ -229,7 +259,10 @@ Para ejecución local, `config.js` puede permanecer vacío para que el frontend 
 | Problema | Posible causa | Solución |
 | --- | --- | --- |
 | `Error al conectar a PostgreSQL` | Variables incorrectas o servicio detenido. | Revisar `backend/.env` e iniciar PostgreSQL. |
+| `database "artify_db" does not exist` | La base local no fue creada. | Ejecutar `createdb artify_db` o `psql -d postgres -c 'CREATE DATABASE artify_db;'`. |
+| `TOKEN_SECRET`, `ADMIN_USER` o `ADMIN_PASSWORD` indefinidos en pruebas | Falta `backend/.env` o las variables no fueron cargadas. | Crear `backend/.env` desde `.env.example` y ajustar los valores locales. |
 | `Unknown command: pnpm` | pnpm no está instalado o no está en el PATH. | Instalar pnpm y abrir una nueva terminal. |
+| `This version of pnpm requires at least Node.js v22.13` | La terminal está usando un Node anterior al requerido por pnpm. | Priorizar Node 22 en el `PATH` o actualizar Node. |
 | `/health` no responde | Backend no iniciado o puerto incorrecto. | Ejecutar `pnpm start` en `backend/`. |
 | `/health` responde pero la API falla | PostgreSQL no está disponible, variables incompletas o esquema no cargado. | Revisar `backend/.env`, cargar `schema.sql` y consultar logs del backend. |
 | Login falla aunque el usuario existe | Contraseña incorrecta, hash inválido o límite de intentos alcanzado. | Verificar registro, datos en `USUARIO` y esperar si hubo demasiados intentos. |
