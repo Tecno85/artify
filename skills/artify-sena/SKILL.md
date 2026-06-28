@@ -82,6 +82,8 @@ Antes de proponer commits, revisar `git status` y, cuando ayude, `git diff --sta
 
 Usar Conventional Commits según `docs/tecnica/coding-standards.md`, con formato `tipo(scope): descripción`. Tipos habituales: `feat`, `fix`, `docs`, `test`, `chore`, `style`, `refactor`. Scopes útiles en Artify: `auth`, `admin`, `editor`, `analytics`, `db`, `docs`, `skill`, `frontend`, `backend`.
 
+Los mensajes de commit deben escribirse en español. Mantener el tipo y el scope en el formato convencional, pero redactar la descripción en español, por ejemplo: `docs(project): formalizar postgresql como motor oficial`.
+
 No ejecutar `git commit` ni `git push` salvo que el usuario lo pida explícitamente; el usuario revisa el commit sugerido y hace push manual.
 
 ## Prioridades De Pulido

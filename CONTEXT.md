@@ -7,9 +7,9 @@
 
 ## 1. ¿Qué es Artify SENA PostgreSQL?
 
-Artify SENA PostgreSQL es una variante separada del proyecto Artify SENA. Su objetivo es conservar el frontend HTML, CSS y JavaScript Vanilla, y adaptar el backend Node.js + Express para trabajar con PostgreSQL en lugar del modelo MySQL del proyecto base.
+Artify SENA PostgreSQL es la versión oficial de Artify SENA con backend Node.js + Express y base de datos PostgreSQL. Conserva el frontend HTML, CSS y JavaScript Vanilla, y usa `pg` como conector PostgreSQL del backend.
 
-Esta variante se creó para facilitar un despliegue full-stack de prueba en la web, con frontend estático, backend Node.js y base de datos PostgreSQL.
+El repositorio se mantiene separado del proyecto base anterior para conservar trazabilidad histórica, pero PostgreSQL es el motor oficial de esta versión.
 
 **Estudiante:** Ivan Dario Madrid Daza
 **GitHub:** https://github.com/Tecno85/artify-sena-postgresql
@@ -39,7 +39,7 @@ Esta variante se creó para facilitar un despliegue full-stack de prueba en la w
 
 - Git + GitHub.
 - Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
-- Proyecto separado de `artify-sena` para no afectar la versión original del proyecto base.
+- Repositorio separado de `artify-sena` para no afectar la versión histórica del proyecto base.
 
 ---
 
@@ -220,7 +220,7 @@ Notas:
 
 ## 7. Validación Actual
 
-La migración inicial fue validada con:
+La versión PostgreSQL fue validada con:
 
 - Carga de `database/postgresql/schema.sql`.
 - Carga de `database/postgresql/seed.sql`.
@@ -259,8 +259,8 @@ Enfoque recomendado:
 - Las respuestas de login no diferencian si falló el correo o la contraseña.
 - El login administrativo usa `ADMIN_USER` y `ADMIN_PASSWORD` desde variables de entorno.
 - El `seed.sql` no debe interpretarse como credenciales reales de acceso.
-- La versión original del proyecto base se conserva en el repositorio `artify-sena`.
-- Esta variante debe mantenerse separada para evitar mezclar motores de base de datos.
+- La versión histórica del proyecto base se conserva en el repositorio `artify-sena`.
+- Este repositorio debe mantenerse como referencia oficial de Artify SENA con PostgreSQL.
 
 ---
 
@@ -268,9 +268,10 @@ Enfoque recomendado:
 
 - [2026-06-24] Creación del proyecto separado `artify-sena-postgresql`.
 - [2026-06-24] Creación del esquema inicial PostgreSQL.
-- [2026-06-24] Migración inicial del backend hacia PostgreSQL mediante `pg`.
+- [2026-06-24] Migración del backend hacia PostgreSQL mediante `pg`.
 - [2026-06-24] Preparación de configuración frontend para despliegue con `ARTIFY_API_URL`.
 - [2026-06-27] Verificación completa de la migración con PostgreSQL temporal y pruebas automatizadas.
+- [2026-06-28] Formalización de PostgreSQL como motor oficial de esta versión.
 
 ---
 

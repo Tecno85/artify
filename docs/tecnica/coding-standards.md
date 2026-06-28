@@ -690,6 +690,8 @@ const queries = [
 
 ### Formato — tipo(alcance): descripción
 
+La descripción del commit debe escribirse en español. El tipo y el alcance conservan el formato de Conventional Commits.
+
 ```bash
 # Ejemplo recomendado - commits reales del proyecto Artify
 git commit -m "feat(registro): crear configuración por defecto automáticamente al registrar usuario"

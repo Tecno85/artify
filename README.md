@@ -6,17 +6,17 @@
 ![Status](https://img.shields.io/badge/estado-activo-28ffce?style=for-the-badge)
 ![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
 ![Node](https://img.shields.io/badge/Node.js-22.13+-339933?style=for-the-badge&logo=node.js)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-migración_inicial-4169E1?style=for-the-badge&logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-oficial-4169E1?style=for-the-badge&logo=postgresql)
 
-**Artify SENA PostgreSQL** es una variante experimental de Artify que adapta el backend hacia PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa Node.js + Express + PostgreSQL en el backend.
+**Artify SENA PostgreSQL** es la versión oficial de Artify SENA con backend Node.js + Express y base de datos PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa `pg` como conector PostgreSQL en el backend.
 
-Proyecto experimental local para migración a PostgreSQL
+Proyecto Artify SENA con PostgreSQL como motor oficial de base de datos.
 
 </div>
 
 ---
 
-> **Estado de migración:** el frontend fue copiado desde Artify SENA y el backend ya cuenta con una migración inicial funcional a PostgreSQL. La variante continúa en revisión para ajustes de despliegue y validaciones adicionales.
+> **Estado del proyecto:** PostgreSQL es el motor oficial de esta versión. El backend, el esquema, las pruebas, la documentación y el flujo de despliegue están alineados con PostgreSQL.
 
 ---
 
