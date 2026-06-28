@@ -175,10 +175,15 @@ Artify/
 │   └── pnpm-lock.yaml          # Lockfile de pnpm
 │
 ├── database/                   # Base de datos del proyecto
-│   └── artify_db.sql           # Script SQL completo
+│   ├── artify_db.sql           # Referencia del modelo MySQL original
+│   └── postgresql/
+│       ├── schema.sql          # Esquema PostgreSQL activo
+│       ├── seed.sql            # Datos mínimos de referencia
+│       └── queries.md          # Inventario de ajustes de consultas
 │
 ├── scripts/                    # Automatización
-│   └── setup.sh                # Configuración inicial
+│   ├── setup.sh                # Configuración inicial heredada
+│   └── write-frontend-config.js # Configuración de API para Netlify
 │
 ├── docs/                       # Documentación del proyecto
 │   ├── proyecto/

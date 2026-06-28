@@ -1,287 +1,260 @@
-# CONTEXT.md — Proyecto Artify
+# CONTEXT.md — Proyecto Artify SENA PostgreSQL
 
 > Archivo de contexto para continuar el desarrollo.
-> Última actualización: Mayo 2026
+> Última actualización: Junio 2026
 
 ---
 
-## 1. ¿Qué es Artify?
+## 1. ¿Qué es Artify SENA PostgreSQL?
 
-Artify es un editor de imágenes web full stack desarrollado como proyecto académico del programa **Análisis y Desarrollo de Software del SENA (Colombia)**.
+Artify SENA PostgreSQL es una variante separada del proyecto Artify SENA. Su objetivo es conservar el frontend HTML, CSS y JavaScript Vanilla, y adaptar el backend Node.js + Express para trabajar con PostgreSQL en lugar de MySQL.
+
+Esta variante se creó para facilitar un despliegue full-stack de prueba en la web, con frontend estático, backend Node.js y base de datos PostgreSQL.
 
 **Estudiante:** Ivan Dario Madrid Daza
-**GitHub:** https://github.com/Tecno85/artify-sena
-
-Permite a los usuarios editar imágenes directamente en el navegador con autenticación real, gestión de sesiones, panel de administración y **API REST para consumo de terceros**.
+**GitHub:** https://github.com/Tecno85/artify-sena-postgresql
 
 ---
 
 ## 2. Stack Tecnológico
 
 ### Frontend
-- HTML5, CSS3, JavaScript Vanilla
-- Canvas API para manipulación de imágenes
-- SessionStorage para manejo de sesión
+
+- HTML5, CSS3, JavaScript Vanilla.
+- Canvas API para manipulación de imágenes.
+- SessionStorage para manejo de sesión.
+- `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
 
 ### Backend
-| Componente | Tecnología | Puerto | Estado            |
-| ---------- | ---------- | ------ | ----------------- |
-| Servidor   | Node.js    | 3000   | Oficial y único |
-| Framework  | Express.js | 3000   | Oficial y único |
-| BD         | MySQL 8.0+ | 3306   | Oficial y único |
-| Paquetes   | pnpm 11.1.1 | backend | Oficial y único |
+
+| Componente | Tecnología | Puerto | Estado |
+| --- | --- | --- | --- |
+| Servidor | Node.js | 3000 | Oficial en esta variante |
+| Framework | Express.js | 3000 | Oficial en esta variante |
+| Base de datos | PostgreSQL 15+ recomendado | 5432 | Oficial en esta variante |
+| Conector Node.js | `pg` | backend | Oficial en esta variante |
+| Gestor backend | pnpm 11.1.1 | backend | Oficial en esta variante |
 
 ### Control de versiones
-- Git + GitHub
-- Convención: Ramas feature + Pull Requests
-- Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`)
+
+- Git + GitHub.
+- Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
+- Proyecto separado de `artify-sena` para no afectar la versión MySQL original.
 
 ---
 
-## 3. Estructura del Proyecto
+## 3. Estructura Principal
 
-```
-Artify/
+```text
+artify-sena-postgresql/
 ├── README.md
-├── LICENSE
-├── CONTEXT.md              # Este archivo
-├── .gitignore
-├── .env.example            # Plantilla de variables de entorno
+├── CONTEXT.md
+├── .env.example
+├── netlify.toml
 │
 ├── frontend/
 │   ├── index.html
 │   ├── pages/
-│   │   ├── editor.html     # Editor de imágenes
-│   │   ├── login.html      # Inicio de sesión
-│   │   ├── registro.html   # Registro de usuario
-│   │   └── admin.html      # Panel de administración CRUD
+│   │   ├── editor.html
+│   │   ├── login.html
+│   │   ├── registro.html
+│   │   └── admin.html
 │   └── assets/
-│       ├── css/            # admin.css, editor.css, login.css, registro.css, index.css
-│       └── js/             # auth.js, admin.js, editor.js, login.js, registro.js
+│       ├── css/
+│       ├── js/
+│       │   ├── config.js
+│       │   ├── config.example.js
+│       │   ├── auth.js
+│       │   ├── editor.js
+│       │   ├── login.js
+│       │   ├── registro.js
+│       │   └── admin.js
+│       ├── icons/
+│       └── images/
 │
-├── backend/                # Node.js + Express modular (puerto 3000)
-│   ├── config/             # Configuración de conexión a MySQL
-│   ├── controllers/        # Lógica por recurso
-│   ├── middlewares/        # Tokens, roles y validaciones de acceso
-│   ├── routes/             # Endpoints por dominio
-│   ├── utils/              # Helpers de token y configuración
-│   ├── server.js           # Arranque del servidor y montaje de rutas
-│   ├── .env
+├── backend/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── routes/
+│   ├── tests/
+│   ├── utils/
+│   ├── server.js
 │   ├── package.json
 │   └── pnpm-lock.yaml
 │
 ├── database/
-│   └── artify_db.sql       # Script SQL completo
+│   ├── artify_db.sql
+│   └── postgresql/
+│       ├── README.md
+│       ├── schema.sql
+│       ├── seed.sql
+│       └── queries.md
 │
-├── scripts/                # Automatización
-│   └── setup.sh            # Script de configuración inicial
+├── scripts/
+│   ├── setup.sh
+│   └── write-frontend-config.js
 │
-├── docs/
-│   ├── proyecto/
-│   │   ├── descripcion-proyecto.md
-│   │   └── requerimientos-funcionales.md
-│   ├── tecnica/
-│   │   ├── arquitectura.md        # Arquitectura técnica del sistema
-│   │   ├── api-analytics.md       # Documentación API REST Analytics
-│   │   ├── base-datos.md          # Modelo y estructura de MySQL
-│   │   ├── coding-standards.md    # Estándares Node.js + JavaScript
-│   │   ├── despliegue.md          # Ejecución local y despliegue técnico
-│   │   └── plan-pruebas-autenticacion.md
-│
-└── skills/
-    └── artify-sena/
-        ├── SKILL.md               # Skill oficial de trabajo con Codex
-        └── agents/openai.yaml     # Metadata del skill
+└── docs/
+    └── tecnica/
+        ├── despliegue-fullstack-postgresql.md
+        ├── plan-migracion-postgresql.md
+        └── otros documentos heredados del proyecto base
 ```
 
 ---
 
 ## 4. Base de Datos
 
-### Tablas de `artify_db`
+La base principal de esta variante es PostgreSQL. Los scripts activos se encuentran en:
+
+- `database/postgresql/schema.sql`
+- `database/postgresql/seed.sql`
+- `database/postgresql/queries.md`
+
+El archivo `database/artify_db.sql` se conserva solo como referencia del modelo MySQL original.
+
+### Objetos principales
 
 ```sql
--- Entidad fuerte no dependiente
-USUARIO (
-  usr_id_usuario      INT PK AUTO_INCREMENT,
-  usr_nombres         VARCHAR(100),
-  usr_apellidos       VARCHAR(100),
-  usr_cedula          VARCHAR(20) UNIQUE,
-  usr_fecha_nacimiento DATE,
-  usr_correo          VARCHAR(150) UNIQUE,
-  usr_contrasena      VARCHAR(255),    -- encriptada con bcrypt
-  usr_fecha_registro  DATETIME,
-  usr_ultimo_acceso   DATETIME,
-  usr_sesion_activa   TINYINT(1),
-  usr_estado_usuario  ENUM('activo','inactivo','suspendido'),
-  usr_rol             ENUM('usuario','admin')
-)
-
--- Tablas dependientes de USUARIO
-SESION_EDICION   → ses_usr_id_usuario FK → USUARIO
-OPERACION        → opr_usr_id_usuario FK → USUARIO
-IMAGEN           → img_usr_id_usuario FK → USUARIO
-CONFIGURACION    → cfg_usr_id_usuario FK → USUARIO (UNIQUE)
-
--- Vista
-v_usuarios_activos → resumen de USUARIO + IMAGEN + SESION_EDICION
+USUARIO
+CONFIGURACION
+IMAGEN
+SESION_EDICION
+OPERACION
+v_usuarios_activos
 ```
 
-### Convención de nombres en BD
-- Tablas en MAYÚSCULAS: `USUARIO`, `SESION_EDICION`
-- Columnas con prefijo de tabla: `usr_`, `ses_`, `opr_`, `img_`, `cfg_`
+### Convenciones
+
+- Las tablas conservan nombres en mayúscula para reducir cambios frente al proyecto original.
+- Las columnas conservan prefijos: `usr_`, `ses_`, `opr_`, `img_`, `cfg_`.
+- En PostgreSQL las tablas en mayúscula se referencian con comillas dobles.
+- El backend incluye una capa de compatibilidad en `backend/config/db.js` para adaptar placeholders `?`, nombres de tablas y resultados esperados por controladores heredados.
 
 ---
 
 ## 5. Endpoints Implementados
 
 ### Autenticación
-| Método | Ruta            | Descripción                                                |
-| ------ | --------------- | ---------------------------------------------------------- |
-| POST   | `/api/login`    | Login con bcrypt. Devuelve usuario autenticado y token     |
-| POST   | `/api/registro` | Registro con bcrypt                                        |
 
-### Panel de Administración (CRUD sobre USUARIO)
-| Método | Ruta                     | Descripción               |
-| ------ | ------------------------ | ------------------------- |
-| GET    | `/api/admin/usuarios`    | Lista todos los usuarios  |
-| POST   | `/api/admin/usuario`     | Agrega usuario nuevo      |
-| PUT    | `/api/admin/usuario/:id` | Edita usuario por ID      |
-| DELETE | `/api/admin/usuario/:id` | Elimina usuario (cascada) |
-| POST   | `/api/admin/login`       | Login del panel admin con token |
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| POST | `/api/login` | Login con bcrypt. Devuelve usuario autenticado y token. |
+| POST | `/api/registro` | Registro con bcrypt. |
 
-### Sesiones y Operaciones
-| Método | Ruta                    | Descripción                   |
-| ------ | ----------------------- | ----------------------------- |
-| POST   | `/api/sesion/iniciar`   | Inicia sesión de edición      |
-| POST   | `/api/sesion/cerrar`    | Cierra sesión de edición      |
-| POST   | `/api/operacion`        | Registra operación de edición |
-| POST   | `/api/imagen`           | Registra imagen procesada     |
-| GET    | `/api/estadisticas/:id` | Estadísticas del usuario      |
+### Panel de Administración
 
-### API REST Analytics (Nuevos - v1.0)
-| Método | Ruta                                    | Descripción                        |
-| ------ | --------------------------------------- | ---------------------------------- |
-| GET    | `/api/v1/analytics/filtros-populares`   | Top filtros más usados             |
-| GET    | `/api/v1/analytics/horarios-edicion`    | Horas pico de edición              |
-| GET    | `/api/v1/analytics/formatos-preferidos` | Formatos de imagen más descargados |
-| GET    | `/api/v1/analytics/tasa-conversion`     | % sesiones con cambios guardados   |
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/api/admin/usuarios` | Lista todos los usuarios. |
+| POST | `/api/admin/usuario` | Agrega usuario nuevo. |
+| PUT | `/api/admin/usuario/:id` | Edita usuario por ID. |
+| DELETE | `/api/admin/usuario/:id` | Elimina usuario y datos dependientes. |
+| POST | `/api/admin/login` | Login del panel admin con token. |
 
----
+### Sesiones, Operaciones e Imágenes
 
-## 6. Funcionalidades Implementadas
-
-### Autenticación y roles
-- Registro con bcrypt
-- Login con validación bcrypt
-- Tokens firmados por backend para rutas protegidas
-- Redirección por rol: `admin` → `admin.html`, `usuario` → `editor.html`
-- Control de sesión activa
-- Cierre automático de sesiones inactivas (cron job, 8h límite)
-
-### Editor de imágenes
-- Drag & drop para subir imágenes
-- Recortar con proporciones (libre, 1:1, 16:9, 4:3, 3:2)
-- Redimensionar con bloqueo de proporción
-- Rotar (90°, 180°, 270°)
-- Filtros: Blanco y Negro, Sepia, Brillo, Contraste, Convertir
-- Deshacer/Rehacer (hasta 20 pasos)
-- Zoom 50%-200%
-- Registro de operaciones en MySQL
-
-### Panel de administración
-- Login protegido con credenciales en `.env`
-- CRUD completo sobre tabla USUARIO
-- Búsqueda en tiempo real
-- Estadísticas de usuarios activos/inactivos
-- Columna de rol (admin/usuario)
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| POST | `/api/sesion/iniciar` | Inicia sesión de edición. |
+| POST | `/api/sesion/cerrar` | Cierra sesión de edición. |
+| POST | `/api/operacion` | Registra operación de edición. |
+| POST | `/api/imagen` | Registra imagen procesada. |
+| GET | `/api/estadisticas/:id` | Estadísticas del usuario. |
 
 ### API REST Analytics
-- 4 endpoints de analytics (filtros, horarios, formatos, conversión)
-- Documentación completa en `docs/tecnica/api-analytics.md`
-- Respuestas en formato JSON estructurado
-- Código completamente comentado
-- Versión v1 (permite futuras versiones sin conflictos)
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/api/v1/analytics/filtros-populares` | Top filtros más usados. |
+| GET | `/api/v1/analytics/horarios-edicion` | Horas pico de edición. |
+| GET | `/api/v1/analytics/formatos-preferidos` | Formatos de imagen más descargados. |
+| GET | `/api/v1/analytics/tasa-conversion` | Porcentaje de sesiones con cambios guardados. |
 
 ---
 
-## 7. Lógica Funcional Principal
+## 6. Variables de Entorno
 
-La lógica funcional del proyecto es la **redirección por rol después del login**:
+### Backend Node.js
 
-```javascript
-// frontend/assets/js/login.js
-if (data.usuario.rol === 'admin') {
-  window.location.href = './admin.html';  // Va a frontend/pages/admin.html
-} else {
-  window.location.href = './editor.html'; // Va a frontend/pages/editor.html
-}
-```
-
----
-
-## 8. Variables de Entorno
-
-### Backend Node.js (`backend/.env`)
 ```env
+DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=contraseña
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=tu_contrasena_postgresql
 DB_NAME=artify_db
 ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=contraseña_admin
-TOKEN_SECRET=secreto_largo_y_aleatorio
+ADMIN_PASSWORD=tu_contrasena_admin
+TOKEN_SECRET=cambia_este_valor_por_un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
 ```
 
-### Importante
-- El archivo `.env` **NUNCA** se sube a GitHub
-- Usar `.env.example` como plantilla
-- Cada dev crea su propio `.env` local
+### Frontend desplegado
+
+```env
+ARTIFY_API_URL=https://url-del-backend
+```
+
+Notas:
+
+- El archivo `.env` real no se sube a GitHub.
+- `.env.example` está en la raíz del proyecto como plantilla.
+- Para despliegue, Render/Netlify deben recibir variables desde sus paneles de configuración.
 
 ---
 
-## 9. Operación Local
+## 7. Validación Actual
 
-- Para instalación y arranque, consulta `README.md`.
-- Este archivo solo mantiene la referencia del estado actual del proyecto y de los endpoints activos.
-- Las pruebas rápidas recomendadas son:
-  - login usuario
-  - login admin
-  - eliminación de usuario desde admin
-  - analytics públicas sin token
+La migración inicial fue validada con:
 
----
-
-## 10. Versionamiento con Git
-
-- Se usa flujo con ramas `feature/*` y Pull Requests.
-- Los commits siguen la convención `tipo(scope): descripción`.
+- Carga de `database/postgresql/schema.sql`.
+- Carga de `database/postgresql/seed.sql`.
+- Creación de 5 tablas y la vista `v_usuarios_activos`.
+- `pnpm run check`.
+- `pnpm test` contra una instancia temporal de PostgreSQL.
+- Resultado de pruebas automatizadas: 12/12 correctas.
 
 ---
 
-## 11. Notas Importantes
+## 8. Despliegue
 
-- Las contraseñas siempre se encriptan con **bcrypt**
-- La eliminación de usuarios se ejecuta en **transacción** y en este orden: OPERACION → SESION_EDICION → IMAGEN → CONFIGURACION → USUARIO
-- El backend oficial es **Node.js + Express modular**
-- Las tablas usan MAYÚSCULAS por convención del instructor del SENA
-- Todos los endpoints tienen comentarios detallados en el código
-- La API REST Analytics es consumible por e-commerce externos
+La guía de despliegue full-stack se encuentra en:
 
----
+```text
+docs/tecnica/despliegue-fullstack-postgresql.md
+```
 
-## 12. Historial de Cambios Recientes
+Enfoque recomendado:
 
-- [2026-04-22] Reorganización de estructura del proyecto
-- [2026-04-22] Modularización del backend y protección de rutas con token
-- [2026-04-22] Creación de API REST Analytics (4 endpoints)
-- [2026-04-22] Creación de scripts de automatización (setup.sh)
-- [2026-04-21] Normalización de comentarios en backend modular y auth frontend
-- [2026-04-20] Creación de documentación api-analytics.md
+- Netlify para frontend estático.
+- Render para backend Node.js.
+- Neon PostgreSQL para base de datos.
 
 ---
 
-*Proyecto Artify — Análisis y Desarrollo de Software — SENA 2026*
+## 9. Notas Importantes
+
+- Las contraseñas de usuarios se guardan con bcrypt.
+- El login administrativo usa `ADMIN_USER` y `ADMIN_PASSWORD` desde variables de entorno.
+- El `seed.sql` no debe interpretarse como credenciales reales de acceso.
+- La versión MySQL original se conserva en el repositorio `artify-sena`.
+- Esta variante debe mantenerse separada para evitar mezclar motores de base de datos.
+
+---
+
+## 10. Historial Reciente
+
+- [2026-06-24] Creación del proyecto separado `artify-sena-postgresql`.
+- [2026-06-24] Creación del esquema inicial PostgreSQL.
+- [2026-06-24] Migración inicial del backend desde `mysql2` hacia `pg`.
+- [2026-06-24] Preparación de configuración frontend para despliegue con `ARTIFY_API_URL`.
+- [2026-06-27] Verificación completa de la migración con PostgreSQL temporal y pruebas automatizadas.
+
+---
+
+*Proyecto Artify SENA PostgreSQL — Análisis y Desarrollo de Software — SENA 2026*
 *Estudiante: Ivan Dario Madrid Daza*

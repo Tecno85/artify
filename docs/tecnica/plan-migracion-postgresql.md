@@ -3,25 +3,25 @@
 > **Proyecto:** Artify SENA PostgreSQL  
 > **Base:** copia experimental de Artify SENA  
 > **Objetivo:** construir una variante full-stack con backend Node.js + Express y base de datos PostgreSQL  
-> **Estado:** preparación inicial
+> **Estado:** migración inicial funcional
 
 ---
 
 ## 1. Objetivo
 
-Crear una variante del proyecto Artify con PostgreSQL para facilitar un despliegue full-stack en plataformas gratuitas o de bajo costo. Esta variante se trabaja por separado para no afectar el proyecto original basado en MySQL.
+En este plan organizo la migración de Artify hacia PostgreSQL para facilitar un despliegue full-stack en plataformas gratuitas o de bajo costo. Trabajo esta variante por separado para no afectar el proyecto original basado en MySQL.
 
 ---
 
 ## 2. Alcance Inicial
 
-La primera etapa consiste en:
+En la primera etapa defino el siguiente alcance:
 
-- Conservar el frontend actual.
-- Conservar el backend como punto de partida.
-- Preparar carpeta de migración PostgreSQL.
-- Mantener el script MySQL como referencia.
-- Definir fases antes de reemplazar dependencias o consultas.
+- Conservo el frontend actual.
+- Uso el backend existente como punto de partida.
+- Preparo la carpeta de migración PostgreSQL.
+- Mantengo el script MySQL como referencia histórica.
+- Defino fases antes de reemplazar dependencias o consultas.
 
 ---
 
@@ -29,40 +29,39 @@ La primera etapa consiste en:
 
 | Fase | Trabajo | Resultado esperado |
 | --- | --- | --- |
-| 1 | Preparar proyecto experimental | Copia aislada y documentada. |
-| 2 | Crear esquema PostgreSQL | `database/postgresql/schema.sql`. |
-| 3 | Cambiar conexión backend | Uso de `pg` y variables PostgreSQL. |
-| 4 | Adaptar consultas | Placeholders, inserts y filas afectadas. |
-| 5 | Adaptar pruebas | Suite automatizada con PostgreSQL. |
-| 6 | Probar localmente | Registro, login, editor y analíticas funcionando. |
-| 7 | Preparar despliegue | Render, Neon, Supabase u otra plataforma PostgreSQL. |
+| 1 | Preparo el proyecto experimental | Copia aislada y documentada. |
+| 2 | Creo el esquema PostgreSQL | `database/postgresql/schema.sql`. |
+| 3 | Cambio la conexión backend | Uso de `pg` y variables PostgreSQL. |
+| 4 | Adapto consultas | Placeholders, inserts y filas afectadas. |
+| 5 | Adapto pruebas | Suite automatizada con PostgreSQL. |
+| 6 | Pruebo localmente | Registro, login, editor y analíticas funcionando. |
+| 7 | Preparo despliegue | Netlify, Render y Neon PostgreSQL. |
 
 ---
 
-## 4. Decisiones Técnicas Pendientes
+## 4. Decisiones Técnicas
 
-| Decisión | Recomendación inicial |
+| Decisión | Criterio aplicado |
 | --- | --- |
-| Nombres de tablas | Mantener nombres equivalentes al modelo actual para reducir cambios. |
-| Driver Node.js | Usar `pg`. |
-| Variables de entorno | Priorizar `DATABASE_URL` para despliegue y conservar variables separadas si son útiles en local. |
-| Frontend | Servirlo desde Express en el despliegue full-stack para usar una sola URL. |
-| Datos iniciales | Usar datos mínimos, no migrar usuarios reales. |
+| Nombres de tablas | Mantengo nombres equivalentes al modelo actual para reducir cambios. |
+| Driver Node.js | Uso `pg`. |
+| Variables de entorno | Priorizo `DATABASE_URL` para despliegue y conservo variables separadas si son útiles en local. |
+| Frontend | Lo despliego como sitio estático y configuro `ARTIFY_API_URL` para conectar con el backend. |
+| Datos iniciales | Uso datos mínimos de referencia y no migro usuarios reales. |
 
 ---
 
 ## 5. Criterios de Aceptación
 
-La migración se considerará funcional cuando:
+Considero funcional la migración cuando:
 
-1. PostgreSQL cargue el esquema sin errores.
-2. El backend se conecte correctamente a PostgreSQL.
-3. Registro y login funcionen.
-4. Las sesiones se registren.
-5. Las operaciones del editor se guarden.
-6. La configuración de usuario se pueda leer y actualizar.
-7. Las rutas de analíticas respondan.
-8. `pnpm run check` pase.
-9. `pnpm test` pase.
-10. La aplicación pueda desplegarse con backend y base de datos.
-
+1. Cargo el esquema PostgreSQL sin errores.
+2. Conecto el backend correctamente a PostgreSQL.
+3. Verifico que registro y login funcionen.
+4. Confirmo que las sesiones se registren.
+5. Confirmo que las operaciones del editor se guarden.
+6. Verifico que la configuración de usuario se pueda leer y actualizar.
+7. Confirmo que las rutas de analíticas respondan.
+8. Ejecuto `pnpm run check` correctamente.
+9. Ejecuto `pnpm test` correctamente.
+10. Preparo la aplicación para desplegarse con backend y base de datos.

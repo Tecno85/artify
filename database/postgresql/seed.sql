@@ -1,5 +1,7 @@
--- Datos mínimos para pruebas locales de Artify SENA PostgreSQL.
--- La contraseña del administrador es solo un hash de ejemplo heredado.
+-- Datos mínimos de referencia para Artify SENA PostgreSQL.
+-- Este registro permite verificar que el seed carga correctamente.
+-- No corresponde a credenciales reales de acceso.
+-- El acceso administrativo real usa ADMIN_USER y ADMIN_PASSWORD del entorno.
 
 INSERT INTO "USUARIO" (
   "usr_id_usuario",
@@ -13,14 +15,14 @@ INSERT INTO "USUARIO" (
   "usr_rol"
 ) VALUES (
   1,
-  'Admin',
-  'Artify',
+  'Referencia',
+  'Migracion',
   '0000000000',
   '1990-01-01',
-  'admin@artify.com',
+  'referencia.seed@artify.local',
   '$2b$10$hash_de_ejemplo_no_valido',
   'activo',
-  'admin'
+  'usuario'
 ) ON CONFLICT ("usr_correo") DO NOTHING;
 
 SELECT setval(
