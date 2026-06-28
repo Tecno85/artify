@@ -60,17 +60,52 @@ Si las pruebas dependen de una base local, debo tener PostgreSQL activo y el arc
 
 ## 5. Creo la Base de Datos en Neon
 
-1. Ingreso a Neon y creo un proyecto nuevo.
-2. Selecciono PostgreSQL como motor de base de datos.
-3. Creo o uso la base de datos principal del proyecto.
-4. Copio la cadena de conexión desde la opción **Connect**.
-5. Identifico la URL con formato similar a:
+En Neon preparo primero la base de datos porque el backend de Render dependerá de la variable `DATABASE_URL`.
+
+### 5.1 Crear el proyecto
+
+1. Ingreso a Neon con mi cuenta.
+2. Selecciono **New Project**.
+3. Uso un nombre identificable, por ejemplo `artify-sena-postgresql`.
+4. Selecciono PostgreSQL `16` como versión recomendada para esta entrega.
+5. Selecciono una región cercana al backend que usaré en Render, para reducir latencia.
+6. Confirmo la creación del proyecto.
+
+PostgreSQL 16 es una versión estable y compatible con el esquema de Artify. El proyecto no usa funciones específicas que obliguen a una versión superior, por lo que PostgreSQL 16 ofrece una base prudente para documentación, pruebas y despliegue.
+
+### 5.2 Definir la base de datos activa
+
+Neon puede crear una base inicial por defecto. Para Artify debo trabajar con una base destinada al proyecto. Puedo usar la base que Neon crea inicialmente o crear una base llamada:
+
+```text
+artify_db
+```
+
+Lo importante es que el nombre de la base en la cadena `DATABASE_URL` coincida con la base donde cargaré `schema.sql` y `seed.sql`.
+
+### 5.3 Obtener la cadena de conexión
+
+En el panel del proyecto abro la opción **Connect** y copio una cadena de conexión PostgreSQL. El formato esperado es:
 
 ```env
 postgresql://usuario:contrasena@host/dbname?sslmode=require
 ```
 
-Neon entrega una cadena de conexión con usuario, contraseña, host y nombre de base de datos. Uso esta cadena como `DATABASE_URL` en el backend.
+Para Render uso esta cadena como `DATABASE_URL`. Si Neon ofrece varias opciones, puedo usar la conexión directa o la conexión con pooler. Para este proyecto académico cualquiera de las dos funciona, pero mantengo una sola cadena consistente durante toda la configuración.
+
+Antes de pegarla en Render verifico:
+
+- Que incluya `sslmode=require`.
+- Que el nombre final de la ruta sea la base correcta, por ejemplo `/artify_db`.
+- Que no tenga espacios al inicio o al final.
+- Que no se muestre completa en capturas, videos o documentos versionados.
+
+### 5.4 Criterios de seguridad
+
+- No guardo la cadena real de Neon en el repositorio.
+- No la copio en `README.md`, documentos o evidencias visibles.
+- No reutilizo la contraseña de Neon como contraseña administrativa de Artify.
+- Si la cadena se expone durante una práctica o grabación, genero una nueva contraseña o una nueva cadena desde Neon antes del despliegue final.
 
 ## 6. Creo las Tablas en PostgreSQL
 
@@ -83,10 +118,11 @@ psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -f database/p
 
 Este paso corresponde al aprovisionamiento inicial o a un reinicio controlado de la base. El archivo `schema.sql` elimina y vuelve a crear los objetos del proyecto; por eso no debo ejecutarlo sobre una base con información útil sin realizar primero una copia de seguridad.
 
-Después verifico que existan las tablas:
+Después verifico que existan las tablas y la vista:
 
 ```bash
 psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c "\\dt"
+psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c "\\dv"
 ```
 
 En la práctica reemplazo la cadena de ejemplo por la URL real entregada por Neon y evito mostrarla completa en capturas o videos.
@@ -98,6 +134,33 @@ Resultado esperado:
 - `IMAGEN`
 - `SESION_EDICION`
 - `OPERACION`
+- `v_usuarios_activos`
+
+También puedo hacer una verificación mínima de datos:
+
+```bash
+psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c 'SELECT COUNT(*) FROM "USUARIO";'
+```
+
+Si no tengo `psql` disponible en mi equipo, uso el editor SQL de Neon:
+
+1. Abro el proyecto en Neon.
+2. Entro al editor SQL.
+3. Ejecuto primero el contenido de `database/postgresql/schema.sql`.
+4. Luego ejecuto el contenido de `database/postgresql/seed.sql`.
+5. Verifico tablas y vista con consultas equivalentes:
+
+```sql
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
+
+SELECT table_name
+FROM information_schema.views
+WHERE table_schema = 'public'
+ORDER BY table_name;
+```
 
 ## 7. Desplegar el backend en Render
 
