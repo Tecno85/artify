@@ -16,14 +16,14 @@ Leer solo lo necesario para la tarea:
 - Siempre: `CONTEXT.md` para estructura real, rutas activas, decisiones vigentes y estado del proyecto.
 - Instalación, uso o navegación documental: `README.md`.
 - Estilo y convenciones: `docs/tecnica/coding-standards.md`.
-- Base de datos: `database/artify_db.sql` y `docs/tecnica/base-datos.md`.
+- Base de datos: `database/postgresql/schema.sql`, `database/postgresql/seed.sql`, `database/postgresql/queries.md` y `docs/tecnica/base-datos.md`.
 - Analytics, despliegue, pruebas o evidencias: documento técnico correspondiente dentro de `docs/tecnica/`.
 
 Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo trabajo. Si se agregan o eliminan documentos relevantes, actualizar el índice documental del `README.md`; no depender de `docs/README.md` como índice principal.
 
 ## Reglas De Trabajo
 
-- Mantener la arquitectura actual: frontend HTML/CSS/JavaScript Vanilla, backend Node.js + Express, MySQL y `pnpm`.
+- Mantener la arquitectura actual de esta variante: frontend HTML/CSS/JavaScript Vanilla, backend Node.js + Express, PostgreSQL mediante `pg` y `pnpm`.
 - No introducir frameworks frontend, TypeScript, bundlers, ORMs ni cambios grandes de arquitectura sin aprobación explícita.
 - Preservar la separación entre `frontend/`, `backend/`, `database/`, `docs/`, `scripts/` y `skills/`.
 - Usar nombres y textos en español cuando el archivo existente esté en español.
@@ -45,7 +45,8 @@ Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo traba
 - Al tocar autenticación, comprobar redirección por rol: admin a `admin.html`, usuario a `editor.html`.
 - Al tocar editor, considerar Canvas, historial deshacer/rehacer, zoom, filtros, recorte, redimensionamiento, conversión y registro de operaciones.
 - Escapar o renderizar de forma segura datos de usuario/base de datos antes de insertarlos en HTML; evitar valores crudos en `innerHTML` o parámetros inline.
-- En MySQL, mantener tablas en mayúsculas y columnas con prefijos (`usr_`, `ses_`, `opr_`, `img_`, `cfg_`).
+- En PostgreSQL, mantener tablas en mayúsculas y columnas con prefijos (`usr_`, `ses_`, `opr_`, `img_`, `cfg_`), usando comillas dobles en SQL directo cuando corresponda.
+- Recordar que `backend/config/db.js` conserva compatibilidad con consultas heredadas: adapta placeholders `?` a `$1`, `$2`, cita tablas en mayúscula y normaliza resultados como `insertId` y `affectedRows`.
 - Si cambia el esquema, actualizar juntos SQL, documentación, pruebas y controladores afectados.
 
 ## Documentación Y Evidencias
@@ -65,9 +66,9 @@ Elegir según el cambio:
 - Backend/auth/API/BD: `cd backend && pnpm test`.
 - Backend local: `cd backend && pnpm start` o `pnpm run dev`.
 - Frontend estático: servir `frontend/` con `npx http-server frontend` y revisar en navegador cuando aplique.
-- Base de datos: verificar contra `database/artify_db.sql` y MySQL local `artify_db` cuando esté disponible.
+- Base de datos: verificar contra `database/postgresql/schema.sql`, `database/postgresql/seed.sql` y PostgreSQL local `artify_db` cuando esté disponible.
 
-Si una validación no puede ejecutarse por MySQL, variables de entorno o sandbox, decir exactamente qué faltó.
+Si una validación no puede ejecutarse por PostgreSQL, variables de entorno o sandbox, decir exactamente qué faltó.
 
 ## Cierre Y Commits
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Backend de Artify ejecutándose correctamente</title>
-  <desc id="desc">Evidencia visual del backend iniciado con pnpm start, conexión exitosa a MySQL y verificación HTTP 200.</desc>
+  <desc id="desc">Evidencia visual del backend iniciado con pnpm start, conexión exitosa a PostgreSQL y verificación HTTP 200.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -25,7 +25,7 @@
   <text class="cmd" x="112" y="144">$ pnpm start</text>
   <text class="line" x="112" y="180">$ node server.js</text>
   <text class="ok" x="112" y="216">Servidor corriendo en http://localhost:3000</text>
-  <text class="ok" x="112" y="246">Conectado a MySQL correctamente</text>
+  <text class="ok" x="112" y="246">Conectado a PostgreSQL correctamente</text>
   <text class="cmd" x="112" y="292">$ curl http://127.0.0.1:3000/api/v1/analytics/filtros-populares</text>
   <text class="ok" x="112" y="326">Respuesta HTTP: 200</text>
 </svg>

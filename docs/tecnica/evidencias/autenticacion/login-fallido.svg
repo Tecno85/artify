@@ -10,7 +10,7 @@
   <rect x="110" y="242" width="880" height="188" rx="8" fill="#fff7f7" stroke="#f0c4c4"/>
   <text x="142" y="292" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#8a1f1f">Respuesta del sistema</text>
   <text x="142" y="332" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#172033">HTTP 401</text>
-  <text x="142" y="370" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#172033">Mensaje: Usuario no encontrado</text>
+  <text x="142" y="370" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#172033">Mensaje: Credenciales incorrectas</text>
   <text x="142" y="408" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#172033">Resultado: el sistema rechaza el acceso y no inicia sesión.</text>
   <rect x="110" y="462" width="880" height="58" rx="8" fill="#f4f7fb" stroke="#d8dee8"/>
   <text x="142" y="498" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#4a5568">Caso relacionado: CP-004 - Login con correo no registrado.</text>

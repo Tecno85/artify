@@ -64,7 +64,7 @@ async function esperarBackend() {
 
   while (Date.now() - inicio < 8000) {
     try {
-      const response = await fetch(`${API}/api/v1/analytics/filtros-populares`);
+      const response = await fetch(`${API}/health`);
       if (response.ok) {
         return;
       }
@@ -193,6 +193,16 @@ after(async () => {
   }
 });
 
+test('health público responde sin consultar credenciales', async () => {
+  const { response, body } = await request('/health');
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.servicio, 'artify-api');
+  assert.equal(body.entorno, 'test');
+  assert.match(body.timestamp, /^\d{4}-\d{2}-\d{2}T/);
+});
+
 test('analytics público responde correctamente', async () => {
   const { response, body } = await request(
     '/api/v1/analytics/filtros-populares'
@@ -225,7 +235,7 @@ test('login rechaza correo no registrado', async () => {
   });
 
   assert.equal(response.status, 401);
-  assert.equal(body.mensaje, 'Usuario no encontrado');
+  assert.equal(body.mensaje, 'Credenciales incorrectas');
 });
 
 test('registro, login y flujo básico de usuario funcionan', async () => {
@@ -300,6 +310,16 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
   assert.equal(operacion.response.status, 200);
   assert.equal(operacion.body.mensaje, 'Operación registrada');
 
+  const analytics = await request('/api/v1/analytics/filtros-populares');
+  const filtroPrueba = analytics.body.data.filtros.find(
+    (item) => item.filtro === 'prueba_automatizada'
+  );
+
+  assert.equal(analytics.response.status, 200);
+  assert.ok(filtroPrueba);
+  assert.equal(typeof filtroPrueba.usos, 'number');
+  assert.equal(typeof filtroPrueba.porcentaje, 'number');
+
   const estadisticas = await request(`/api/estadisticas/${idUsuario}`, {
     headers: { Authorization: `Bearer ${tokenUsuario}` },
   });
@@ -348,7 +368,7 @@ test('login rechaza contraseña incorrecta', async () => {
   const usuarioDespues = await obtenerUsuarioTemporal();
 
   assert.equal(response.status, 401);
-  assert.equal(body.mensaje, 'Contraseña incorrecta');
+  assert.equal(body.mensaje, 'Credenciales incorrectas');
   assert.deepEqual(
     usuarioDespues.usr_ultimo_acceso,
     usuarioAntes.usr_ultimo_acceso

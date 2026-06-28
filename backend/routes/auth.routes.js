@@ -6,13 +6,15 @@ const {
   registro,
   loginAdmin,
 } = require('../controllers/auth.controller');
+const { limitarIntentos } = require('../middlewares/rate-limit');
 
 const router = express.Router();
+const limitarLogin = limitarIntentos();
 
 // ========== RUTAS PÚBLICAS DE AUTENTICACIÓN ==========
-router.post('/login', login);
+router.post('/login', limitarLogin, login);
 router.post('/registro', registro);
-router.post('/admin/login', loginAdmin);
+router.post('/admin/login', limitarLogin, loginAdmin);
 
 // ========== EXPORTACIÓN ==========
 module.exports = router;

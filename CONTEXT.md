@@ -7,7 +7,7 @@
 
 ## 1. ¿Qué es Artify SENA PostgreSQL?
 
-Artify SENA PostgreSQL es una variante separada del proyecto Artify SENA. Su objetivo es conservar el frontend HTML, CSS y JavaScript Vanilla, y adaptar el backend Node.js + Express para trabajar con PostgreSQL en lugar de MySQL.
+Artify SENA PostgreSQL es una variante separada del proyecto Artify SENA. Su objetivo es conservar el frontend HTML, CSS y JavaScript Vanilla, y adaptar el backend Node.js + Express para trabajar con PostgreSQL en lugar del modelo MySQL del proyecto base.
 
 Esta variante se creó para facilitar un despliegue full-stack de prueba en la web, con frontend estático, backend Node.js y base de datos PostgreSQL.
 
@@ -39,7 +39,7 @@ Esta variante se creó para facilitar un despliegue full-stack de prueba en la w
 
 - Git + GitHub.
 - Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
-- Proyecto separado de `artify-sena` para no afectar la versión MySQL original.
+- Proyecto separado de `artify-sena` para no afectar la versión original del proyecto base.
 
 ---
 
@@ -113,7 +113,7 @@ La base principal de esta variante es PostgreSQL. Los scripts activos se encuent
 - `database/postgresql/seed.sql`
 - `database/postgresql/queries.md`
 
-El archivo `database/artify_db.sql` se conserva solo como referencia del modelo MySQL original.
+El archivo `database/artify_db.sql` se conserva solo como referencia del modelo anterior.
 
 ### Objetos principales
 
@@ -131,11 +131,17 @@ v_usuarios_activos
 - Las tablas conservan nombres en mayúscula para reducir cambios frente al proyecto original.
 - Las columnas conservan prefijos: `usr_`, `ses_`, `opr_`, `img_`, `cfg_`.
 - En PostgreSQL las tablas en mayúscula se referencian con comillas dobles.
-- El backend incluye una capa de compatibilidad en `backend/config/db.js` para adaptar placeholders `?`, nombres de tablas y resultados esperados por controladores heredados.
+- El backend incluye una capa de compatibilidad en `backend/config/db.js` para adaptar placeholders `?` a `$1`, `$2`, citar tablas en mayúscula y normalizar resultados como `insertId` y `affectedRows` para no romper controladores heredados.
 
 ---
 
 ## 5. Endpoints Implementados
+
+### Salud del Servicio
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/health` | Verifica que el proceso Express esté activo sin depender de PostgreSQL. |
 
 ### Autenticación
 
@@ -191,7 +197,12 @@ ADMIN_PASSWORD=tu_contrasena_admin
 TOKEN_SECRET=cambia_este_valor_por_un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
+
+`DATABASE_URL` es la variable principal para despliegues como Render o Neon. Las variables separadas `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` quedan como soporte para entornos locales o configuraciones donde se prefiera declarar cada dato por separado.
+
+`CORS_ORIGIN` controla los orígenes autorizados para consumir el backend. En desarrollo puede contener varios orígenes separados por coma; en producción debe apuntar al frontend publicado.
 
 ### Frontend desplegado
 
@@ -214,9 +225,12 @@ La migración inicial fue validada con:
 - Carga de `database/postgresql/schema.sql`.
 - Carga de `database/postgresql/seed.sql`.
 - Creación de 5 tablas y la vista `v_usuarios_activos`.
+- Integridad referencial con cascadas PostgreSQL, checks de valores no negativos e índices para analytics.
+- Login con mensaje genérico ante credenciales inválidas, límite de intentos y CORS configurable por entorno.
+- Endpoint de salud `GET /health` para verificación de despliegue.
 - `pnpm run check`.
 - `pnpm test` contra una instancia temporal de PostgreSQL.
-- Resultado de pruebas automatizadas: 12/12 correctas.
+- Resultado de pruebas automatizadas: 13/13 correctas.
 
 ---
 
@@ -233,15 +247,19 @@ Enfoque recomendado:
 - Netlify para frontend estático.
 - Render para backend Node.js.
 - Neon PostgreSQL para base de datos.
+- Health check público: `GET /health`.
+- En producción se recomienda usar `DATABASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `TOKEN_SECRET`, `NODE_VERSION`, `NODE_ENV` y `CORS_ORIGIN`.
+- `schema.sql` elimina y recrea objetos; solo se ejecuta para carga inicial o reinicio controlado con respaldo previo.
 
 ---
 
 ## 9. Notas Importantes
 
 - Las contraseñas de usuarios se guardan con bcrypt.
+- Las respuestas de login no diferencian si falló el correo o la contraseña.
 - El login administrativo usa `ADMIN_USER` y `ADMIN_PASSWORD` desde variables de entorno.
 - El `seed.sql` no debe interpretarse como credenciales reales de acceso.
-- La versión MySQL original se conserva en el repositorio `artify-sena`.
+- La versión original del proyecto base se conserva en el repositorio `artify-sena`.
 - Esta variante debe mantenerse separada para evitar mezclar motores de base de datos.
 
 ---
@@ -250,7 +268,7 @@ Enfoque recomendado:
 
 - [2026-06-24] Creación del proyecto separado `artify-sena-postgresql`.
 - [2026-06-24] Creación del esquema inicial PostgreSQL.
-- [2026-06-24] Migración inicial del backend desde `mysql2` hacia `pg`.
+- [2026-06-24] Migración inicial del backend hacia PostgreSQL mediante `pg`.
 - [2026-06-24] Preparación de configuración frontend para despliegue con `ARTIFY_API_URL`.
 - [2026-06-27] Verificación completa de la migración con PostgreSQL temporal y pruebas automatizadas.
 

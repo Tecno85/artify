@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="480" viewBox="0 0 980 480" role="img" aria-labelledby="title desc">
   <title id="title">Base de datos artify_db verificada</title>
-  <desc id="desc">Resultado real sanitizado de las consultas SHOW DATABASES, USE artify_db y SHOW TABLES.</desc>
+  <desc id="desc">Resultado real sanitizado de comandos psql para seleccionar la base y listar objetos.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -21,13 +21,14 @@
   <circle class="dot-red" cx="102" cy="75" r="7" />
   <circle class="dot-yellow" cx="126" cy="75" r="7" />
   <circle class="dot-green" cx="150" cy="75" r="7" />
-  <text class="title" x="490" y="82" text-anchor="middle">MySQL - artify_db</text>
-  <text class="cmd" x="112" y="140">mysql&gt; SHOW DATABASES;</text>
+  <text class="title" x="490" y="82" text-anchor="middle">PostgreSQL - artify_db</text>
+  <text class="cmd" x="112" y="140">psql&gt; \l</text>
   <text class="ok" x="112" y="176">artify_db</text>
-  <text class="cmd" x="112" y="216">mysql&gt; USE artify_db;</text>
-  <text class="ok" x="112" y="250">Database changed</text>
-  <text class="cmd" x="112" y="290">mysql&gt; SHOW TABLES;</text>
+  <text class="cmd" x="112" y="216">psql&gt; \c artify_db</text>
+  <text class="ok" x="112" y="250">You are now connected to database artify_db</text>
+  <text class="cmd" x="112" y="290">psql&gt; \dt</text>
   <text class="text" x="112" y="326">CONFIGURACION    IMAGEN    OPERACION</text>
-  <text class="text" x="112" y="356">SESION_EDICION   USUARIO   v_usuarios_activos</text>
-  <text class="ok" x="112" y="398">Resultado: esquema y objetos disponibles.</text>
+  <text class="text" x="112" y="356">SESION_EDICION   USUARIO</text>
+  <text class="cmd" x="112" y="386">psql&gt; \dv</text>
+  <text class="text" x="112" y="416">v_usuarios_activos</text>
 </svg>

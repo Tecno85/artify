@@ -9,7 +9,7 @@
 
 ## 1. Presentación del Proyecto
 
-Artify es una aplicación web full stack orientada a la edición básica de imágenes desde el navegador. El proyecto integra una interfaz visual construida con HTML, CSS y JavaScript Vanilla, un backend desarrollado con Node.js y Express, y una base de datos MySQL para persistir usuarios, sesiones, configuraciones y operaciones realizadas dentro del sistema.
+Artify es una aplicación web full stack orientada a la edición básica de imágenes desde el navegador. El proyecto integra una interfaz visual construida con HTML, CSS y JavaScript Vanilla, un backend desarrollado con Node.js y Express, y una base de datos PostgreSQL para persistir usuarios, sesiones, configuraciones y operaciones realizadas dentro del sistema.
 
 Desarrollo Artify como proyecto académico del programa Análisis y Desarrollo de Software del SENA, con el propósito de aplicar conocimientos de maquetación web, programación frontend, construcción de servicios backend, autenticación, seguridad básica, persistencia de datos y organización profesional de un proyecto de software.
 
@@ -35,7 +35,7 @@ Desarrollar una aplicación web para la edición de imágenes que permita a los 
 - Permitir operaciones como recorte, redimensionamiento, rotación, filtros, zoom, conversión de formato y descarga.
 - Incorporar autenticación de usuarios con contraseñas protegidas mediante `bcrypt`.
 - Gestionar roles de usuario y administrador.
-- Registrar sesiones, operaciones y configuraciones en una base de datos MySQL.
+- Registrar sesiones, operaciones y configuraciones en una base de datos PostgreSQL.
 - Desarrollar un panel administrativo para consultar, crear, editar y eliminar usuarios.
 - Mantener documentación técnica y funcional organizada para facilitar la entrega académica y la continuidad del proyecto.
 
@@ -48,7 +48,7 @@ El alcance actual de Artify incluye:
 - Registro e inicio de sesión de usuarios.
 - Autenticación con token firmado desde el backend.
 - Editor de imágenes con herramientas básicas de transformación.
-- Persistencia de usuarios, configuraciones, sesiones, operaciones e imágenes en MySQL.
+- Persistencia de usuarios, configuraciones, sesiones, operaciones e imágenes en PostgreSQL.
 - Panel de administración protegido por rol.
 - API REST para funcionalidades internas y endpoints de analíticas.
 - Pruebas automatizadas para el módulo de autenticación y rutas protegidas.
@@ -103,7 +103,7 @@ Expone endpoints REST para consultar información agregada sobre filtros, horari
 | Frontend | HTML5, CSS3, JavaScript Vanilla |
 | Edición de imágenes | Canvas API |
 | Backend | Node.js, Express |
-| Base de datos | MySQL |
+| Base de datos | PostgreSQL |
 | Autenticación | Token firmado propio, `bcryptjs` |
 | Gestor de paquetes | pnpm |
 | Pruebas | Node Test Runner |
@@ -121,7 +121,7 @@ Desde el punto de vista académico, el proyecto permite evidenciar el proceso de
 
 ## 10. Estado Actual
 
-El proyecto se encuentra en estado activo. Actualmente cuenta con frontend funcional, backend modularizado, base de datos MySQL, autenticación real, panel administrativo, pruebas automatizadas de autenticación y documentación organizada en:
+El proyecto se encuentra en estado activo. Actualmente cuenta con frontend funcional, backend modularizado, base de datos PostgreSQL, autenticación real, panel administrativo, pruebas automatizadas de autenticación y documentación organizada en:
 
 - `docs/proyecto/`: documentación funcional y académica.
 - `docs/tecnica/`: documentación técnica y manual técnico.

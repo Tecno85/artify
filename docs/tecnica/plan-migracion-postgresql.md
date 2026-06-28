@@ -9,7 +9,7 @@
 
 ## 1. Objetivo
 
-En este plan organizo la migración de Artify hacia PostgreSQL para facilitar un despliegue full-stack en plataformas gratuitas o de bajo costo. Trabajo esta variante por separado para no afectar el proyecto original basado en MySQL.
+En este plan organizo la migración de Artify hacia PostgreSQL para facilitar un despliegue full-stack en plataformas gratuitas o de bajo costo. Trabajo esta variante por separado para no afectar el proyecto original.
 
 ---
 
@@ -20,7 +20,7 @@ En la primera etapa defino el siguiente alcance:
 - Conservo el frontend actual.
 - Uso el backend existente como punto de partida.
 - Preparo la carpeta de migración PostgreSQL.
-- Mantengo el script MySQL como referencia histórica.
+- Mantengo el script anterior como referencia histórica.
 - Defino fases antes de reemplazar dependencias o consultas.
 
 ---

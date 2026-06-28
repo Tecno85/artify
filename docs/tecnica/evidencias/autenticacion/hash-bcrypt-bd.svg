@@ -9,7 +9,7 @@
   <text x="110" y="200" font-family="Arial, Helvetica, sans-serif" font-size="17" fill="#4a5568">Escenario validado: la contraseña no queda guardada en texto plano.</text>
   <rect x="110" y="242" width="880" height="216" rx="8" fill="#111827"/>
   <text x="142" y="292" font-family="Menlo, Consolas, monospace" font-size="16" fill="#d1d5db">SELECT usr_correo, usr_contrasena, usr_ultimo_acceso, usr_sesion_activa</text>
-  <text x="142" y="326" font-family="Menlo, Consolas, monospace" font-size="16" fill="#d1d5db">FROM USUARIO WHERE usr_correo = 'evidencia@artify.local';</text>
+  <text x="142" y="326" font-family="Menlo, Consolas, monospace" font-size="16" fill="#d1d5db">FROM "USUARIO" WHERE usr_correo = 'evidencia@artify.local';</text>
   <text x="142" y="374" font-family="Menlo, Consolas, monospace" font-size="16" fill="#93c5fd">usr_contrasena: $2b$10$/1bzyZzuNBc/iRHSq3CZBeX...</text>
   <text x="142" y="410" font-family="Menlo, Consolas, monospace" font-size="16" fill="#86efac">Validación: inicia con $2b$10$ y no contiene la contraseña original.</text>
   <rect x="110" y="490" width="880" height="58" rx="8" fill="#f4f7fb" stroke="#d8dee8"/>

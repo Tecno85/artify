@@ -8,6 +8,16 @@ const {
   validarEdicionUsuario,
 } = require('../utils/validacion');
 
+const CONFIG_DEFECTO = JSON.stringify({
+  notificaciones: true,
+  formatoDefecto: 'png',
+  autoguardado: false,
+});
+
+function esErrorDuplicado(error) {
+  return error?.code === '23505';
+}
+
 // ========== CONSULTAS DEL PANEL ADMIN ==========
 function listarUsuarios(req, res) {
   const query = `
@@ -29,9 +39,10 @@ function listarUsuarios(req, res) {
 }
 
 // ========== CREACIÓN DE USUARIO ==========
-function crearUsuario(req, res) {
+async function crearUsuario(req, res) {
   const { nombres, apellidos, cedula, fechaNacimiento, correo, password } =
     req.body;
+  const dbPromise = db.promise();
   const errorValidacion = validarUsuario({
     nombres,
     apellidos,
@@ -45,16 +56,16 @@ function crearUsuario(req, res) {
     return res.status(400).json({ mensaje: errorValidacion });
   }
 
-  const queryBuscar =
-    'SELECT * FROM USUARIO WHERE usr_correo = ? OR usr_cedula = ?';
+  try {
+    await dbPromise.beginTransaction();
 
-  db.query(queryBuscar, [correo, cedula], (err, results) => {
-    if (err) {
-      console.error('❌ Error en la consulta:', err.message);
-      return res.status(500).json({ mensaje: 'Error en el servidor' });
-    }
+    const [usuariosExistentes] = await dbPromise.query(
+      'SELECT usr_id_usuario FROM USUARIO WHERE usr_correo = ? OR usr_cedula = ?',
+      [correo, cedula]
+    );
 
-    if (results.length > 0) {
+    if (usuariosExistentes.length > 0) {
+      await dbPromise.rollback();
       return res
         .status(400)
         .json({ mensaje: 'El correo o cédula ya está registrado' });
@@ -63,47 +74,39 @@ function crearUsuario(req, res) {
     // Encriptar la contraseña para mantener el mismo criterio del registro público
     const hash = bcrypt.hashSync(password, 10);
 
-    const queryInsertar = `
-      INSERT INTO USUARIO
-        (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
-         usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
-      VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
-      RETURNING usr_id_usuario
-    `;
-
-    db.query(
-      queryInsertar,
-      [nombres, apellidos, cedula, fechaNacimiento, correo, hash],
-      (errInsertar, result) => {
-        if (errInsertar) {
-          console.error('❌ Error al insertar usuario:', errInsertar.message);
-          return res.status(500).json({ mensaje: 'Error al agregar usuario' });
-        }
-
-        // Crear configuración inicial para el usuario generado desde el panel
-        const configDefecto = JSON.stringify({
-          notificaciones: true,
-          formatoDefecto: 'png',
-          autoguardado: false,
-        });
-
-        db.query(
-          `INSERT INTO CONFIGURACION (cfg_usr_id_usuario, cfg_calidad_exportacion, cfg_configuracion_avanzada, cfg_fecha_actualizacion) VALUES (?, 'media', ?, NOW())`,
-          [result.insertId, configDefecto],
-          (errConfig) => {
-            if (errConfig) {
-              console.warn(
-                '⚠️ No se pudo crear configuración por defecto:',
-                errConfig.message
-              );
-            }
-
-            return res.json({ mensaje: 'Usuario agregado correctamente' });
-          }
-        );
-      }
+    const [resultadoUsuario] = await dbPromise.query(
+      `
+        INSERT INTO USUARIO
+          (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
+           usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
+        VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
+        RETURNING usr_id_usuario
+      `,
+      [nombres, apellidos, cedula, fechaNacimiento, correo, hash]
     );
-  });
+
+    // Crear configuración inicial para el usuario generado desde el panel
+    await dbPromise.query(
+      `INSERT INTO CONFIGURACION (cfg_usr_id_usuario, cfg_calidad_exportacion, cfg_configuracion_avanzada, cfg_fecha_actualizacion) VALUES (?, 'media', ?, NOW())`,
+      [resultadoUsuario.insertId, CONFIG_DEFECTO]
+    );
+
+    await dbPromise.commit();
+    return res.json({ mensaje: 'Usuario agregado correctamente' });
+  } catch (error) {
+    try {
+      await dbPromise.rollback();
+    } catch {}
+
+    if (esErrorDuplicado(error)) {
+      return res
+        .status(400)
+        .json({ mensaje: 'El correo o cédula ya está registrado' });
+    }
+
+    console.error('❌ Error al agregar usuario:', error.message);
+    return res.status(500).json({ mensaje: 'Error al agregar usuario' });
+  }
 }
 
 // ========== EDICIÓN DE USUARIO ==========
@@ -146,6 +149,12 @@ function editarUsuario(req, res) {
     (err, result) => {
       if (err) {
         console.error('❌ Error al editar usuario:', err.message);
+        if (esErrorDuplicado(err)) {
+          return res
+            .status(400)
+            .json({ mensaje: 'El correo o cédula ya está registrado' });
+        }
+
         return res.status(500).json({ mensaje: 'Error al editar usuario' });
       }
 

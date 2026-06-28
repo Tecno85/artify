@@ -24,7 +24,7 @@ Explicar los conceptos principales de clústeres, redundancia, alta disponibilid
 
 ## 3. Relación de Artify con la configuración de servicios
 
-Artify es una aplicación web organizada en componentes principales: un frontend construido con HTML, CSS y JavaScript, un backend desarrollado con Node.js y Express, y una base de datos MySQL para almacenar la información del sistema.
+Artify es una aplicación web organizada en componentes principales: un frontend construido con HTML, CSS y JavaScript, un backend desarrollado con Node.js y Express, y una base de datos PostgreSQL para almacenar la información del sistema.
 
 En su estado actual, Artify se trabaja como un proyecto académico y no utiliza clústeres. Sin embargo, considero importante analizar estos conceptos porque podrían aplicarse en un escenario futuro si el sistema crece, recibe más usuarios o requiere mayor disponibilidad. Por ejemplo, se podría separar el frontend, el backend y la base de datos en servicios diferentes, usar un balanceador de carga o implementar copias de seguridad automatizadas.
 
@@ -49,7 +49,7 @@ En infraestructura tecnológica, los clústeres sirven para mejorar la disponibi
 | Nginx o HAProxy | Distribuir solicitudes entre varios servidores y actuar como balanceador de carga. |
 | Docker | Empaquetar aplicaciones y servicios en contenedores portables. |
 | Kubernetes | Orquestar contenedores, escalar servicios y recuperar instancias fallidas. |
-| MySQL Replication | Replicar datos entre servidores MySQL para mejorar disponibilidad y respaldo. |
+| PostgreSQL Replication | Replicar datos entre servidores PostgreSQL para mejorar disponibilidad y respaldo. |
 | Backups | Crear copias de seguridad para recuperar información ante fallos o pérdida de datos. |
 | Monitoreo | Revisar el estado de servidores, servicios, base de datos y consumo de recursos. |
 | Servicios cloud o VPS | Alojar aplicaciones en servidores remotos con mayor control y escalabilidad. |
@@ -71,7 +71,7 @@ En infraestructura tecnológica, los clústeres sirven para mejorar la disponibi
 - **Clúster de alta disponibilidad:** se enfoca en mantener el servicio activo incluso cuando ocurre una falla en un servidor.
 - **Clúster de balanceo de carga:** reparte las solicitudes de los usuarios entre varios servidores para mejorar el rendimiento.
 - **Clúster de alto rendimiento:** une varios equipos para resolver tareas que requieren gran capacidad de procesamiento.
-- **Clúster de base de datos:** permite replicar, distribuir o proteger la información almacenada en sistemas como MySQL.
+- **Clúster de base de datos:** permite replicar, distribuir o proteger la información almacenada en sistemas como PostgreSQL.
 - **Clúster de almacenamiento:** agrupa recursos de almacenamiento para mejorar capacidad, acceso y respaldo de datos.
 
 ---
@@ -90,7 +90,7 @@ En infraestructura tecnológica, los clústeres sirven para mejorar la disponibi
 | Riesgo | Impacto | Prioridad | Medida preventiva |
 | --- | --- | --- | --- |
 | Caída del backend | Los usuarios no podrían iniciar sesión ni usar funciones conectadas a la API. | Alta | Documentar el arranque del backend, monitorear el servicio y considerar reinicio automático en un entorno futuro. |
-| Falla de MySQL | El sistema no podría consultar ni guardar información persistente. | Alta | Realizar copias de seguridad y documentar el proceso de restauración de la base de datos. |
+| Falla de PostgreSQL | El sistema no podría consultar ni guardar información persistente. | Alta | Realizar copias de seguridad y documentar el proceso de restauración de la base de datos. |
 | Pérdida de datos | Se podrían perder usuarios, configuraciones, sesiones u operaciones registradas. | Alta | Programar backups periódicos y conservar copias en ubicaciones seguras. |
 | Falla de red | El frontend no podría comunicarse correctamente con el backend o la base de datos. | Media | Verificar conectividad, puertos, variables de entorno y configuración de red. |
 | Error de configuración | El sistema podría fallar por credenciales, rutas o variables incorrectas. | Media | Documentar variables de entorno, revisar archivos de configuración y probar el despliegue después de cada ajuste. |
@@ -123,7 +123,7 @@ Para Artify, como proyecto académico, propongo los siguientes valores de refere
 Para fortalecer la continuidad de Artify, propongo aplicar acciones básicas que permitan recuperar el proyecto si se presenta una falla:
 
 - Mantener el código fuente actualizado en GitHub.
-- Realizar copias de seguridad periódicas de la base de datos MySQL.
+- Realizar copias de seguridad periódicas de la base de datos PostgreSQL.
 - Documentar las variables de entorno necesarias para ejecutar el backend.
 - Conservar pasos claros de reinstalación del proyecto.
 - Verificar que el frontend pueda comunicarse correctamente con el backend.
@@ -154,9 +154,9 @@ Si Artify crece y requiere mayor estabilidad, podría beneficiarse de una arquit
 
 - Separar el frontend, el backend y la base de datos en servicios independientes.
 - Usar un balanceador de carga como Nginx o HAProxy para distribuir solicitudes hacia el backend.
-- Replicar la base de datos MySQL para mejorar la disponibilidad de la información.
+- Replicar la base de datos PostgreSQL para mejorar la disponibilidad de la información.
 - Automatizar copias de seguridad de la base de datos y de archivos importantes.
-- Monitorear servicios, consumo de recursos, disponibilidad de la API y estado de MySQL.
+- Monitorear servicios, consumo de recursos, disponibilidad de la API y estado de PostgreSQL.
 - Documentar procedimientos de recuperación para que el sistema pueda restaurarse con mayor rapidez.
 
 Estas acciones no son obligatorias en la etapa actual del proyecto, pero sirven como referencia para una posible evolución técnica de Artify.
@@ -173,7 +173,7 @@ Para un escenario básico, propongo verificar:
 - Que el frontend cargue correctamente en el navegador.
 - Que el registro de usuarios funcione.
 - Que el inicio de sesión responda correctamente.
-- Que la conexión con MySQL esté activa.
+- Que la conexión con PostgreSQL esté activa.
 - Que las rutas principales del backend respondan.
 - Que los datos puedan guardarse y consultarse después de una restauración.
 
@@ -199,6 +199,6 @@ Considero que la aplicación futura de balanceadores de carga, respaldos, monito
 - Cloudflare. Conceptos sobre balanceo de carga, disponibilidad y tolerancia a fallos.
 - Docker. Documentación general sobre contenedores y despliegue de aplicaciones.
 - Kubernetes. Documentación general sobre orquestación de contenedores y escalabilidad.
-- MySQL. Documentación sobre MySQL Replication y mecanismos de respaldo.
+- PostgreSQL. Documentación sobre PostgreSQL Replication y mecanismos de respaldo.
 - Nginx. Documentación sobre servidor web, proxy inverso y balanceo de carga.
 - Red Hat. Conceptos generales sobre clústeres, alta disponibilidad e infraestructura escalable.

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
-  <title id="title">Servicio MySQL activo</title>
-  <desc id="desc">Evidencia visual sanitizada del proceso MySQL activo y de una conexión correcta al servidor local.</desc>
+  <title id="title">Base de datos PostgreSQL verificada</title>
+  <desc id="desc">Evidencia visual de la base artify_db y sus tablas principales verificadas en PostgreSQL.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -10,7 +10,7 @@
       .dot-yellow { fill: #f59e0b; }
       .dot-green { fill: #22c55e; }
       .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
-      .cmd { font: 15px Menlo, Consolas, monospace; fill: #93c5fd; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #9ae6b4; }
       .text { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
       .ok { font: 700 15px Menlo, Consolas, monospace; fill: #86efac; }
     </style>
@@ -21,11 +21,12 @@
   <circle class="dot-red" cx="102" cy="81" r="7" />
   <circle class="dot-yellow" cx="126" cy="81" r="7" />
   <circle class="dot-green" cx="150" cy="81" r="7" />
-  <text class="title" x="490" y="88" text-anchor="middle">Terminal - servicio MySQL</text>
-  <text class="cmd" x="112" y="148">$ verificar proceso mysqld</text>
-  <text class="ok" x="112" y="188">Proceso activo: /usr/local/mysql/bin/mysqld</text>
-  <text class="text" x="112" y="226">Usuario del servicio: _mysql</text>
-  <text class="text" x="112" y="260">Directorio de datos: /usr/local/mysql/data</text>
-  <text class="cmd" x="112" y="304">$ conectar a 127.0.0.1:3306</text>
-  <text class="ok" x="112" y="338">Conexión autenticada correctamente.</text>
+  <text class="title" x="490" y="88" text-anchor="middle">PostgreSQL - verificación de base de datos</text>
+  <text class="cmd" x="112" y="144">$ node consulta-postgresql-artify</text>
+  <text class="ok" x="112" y="180">Base seleccionada: artify_db</text>
+  <text class="ok" x="112" y="210">Tablas encontradas: 5</text>
+  <text class="text" x="112" y="244">CONFIGURACION    IMAGEN    OPERACION</text>
+  <text class="text" x="112" y="274">SESION_EDICION   USUARIO</text>
+  <text class="ok" x="112" y="304">Vista encontrada: v_usuarios_activos</text>
+  <text class="text" x="112" y="340">Evidencia: la base de datos del proyecto está disponible localmente.</text>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="430" viewBox="0 0 980 430" role="img" aria-labelledby="title desc">
   <title id="title">Arquitectura de despliegue de Artify</title>
-  <desc id="desc">Diagrama técnico que muestra la relación entre navegador, frontend, backend y base de datos MySQL para Artify.</desc>
+  <desc id="desc">Diagrama técnico que muestra la relación entre navegador, frontend, backend y base de datos PostgreSQL para Artify.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -42,7 +42,7 @@
   <text class="small" x="639" y="248" text-anchor="middle">Token firmado</text>
 
   <rect class="db" x="786" y="130" width="138" height="138" rx="14" />
-  <text class="title" x="855" y="168" text-anchor="middle">MySQL</text>
+  <text class="title" x="855" y="168" text-anchor="middle">PostgreSQL</text>
   <text class="text" x="855" y="200" text-anchor="middle">USUARIO</text>
   <text class="small" x="855" y="226" text-anchor="middle">Datos persistentes</text>
   <text class="small" x="855" y="248" text-anchor="middle">y sesiones</text>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
-  <title id="title">Base de datos MySQL verificada</title>
-  <desc id="desc">Evidencia visual de la base artify_db y sus tablas principales verificadas desde MySQL.</desc>
+  <title id="title">Servicio PostgreSQL activo</title>
+  <desc id="desc">Evidencia visual sanitizada del proceso PostgreSQL activo y de una conexión correcta al servidor local.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -10,7 +10,7 @@
       .dot-yellow { fill: #f59e0b; }
       .dot-green { fill: #22c55e; }
       .title { font: 700 18px Arial, Helvetica, sans-serif; fill: #e5e7eb; }
-      .cmd { font: 15px Menlo, Consolas, monospace; fill: #9ae6b4; }
+      .cmd { font: 15px Menlo, Consolas, monospace; fill: #93c5fd; }
       .text { font: 15px Menlo, Consolas, monospace; fill: #d1d5db; }
       .ok { font: 700 15px Menlo, Consolas, monospace; fill: #86efac; }
     </style>
@@ -21,11 +21,11 @@
   <circle class="dot-red" cx="102" cy="81" r="7" />
   <circle class="dot-yellow" cx="126" cy="81" r="7" />
   <circle class="dot-green" cx="150" cy="81" r="7" />
-  <text class="title" x="490" y="88" text-anchor="middle">MySQL - verificación de base de datos</text>
-  <text class="cmd" x="112" y="144">$ node consulta-mysql-artify</text>
-  <text class="ok" x="112" y="180">Base seleccionada: artify_db</text>
-  <text class="ok" x="112" y="210">Tablas encontradas: 6</text>
-  <text class="text" x="112" y="244">CONFIGURACION    IMAGEN    OPERACION</text>
-  <text class="text" x="112" y="274">SESION_EDICION   USUARIO   v_usuarios_activos</text>
-  <text class="text" x="112" y="322">Evidencia: la base de datos del proyecto está disponible localmente.</text>
+  <text class="title" x="490" y="88" text-anchor="middle">Terminal - servicio PostgreSQL</text>
+  <text class="cmd" x="112" y="148">$ verificar proceso postgres</text>
+  <text class="ok" x="112" y="188">Proceso activo: /usr/local/bin/postgres</text>
+  <text class="text" x="112" y="226">Usuario del servicio: _postgres</text>
+  <text class="text" x="112" y="260">Directorio de datos: /usr/local/var/postgresql</text>
+  <text class="cmd" x="112" y="304">$ conectar a 127.0.0.1:5432</text>
+  <text class="ok" x="112" y="338">Conexión autenticada correctamente.</text>
 </svg>

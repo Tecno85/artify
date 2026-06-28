@@ -1,23 +1,21 @@
-# Arquitectura Técnica de Artify
+# Arquitectura Técnica de Artify SENA PostgreSQL
 
-> **Proyecto:** Artify - Editor de Imágenes Web
+> **Proyecto:** Artify SENA PostgreSQL
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
-> **Fecha:** Mayo 2026
+> **Fecha:** Junio 2026
 
 ---
 
 ## 1. Objetivo del Documento
 
-Este documento describe la arquitectura técnica de Artify, explicando cómo se organizan sus capas principales, qué responsabilidades tiene cada componente y cómo se comunican el frontend, el backend y la base de datos.
-
-La finalidad es dejar una referencia clara para comprender, mantener y ampliar el proyecto sin perder la separación de responsabilidades.
+En este documento describo la arquitectura técnica de Artify SENA PostgreSQL. Explico cómo organizo sus capas principales, qué responsabilidad tiene cada componente y cómo se comunican el frontend, el backend y la base de datos PostgreSQL.
 
 ---
 
 ## 2. Vista General
 
-Artify utiliza una arquitectura web full stack organizada en tres capas principales:
+Artify SENA PostgreSQL utiliza una arquitectura web full stack organizada en tres capas principales:
 
 ```text
 ┌─────────────────────────────────────────────────┐
@@ -31,10 +29,10 @@ Artify utiliza una arquitectura web full stack organizada en tres capas principa
 │  Node.js + Express modularizado                 │
 │  Rutas, controladores, middlewares y utilidades │
 └────────────────────┬────────────────────────────┘
-                     │ mysql2
+                     │ pg
 ┌────────────────────▼────────────────────────────┐
 │                 BASE DE DATOS                    │
-│                 MySQL - artify_db                │
+│              PostgreSQL - artify_db             │
 │  USUARIO, SESION_EDICION, OPERACION,            │
 │  CONFIGURACION, IMAGEN                          │
 └─────────────────────────────────────────────────┘
@@ -57,6 +55,7 @@ El frontend se encuentra en la carpeta `frontend/` y está construido con HTML, 
 | `frontend/pages/admin.html` | Panel administrativo. |
 | `frontend/assets/css/` | Estilos visuales de cada pantalla. |
 | `frontend/assets/js/` | Lógica del frontend y consumo de API. |
+| `frontend/assets/js/config.js` | Configuración de la URL del backend para despliegues. |
 
 ### Responsabilidades
 
@@ -70,14 +69,14 @@ El frontend se encuentra en la carpeta `frontend/` y está construido con HTML, 
 
 ## 4. Capa Backend
 
-El backend se encuentra en la carpeta `backend/` y está construido con Node.js y Express. Su responsabilidad es recibir solicitudes del frontend, validar datos, aplicar reglas de negocio, proteger rutas y comunicarse con MySQL.
+El backend se encuentra en la carpeta `backend/` y está construido con Node.js y Express. Su responsabilidad es recibir solicitudes del frontend, validar datos, aplicar reglas de negocio, proteger rutas y comunicarse con PostgreSQL mediante `pg`.
 
 ### Componentes principales
 
 | Carpeta o archivo | Responsabilidad |
 | --- | --- |
 | `backend/server.js` | Punto de entrada, middlewares globales, montaje de rutas y limpieza de sesiones. |
-| `backend/config/` | Conexión a la base de datos. |
+| `backend/config/db.js` | Conexión PostgreSQL y compatibilidad con consultas heredadas. |
 | `backend/routes/` | Definición de endpoints por módulo. |
 | `backend/controllers/` | Lógica de negocio de cada recurso. |
 | `backend/middlewares/` | Autenticación, autorización y control de acceso. |
@@ -94,15 +93,16 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 | Actividad | `actividad.routes.js` | Estadísticas, operaciones e imágenes. |
 | Administración | `admin.routes.js` | CRUD de usuarios. |
 | Analíticas | `analytics.routes.js` | Endpoints públicos de analíticas. |
+| Salud | `server.js` | `GET /health` para verificación de disponibilidad del proceso Express. |
 
 ---
 
 ## 5. Capa de Base de Datos
 
-Artify utiliza MySQL como sistema de persistencia. La base de datos principal es `artify_db` y su script se encuentra en:
+Artify SENA PostgreSQL utiliza PostgreSQL como sistema de persistencia. El esquema activo se encuentra en:
 
 ```text
-database/artify_db.sql
+database/postgresql/schema.sql
 ```
 
 ### Tablas principales
@@ -153,8 +153,8 @@ Usuario
 Frontend HTML/CSS/JS
   ↓ fetch HTTP
 Backend Express
-  ↓ mysql2
-MySQL
+  ↓ pg
+PostgreSQL
   ↓ respuesta
 Backend Express
   ↓ JSON
@@ -189,7 +189,7 @@ No se debe mezclar con `package-lock.json`, porque el proyecto ya está migrado 
 
 ## 10. Criterios de Mantenimiento
 
-Para mantener la arquitectura clara se deben respetar estas reglas:
+Para mantener la arquitectura clara considero estas reglas:
 
 - Mantener la separación entre frontend, backend y base de datos.
 - Agregar nuevas rutas dentro de `backend/routes/`.

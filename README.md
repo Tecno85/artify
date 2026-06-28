@@ -8,7 +8,7 @@
 ![Node](https://img.shields.io/badge/Node.js-22.13+-339933?style=for-the-badge&logo=node.js)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-migración_inicial-4169E1?style=for-the-badge&logo=postgresql)
 
-**Artify SENA PostgreSQL** es una variante experimental de Artify que adapta el backend desde MySQL hacia PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa Node.js + Express + PostgreSQL en el backend.
+**Artify SENA PostgreSQL** es una variante experimental de Artify que adapta el backend hacia PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa Node.js + Express + PostgreSQL en el backend.
 
 Proyecto experimental local para migración a PostgreSQL
 
@@ -175,7 +175,7 @@ Artify/
 │   └── pnpm-lock.yaml          # Lockfile de pnpm
 │
 ├── database/                   # Base de datos del proyecto
-│   ├── artify_db.sql           # Referencia del modelo MySQL original
+│   ├── artify_db.sql           # Referencia del modelo anterior
 │   └── postgresql/
 │       ├── schema.sql          # Esquema PostgreSQL activo
 │       ├── seed.sql            # Datos mínimos de referencia
@@ -256,15 +256,29 @@ ADMIN_PASSWORD=tu_contraseña_admin
 TOKEN_SECRET=un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
 
 ### 4. Crear la base de datos en PostgreSQL
 
-```sql
-CREATE DATABASE artify_db;
+PostgreSQL no crea la base automáticamente al ejecutar `schema.sql`. Primero debo crear `artify_db` y después cargar el esquema conectado a esa base:
+
+```bash
+createdb artify_db
+psql -d artify_db -f database/postgresql/schema.sql
+psql -d artify_db -f database/postgresql/seed.sql
 ```
 
-El esquema PostgreSQL se encuentra en `database/postgresql/schema.sql`. El archivo `database/artify_db.sql` se conserva solo como referencia del modelo MySQL original.
+El esquema PostgreSQL activo se encuentra en `database/postgresql/schema.sql` y los datos mínimos de referencia se encuentran en `database/postgresql/seed.sql`. El archivo `database/artify_db.sql` se conserva solo como referencia del modelo anterior.
+
+Verificación rápida desde `psql`:
+
+```sql
+\l
+\c artify_db
+\dt
+\dv
+```
 
 ### 5. Iniciar el backend
 
@@ -359,21 +373,29 @@ No se deben incluir barras finales en la URL. El frontend construye las rutas ag
 
 ### Variables del backend
 
-El backend requiere variables de entorno equivalentes a las usadas en local:
+En producción, el backend debe recibir las variables desde el panel del proveedor. Para Render con Neon, la configuración mínima recomendada es:
 
 ```env
-DATABASE_URL=postgresql://usuario:contrasena@host:5432/artify_db
-DB_HOST=host
-DB_PORT=5432
-DB_USER=usuario
-DB_PASSWORD=contrasena
-DB_NAME=artify_db
+DATABASE_URL=postgresql://usuario:contrasena@host/dbname?sslmode=require
 ADMIN_USER=admin@artify.com
 ADMIN_PASSWORD=contrasena_admin
 TOKEN_SECRET=secreto_largo_y_seguro
-PORT=3000
+NODE_VERSION=22.13.0
 NODE_ENV=production
+CORS_ORIGIN=https://url-del-frontend.netlify.app
 ```
+
+Para despliegues, `DATABASE_URL` es la variable principal. Las variables separadas `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` se mantienen como soporte local o para configuraciones donde no se use una cadena completa.
+
+`CORS_ORIGIN` define qué frontend puede consumir el backend. En desarrollo puede incluir varios orígenes separados por coma. En producción debe apuntar a la URL pública real del frontend.
+
+Render asigna el puerto del servicio mediante `PORT`; normalmente no es necesario declararlo manualmente. Para health checks o monitoreo básico, el backend expone:
+
+```text
+https://url-del-backend.onrender.com/health
+```
+
+La carga de `database/postgresql/schema.sql` es para aprovisionamiento inicial o reinicio controlado: ese archivo elimina y recrea los objetos del proyecto. Antes de ejecutarlo sobre una base con datos útiles, se debe hacer respaldo.
 
 ---
 
@@ -445,7 +467,7 @@ artify_db
 
 ```sql
 -- Resumen de usuarios activos con estadísticas
-SELECT * FROM v_usuarios_activos;
+SELECT * FROM "v_usuarios_activos";
 ```
 
 ---
@@ -517,6 +539,8 @@ Este proyecto sigue estándares de codificación documentados. Consulta el archi
 ### Seguridad
 - Las contraseñas se encriptan con bcrypt antes de almacenarse
 - Las credenciales de la base de datos se manejan con variables de entorno
+- El login usa un mensaje genérico para credenciales inválidas y limita intentos repetidos
+- En producción el backend restringe CORS mediante `CORS_ORIGIN`
 - El archivo `.env` nunca se sube al repositorio
 
 ---

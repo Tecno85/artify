@@ -32,5 +32,6 @@
   <text x="112" y="324"><tspan class="key">TOKEN_SECRET</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="356"><tspan class="key">PORT</tspan><tspan class="value">=3000</tspan></text>
   <text x="112" y="388"><tspan class="key">NODE_ENV</tspan><tspan class="value">=development</tspan></text>
-  <text class="note" x="112" y="444">Las credenciales y secretos reales no se incluyen en la evidencia ni en el repositorio.</text>
+  <text x="112" y="420"><tspan class="key">CORS_ORIGIN</tspan><tspan class="value">=http://localhost:8080</tspan></text>
+  <text class="note" x="112" y="464">Las credenciales y secretos reales no se incluyen en la evidencia ni en el repositorio.</text>
 </svg>

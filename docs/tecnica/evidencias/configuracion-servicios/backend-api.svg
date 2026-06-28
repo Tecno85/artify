@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="460" viewBox="0 0 980 460" role="img" aria-labelledby="title desc">
   <title id="title">Backend y API de Artify funcionando</title>
-  <desc id="desc">Salida real sanitizada del backend conectado a MySQL y de una consulta HTTP con respuesta 200.</desc>
+  <desc id="desc">Salida real sanitizada del backend conectado a PostgreSQL y de una consulta HTTP con respuesta 200.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -25,7 +25,7 @@
   <text class="cmd" x="112" y="142">$ pnpm start</text>
   <text class="text" x="112" y="178">$ node server.js</text>
   <text class="ok" x="112" y="214">Servidor corriendo en http://localhost:3000</text>
-  <text class="ok" x="112" y="248">Conectado a MySQL correctamente</text>
+  <text class="ok" x="112" y="248">Conectado a PostgreSQL correctamente</text>
   <text class="cmd" x="112" y="300">$ consultar /api/v1/analytics/filtros-populares</text>
   <text class="ok" x="112" y="336">HTTP 200</text>
   <text class="text" x="112" y="374">Respuesta: {"ok": true, "mensaje": "Top filtros utilizados"}</text>

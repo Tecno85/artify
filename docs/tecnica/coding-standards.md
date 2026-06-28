@@ -103,7 +103,7 @@ let b1, b2, b3;
 // Ejemplo recomendado - tomado del backend modular
 const { correo, password } = req.body;
 const passwordValida = bcrypt.compareSync(password, usuario.usr_contrasena);
-const queryAcceso = `UPDATE USUARIO SET ...`;
+const queryAcceso = `UPDATE USUARIO SET ...`; // el adaptador cita la tabla antes de ejecutar en PostgreSQL
 
 // Incorrecto
 const { Correo, Password } = req.body;
@@ -216,8 +216,10 @@ window.abrirEliminar = function(id, nombre) {
 
 ```javascript
 // Ejemplo recomendado - tomado del backend modular
-const db = mysql2.createConnection({
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
   host:     process.env.DB_HOST,
+  port:     Number(process.env.DB_PORT || 5432),
   user:     process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -448,10 +450,10 @@ try {
 
 ```javascript
 // Ejemplo recomendado - tomado del backend modular y admin.js
-console.log('Conectado a MySQL correctamente');
+console.log('Conectado a PostgreSQL correctamente');
 console.log('Login exitoso para:', usuario.usr_nombres);
 console.log('Rol:', usuario.usr_rol);
-console.error('Error al conectar a MySQL:', err.message);
+console.error('Error al conectar a PostgreSQL:', err.message);
 console.warn('No se pudo actualizar último acceso:', err.message);
 console.log('Datos recibidos desde el formulario:');
 console.log('Redirigiendo al editor...');
@@ -472,7 +474,7 @@ console.log(err);
 // Ejemplo recomendado - tomado del backend modular
 // ========== DEPENDENCIAS ==========
 // ========== CONFIGURACIÓN ==========
-// ========== CONEXIÓN A MYSQL ==========
+// ========== CONEXIÓN A POSTGRESQL ==========
 // ========== ENDPOINT DE LOGIN ==========
 // ========== ENDPOINT DE REGISTRO ==========
 // ========== ENDPOINTS PANEL DE ADMINISTRACIÓN ==========
@@ -483,17 +485,20 @@ console.log(err);
 
 ```javascript
 // Ejemplo recomendado - tomado del backend modular
-const db = mysql2.createConnection({
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
   host:     process.env.DB_HOST,
+  port:     Number(process.env.DB_PORT || 5432),
   user:     process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
 
 // Incorrecto — nunca hardcodear credenciales
-const db = mysql2.createConnection({
+const pool = new Pool({
   host:     'localhost',
-  user:     'root',
+  port:     5432,
+  user:     'postgres',
   password: 'mi_contrasena',
   database: 'artify_db',
 });
@@ -503,8 +508,7 @@ const db = mysql2.createConnection({
 
 ```javascript
 // Ejemplo recomendado - tomado del backend modular
-return res.status(401).json({ mensaje: 'Usuario no encontrado' });
-return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
+return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
 return res.status(500).json({ mensaje: 'Error en el servidor' });
 return res.status(400).json({ mensaje: 'El correo o cédula ya está registrado' });
 res.json({ mensaje: 'Login exitoso', usuario: { ... } });
@@ -513,7 +517,7 @@ res.json({ mensaje: 'Usuario editado correctamente' });
 res.json({ mensaje: 'Usuario eliminado correctamente' });
 ```
 
-### Estructura de callbacks de MySQL
+### Estructura de callbacks de PostgreSQL
 
 ```javascript
 // Ejemplo recomendado - tomado del backend modular
@@ -534,17 +538,19 @@ db.query(query, [params], (err, results) => {
 ### Nombres de tablas — MAYÚSCULAS
 
 ```sql
--- Ejemplo recomendado
-SELECT * FROM USUARIO;
-SELECT * FROM SESION_EDICION;
-SELECT * FROM OPERACION;
-SELECT * FROM CONFIGURACION;
-SELECT * FROM IMAGEN;
+-- Ejemplo recomendado en SQL directo para PostgreSQL
+SELECT * FROM "USUARIO";
+SELECT * FROM "SESION_EDICION";
+SELECT * FROM "OPERACION";
+SELECT * FROM "CONFIGURACION";
+SELECT * FROM "IMAGEN";
 
 -- Incorrecto
 SELECT * FROM usuario;
 SELECT * FROM sesion_edicion;
 ```
+
+En los controladores heredados pueden aparecer tablas sin comillas porque `backend/config/db.js` cita automáticamente los nombres antes de ejecutar la consulta con `pg`.
 
 ### Nombres de columnas — prefijo de tabla + snake_case
 
@@ -583,7 +589,7 @@ opr_fecha_hora
 ### Consultas SQL — multilínea con indentación
 
 ```javascript
-// Ejemplo recomendado - tomado del backend modular
+// Ejemplo recomendado para controladores que usan backend/config/db.js
 const query = `
   SELECT usr_id_usuario, usr_nombres, usr_apellidos,
          usr_cedula, usr_correo, usr_estado_usuario, usr_rol
@@ -594,7 +600,7 @@ const query = `
 const queryUpdate = `
   UPDATE USUARIO
   SET usr_ultimo_acceso = NOW(),
-      usr_sesion_activa = 1
+      usr_sesion_activa = true
   WHERE usr_id_usuario = ?
 `;
 
@@ -602,17 +608,25 @@ const queryUpdate = `
 const query = 'SELECT usr_id_usuario, usr_nombres, usr_apellidos, usr_cedula, usr_correo, usr_estado_usuario, usr_rol FROM USUARIO ORDER BY usr_fecha_registro DESC';
 ```
 
+Estos ejemplos conservan tablas sin comillas porque pasan por `backend/config/db.js`. En SQL directo ejecutado desde `psql`, se deben usar comillas dobles:
+
+```sql
+SELECT "usr_id_usuario", "usr_correo"
+FROM "USUARIO"
+ORDER BY "usr_fecha_registro" DESC;
+```
+
 ### Vistas — prefijo v_
 
 ```sql
--- Ejemplo recomendado - definido en artify_db
-CREATE VIEW v_usuarios_activos AS
-SELECT u.usr_id_usuario,
-       CONCAT(u.usr_nombres, ' ', u.usr_apellidos) AS nombre_completo,
-       u.usr_correo,
+-- Ejemplo recomendado - definido en PostgreSQL
+CREATE VIEW "v_usuarios_activos" AS
+SELECT u."usr_id_usuario",
+       CONCAT(u."usr_nombres", ' ', u."usr_apellidos") AS "nombre_completo",
+       u."usr_correo",
        ...
-FROM USUARIO u
-WHERE u.usr_estado_usuario = 'activo';
+FROM "USUARIO" u
+WHERE u."usr_estado_usuario" = 'activo';
 ```
 
 ---
@@ -645,7 +659,7 @@ WHERE u.usr_estado_usuario = 'activo';
 
 ```javascript
 // Ejemplo recomendado - tomado del backend modular
-// Buscar usuario en la base de datos
+// Buscar usuario en la base de datos usando la capa de compatibilidad
 const query = 'SELECT * FROM USUARIO WHERE usr_correo = ?';
 
 // Validar contraseña con bcrypt
@@ -654,7 +668,7 @@ const passwordValida = bcrypt.compareSync(password, usuario.usr_contrasena);
 // Crear configuración por defecto
 const configDefecto = JSON.stringify({ ... });
 
-// Eliminar registros relacionados primero
+// Eliminar registros relacionados primero usando la capa de compatibilidad
 const queries = [
   'DELETE FROM IMAGEN WHERE img_usr_id_usuario = ?',
   'DELETE FROM OPERACION WHERE opr_usr_id_usuario = ?',
@@ -680,7 +694,7 @@ const queries = [
 # Ejemplo recomendado - commits reales del proyecto Artify
 git commit -m "feat(registro): crear configuración por defecto automáticamente al registrar usuario"
 git commit -m "feat(sesion): agregar control de inactividad y limpieza automática de sesiones"
-git commit -m "feat(filtros): registrar operaciones de filtros en MySQL"
+git commit -m "feat(filtros): registrar operaciones de filtros en PostgreSQL"
 git commit -m "feat(admin): agregar panel de administración con CRUD completo sobre tabla USUARIO"
 git commit -m "feat(roles): redirigir al panel de admin o editor según rol del usuario en login"
 git commit -m "fix(admin): eliminar registros relacionados antes de eliminar usuario"

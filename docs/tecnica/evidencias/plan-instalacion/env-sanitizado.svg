@@ -24,7 +24,7 @@
   <circle class="dot-green" cx="150" cy="79" r="7" />
   <text class="title" x="490" y="86" text-anchor="middle">backend/.env - valores sanitizados</text>
   <text x="112" y="142"><tspan class="key">DB_HOST</tspan><tspan class="value">=localhost</tspan></text>
-  <text x="112" y="174"><tspan class="key">DB_USER</tspan><tspan class="value">=root</tspan></text>
+  <text x="112" y="174"><tspan class="key">DB_PORT</tspan><tspan class="value">=5432</tspan></text>
   <text x="112" y="206"><tspan class="key">DB_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="238"><tspan class="key">DB_NAME</tspan><tspan class="value">=artify_db</tspan></text>
   <text x="112" y="270"><tspan class="key">ADMIN_USER</tspan><tspan class="value">=admin@artify.com</tspan></text>
@@ -32,5 +32,6 @@
   <text x="112" y="334"><tspan class="key">TOKEN_SECRET</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="366"><tspan class="key">PORT</tspan><tspan class="value">=3000</tspan></text>
   <text x="112" y="398"><tspan class="key">NODE_ENV</tspan><tspan class="value">=development</tspan></text>
-  <text class="note" x="112" y="436">Los valores sensibles se ocultan para proteger credenciales y secretos del entorno local.</text>
+  <text x="112" y="430"><tspan class="key">CORS_ORIGIN</tspan><tspan class="value">=http://localhost:8080</tspan></text>
+  <text class="note" x="112" y="456">Los valores sensibles se ocultan para proteger credenciales y secretos del entorno local.</text>
 </svg>

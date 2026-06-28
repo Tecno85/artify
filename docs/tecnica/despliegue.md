@@ -1,29 +1,29 @@
 # Guía de Despliegue y Ejecución Local
 
-> **Proyecto:** Artify - Editor de Imágenes Web
+> **Proyecto:** Artify SENA PostgreSQL
 > **Entorno principal:** Local / desarrollo
 > **Backend:** Node.js + Express
 > **Frontend:** HTML, CSS y JavaScript Vanilla
-> **Base de datos:** MySQL
-> **Fecha:** Mayo 2026
+> **Base de datos:** PostgreSQL
+> **Fecha:** Junio 2026
 
 ---
 
 ## 1. Objetivo del Documento
 
-Este documento describe los pasos técnicos necesarios para preparar, ejecutar y verificar Artify en un entorno local. Hace parte del manual técnico y complementa el `README.md`, evitando repetir la descripción general del proyecto.
+En este documento explico los pasos técnicos necesarios para preparar, ejecutar y verificar Artify SENA PostgreSQL en un entorno local. Esta guía complementa el `README.md` y se enfoca en la ejecución del backend, el frontend y la base de datos PostgreSQL.
 
 ---
 
 ## 2. Requisitos Previos
 
-Antes de ejecutar el proyecto se requiere tener instalado:
+Antes de ejecutar el proyecto confirmo que estén disponibles estas herramientas:
 
 | Herramienta | Versión recomendada | Uso |
 | --- | --- | --- |
 | Node.js | 22.13 o superior | Ejecutar el backend. |
 | pnpm | 11.1.1 | Instalar dependencias y ejecutar scripts del backend. |
-| MySQL | 8.0 o superior | Base de datos relacional. |
+| PostgreSQL | 15 o superior | Base de datos relacional. |
 | Git | Versión estable | Clonar y versionar el proyecto. |
 | Navegador moderno | Chrome, Edge, Firefox, Safari u Opera | Usar el frontend. |
 
@@ -32,8 +32,8 @@ Antes de ejecutar el proyecto se requiere tener instalado:
 ## 3. Clonar el Proyecto
 
 ```bash
-git clone https://github.com/Tecno85/artify-sena.git
-cd artify-sena
+git clone https://github.com/Tecno85/artify-sena-postgresql.git
+cd artify-sena-postgresql
 ```
 
 ---
@@ -53,7 +53,9 @@ El proyecto usa `pnpm` como gestor oficial. No se debe mezclar con `npm install`
 
 ## 5. Configurar Variables de Entorno
 
-El backend necesita un archivo `.env` dentro de `backend/`. Se puede crear a partir de `.env.example`.
+El backend necesita variables de entorno para conectarse a PostgreSQL, configurar el usuario administrador y firmar tokens.
+
+Puedo crear `backend/.env` a partir de `.env.example`:
 
 ```bash
 cp ../.env.example .env
@@ -62,17 +64,18 @@ cp ../.env.example .env
 Variables principales:
 
 ```env
+DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=tu_contrasena_mysql
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=tu_contrasena_postgresql
 DB_NAME=artify_db
-
 ADMIN_USER=admin@artify.com
 ADMIN_PASSWORD=tu_contrasena_admin
-
 TOKEN_SECRET=un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
 
 ### Consideraciones
@@ -80,30 +83,35 @@ NODE_ENV=development
 - `backend/.env` no debe subirse al repositorio.
 - `TOKEN_SECRET` debe ser largo y difícil de adivinar.
 - `ADMIN_PASSWORD` debe cambiarse por una contraseña segura en cada entorno.
+- `CORS_ORIGIN` debe incluir el origen desde el que se sirve el frontend.
 
 ---
 
 ## 6. Crear la Base de Datos
 
-El script principal de base de datos se encuentra en:
-
-```text
-database/artify_db.sql
-```
-
-Desde la raíz del proyecto se puede importar con:
+Primero creo la base de datos:
 
 ```bash
-mysql -u root -p < database/artify_db.sql
+createdb artify_db
 ```
 
-También se puede ejecutar el script desde MySQL Workbench u otra herramienta compatible.
+Luego cargo el esquema y los datos mínimos de referencia:
 
-Al finalizar, debe existir la base de datos:
-
-```text
-artify_db
+```bash
+psql -d artify_db -f database/postgresql/schema.sql
+psql -d artify_db -f database/postgresql/seed.sql
 ```
+
+Al finalizar, verifico la base, las tablas y la vista:
+
+```sql
+\l
+\c artify_db
+\dt
+\dv
+```
+
+Si prefiero validar en un solo comando desde la terminal, puedo usar `psql -d artify_db -c "\\dt"` para tablas y `psql -d artify_db -c "\\dv"` para vistas.
 
 ---
 
@@ -118,7 +126,7 @@ pnpm start
 Salida esperada:
 
 ```text
-Conectado a MySQL correctamente
+Conectado a PostgreSQL correctamente
 Servidor corriendo en http://localhost:3000
 ```
 
@@ -132,7 +140,7 @@ pnpm run dev
 
 ## 8. Ejecutar el Frontend
 
-El frontend es estático. Para probar rutas y navegación de forma más estable se recomienda servir la carpeta `frontend/` por HTTP.
+El frontend es estático. Para probar rutas y navegación de forma estable, sirvo la carpeta `frontend/` por HTTP.
 
 Desde la raíz del proyecto:
 
@@ -140,19 +148,30 @@ Desde la raíz del proyecto:
 npx http-server frontend -p 8080
 ```
 
-Luego abrir:
+Luego abro:
 
 ```text
 http://127.0.0.1:8080
 ```
-
-También es posible abrir `frontend/index.html` directamente, pero para pruebas completas se recomienda usar servidor local.
 
 ---
 
 ## 9. Verificar el Funcionamiento
 
 ### Verificación del backend
+
+```bash
+curl http://127.0.0.1:3000/health
+```
+
+Resultado esperado:
+
+```json
+{
+  "ok": true,
+  "servicio": "artify-api"
+}
+```
 
 ```bash
 cd backend
@@ -166,17 +185,17 @@ cd backend
 pnpm test
 ```
 
-La suite actual valida autenticación, rutas protegidas, tokens, configuración básica y limpieza de usuarios temporales.
+La suite actual valida autenticación, rutas protegidas, tokens, configuración básica, conexión con PostgreSQL y limpieza de usuarios temporales.
 
 ### Verificación manual básica
 
-1. Abrir `http://127.0.0.1:8080`.
-2. Registrar un usuario de prueba.
-3. Iniciar sesión.
-4. Confirmar redirección al editor.
-5. Cargar una imagen.
-6. Probar una operación de edición.
-7. Descargar la imagen resultante.
+1. Abro `http://127.0.0.1:8080`.
+2. Registro un usuario de prueba.
+3. Inicio sesión.
+4. Confirmo redirección al editor.
+5. Cargo una imagen.
+6. Pruebo una operación de edición.
+7. Descargo la imagen resultante.
 
 ---
 
@@ -186,28 +205,22 @@ La suite actual valida autenticación, rutas protegidas, tokens, configuración 
 | --- | --- | --- |
 | Backend Express | `3000` | API principal del sistema. |
 | Frontend local | `8080` | Servidor estático recomendado para pruebas. |
-| MySQL | `3306` | Puerto habitual de MySQL. |
+| PostgreSQL | `5432` | Puerto habitual de PostgreSQL. |
 | Backend de pruebas | `3100` | Puerto usado por la suite automatizada cuando aplica. |
 
 ---
 
-## 11. Script de Configuración Inicial
+## 11. Script de Configuración Frontend
 
-El proyecto incluye un script de apoyo:
+El proyecto incluye el script:
 
 ```text
-scripts/setup.sh
+scripts/write-frontend-config.js
 ```
 
-Este script instala dependencias del backend y crea `backend/.env` desde `.env.example` si todavía no existe.
+Este script genera `frontend/assets/js/config.js` durante el despliegue en Netlify usando la variable `ARTIFY_API_URL`.
 
-Ejecución:
-
-```bash
-./scripts/setup.sh
-```
-
-Después de ejecutarlo, se debe revisar manualmente `backend/.env` y cargar la base de datos.
+Para ejecución local, `config.js` puede permanecer vacío para que el frontend use `http://localhost:3000` como backend por defecto.
 
 ---
 
@@ -215,11 +228,12 @@ Después de ejecutarlo, se debe revisar manualmente `backend/.env` y cargar la b
 
 | Problema | Posible causa | Solución |
 | --- | --- | --- |
-| `Error al conectar a MySQL` | Credenciales incorrectas o MySQL detenido. | Revisar `backend/.env` e iniciar MySQL. |
+| `Error al conectar a PostgreSQL` | Variables incorrectas o servicio detenido. | Revisar `backend/.env` e iniciar PostgreSQL. |
 | `Unknown command: pnpm` | pnpm no está instalado o no está en el PATH. | Instalar pnpm y abrir una nueva terminal. |
-| API no responde | Backend no iniciado o puerto incorrecto. | Ejecutar `pnpm start` en `backend/`. |
-| Login falla aunque el usuario existe | Contraseña incorrecta o hash inválido. | Verificar registro y datos en `USUARIO`. |
-| Frontend no consume API | Backend apagado o URL incorrecta. | Confirmar que API esté en `http://localhost:3000`. |
+| `/health` no responde | Backend no iniciado o puerto incorrecto. | Ejecutar `pnpm start` en `backend/`. |
+| `/health` responde pero la API falla | PostgreSQL no está disponible, variables incompletas o esquema no cargado. | Revisar `backend/.env`, cargar `schema.sql` y consultar logs del backend. |
+| Login falla aunque el usuario existe | Contraseña incorrecta, hash inválido o límite de intentos alcanzado. | Verificar registro, datos en `USUARIO` y esperar si hubo demasiados intentos. |
+| Frontend no consume API | Backend apagado, URL incorrecta o `CORS_ORIGIN` no incluye el origen del frontend. | Confirmar la API en `http://localhost:3000` y revisar `CORS_ORIGIN`. |
 
 ---
 

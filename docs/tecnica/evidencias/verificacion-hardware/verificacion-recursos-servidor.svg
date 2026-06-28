@@ -24,7 +24,7 @@
   <rect class="center" x="362" y="176" width="256" height="150" rx="16" />
   <text class="title" x="490" y="224" text-anchor="middle">Servidor Artify</text>
   <text class="text" x="490" y="256" text-anchor="middle">Backend Node.js</text>
-  <text class="text" x="490" y="278" text-anchor="middle">Base de datos MySQL</text>
+  <text class="text" x="490" y="278" text-anchor="middle">Base de datos PostgreSQL</text>
 
   <rect class="cpu" x="86" y="84" width="218" height="118" rx="14" />
   <text class="label" x="195" y="122" text-anchor="middle">Procesador</text>

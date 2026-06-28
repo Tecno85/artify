@@ -74,18 +74,22 @@ Neon entrega una cadena de conexión con usuario, contraseña, host y nombre de 
 
 ## 6. Creo las Tablas en PostgreSQL
 
-Con la base creada, debo ejecutar los scripts del proyecto:
+Con la base creada, debo ejecutar los scripts del proyecto desde la raíz del repositorio:
 
 ```bash
-psql "DATABASE_URL_DE_NEON" -f database/postgresql/schema.sql
-psql "DATABASE_URL_DE_NEON" -f database/postgresql/seed.sql
+psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -f database/postgresql/schema.sql
+psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -f database/postgresql/seed.sql
 ```
+
+Este paso corresponde al aprovisionamiento inicial o a un reinicio controlado de la base. El archivo `schema.sql` elimina y vuelve a crear los objetos del proyecto; por eso no debo ejecutarlo sobre una base con información útil sin realizar primero una copia de seguridad.
 
 Después verifico que existan las tablas:
 
 ```bash
-psql "DATABASE_URL_DE_NEON" -c "\\dt"
+psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c "\\dt"
 ```
+
+En la práctica reemplazo la cadena de ejemplo por la URL real entregada por Neon y evito mostrarla completa en capturas o videos.
 
 Resultado esperado:
 
@@ -105,36 +109,52 @@ Configuración sugerida:
 | --- | --- |
 | Runtime | Node |
 | Root Directory | `backend` |
-| Build Command | `pnpm install` |
+| Build Command | `pnpm install --frozen-lockfile` |
 | Start Command | `pnpm start` |
 | Branch | `main` |
+| Health Check Path | `/health` |
 
-Variables de entorno del backend:
+Variables de entorno mínimas del backend en producción:
 
 ```env
 DATABASE_URL=postgresql://usuario:contrasena@host/dbname?sslmode=require
-DB_HOST=host
-DB_PORT=5432
-DB_USER=usuario
-DB_PASSWORD=contrasena
-DB_NAME=nombre_base_datos
 ADMIN_USER=admin@artify.com
 ADMIN_PASSWORD=contrasena_segura
 TOKEN_SECRET=secreto_largo_y_seguro
-PORT=3000
+NODE_VERSION=22.13.0
 NODE_ENV=production
+CORS_ORIGIN=https://url-del-frontend.netlify.app
 ```
 
 Notas:
 
 - `DATABASE_URL` es la variable principal para conectar con Neon.
+- Las variables separadas `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` se reservan para configuración local o entornos donde no se use una cadena completa.
 - Defino `TOKEN_SECRET` como un valor largo y no lo comparto.
 - Uso una `ADMIN_PASSWORD` diferente a mis claves personales.
+- Render asigna el puerto mediante `PORT`; no necesito declararlo manualmente en el panel.
+- `NODE_VERSION` fija una versión compatible con `backend/package.json` y `backend/.node-version`.
+- Si todavía no conozco la URL de Netlify, dejo `CORS_ORIGIN` pendiente y lo actualizo al finalizar el despliegue del frontend.
 - Render asigna una URL pública al backend cuando el despliegue finaliza.
 
 ## 8. Verificar el backend publicado
 
-Cuando Render termine el despliegue, abro la URL pública del backend. Luego pruebo una ruta pública:
+Cuando Render termine el despliegue, abro la URL pública del backend y pruebo primero la ruta de salud:
+
+```text
+https://url-del-backend.onrender.com/health
+```
+
+Resultado esperado:
+
+```json
+{
+  "ok": true,
+  "servicio": "artify-api"
+}
+```
+
+Después pruebo una ruta pública que sí consulta PostgreSQL:
 
 ```text
 https://url-del-backend.onrender.com/api/v1/analytics/filtros-populares
@@ -156,10 +176,11 @@ Si la API no responde, reviso:
 - Cadena `DATABASE_URL`.
 - Ejecución previa de `schema.sql`.
 - Permisos o disponibilidad de la base en Neon.
+- Health check `/health` para diferenciar error del proceso Express frente a error de base de datos.
 
 ## 9. Desplegar el frontend en Netlify
 
-El proyecto ya incluye `netlify.toml` con esta configuración:
+El proyecto ya incluye `netlify.toml` en la raíz del repositorio con esta configuración:
 
 ```toml
 [build]
@@ -167,13 +188,21 @@ El proyecto ya incluye `netlify.toml` con esta configuración:
   publish = "frontend"
 ```
 
-En Netlify debo conectar el repositorio y configurar la variable:
+En Netlify conecto el repositorio desde la raíz, sin definir `frontend` como base directory, y configuro la variable:
 
 ```env
 ARTIFY_API_URL=https://url-del-backend.onrender.com
 ```
 
 Esta variable permite que el frontend publicado consuma el backend externo. No agrego `/api` al final porque el código ya construye las rutas completas.
+
+Cuando Netlify entregue la URL pública del frontend, regreso a Render y actualizo:
+
+```env
+CORS_ORIGIN=https://url-del-frontend.netlify.app
+```
+
+Después redepliego o reinicio el backend para que tome el origen definitivo.
 
 ## 10. Verificar el frontend publicado
 
@@ -197,12 +226,13 @@ Primera práctica:
 2. Ejecuto `schema.sql` y `seed.sql`.
 3. Creo el servicio backend en Render.
 4. Configuro las variables del backend.
-5. Confirmo la respuesta de la API.
+5. Confirmo `/health` y luego una ruta de analytics.
 6. Creo el sitio frontend en Netlify.
 7. Configuro `ARTIFY_API_URL`.
-8. Confirmo registro, login y editor.
-9. Anoto errores o tiempos de espera.
-10. Repito el proceso en una grabación limpia.
+8. Copio la URL pública de Netlify en `CORS_ORIGIN` dentro de Render.
+9. Confirmo registro, login y editor.
+10. Anoto errores o tiempos de espera.
+11. Repito el proceso en una grabación limpia.
 
 Durante la práctica puedo pausar, revisar logs y corregir variables. Durante el video muestro el proceso ya conocido y oculto secretos.
 
@@ -213,21 +243,23 @@ Durante la práctica puedo pausar, revisar logs y corregir variables. Durante el
 3. Muestro la base en Neon sin exponer la contraseña.
 4. Explico que cargué `schema.sql` y `seed.sql`.
 5. Muestro Render con el backend desplegado.
-6. Verifico una ruta pública de la API.
+6. Verifico `/health` y una ruta pública de la API.
 7. Muestro Netlify con `ARTIFY_API_URL` configurado.
-8. Abro la URL pública del frontend.
-9. Registro o inicio sesión con un usuario de prueba.
-10. Abro el editor y realizo una prueba básica.
-11. Concluyo explicando que la aplicación quedó funcional en la web.
+8. Muestro que `CORS_ORIGIN` quedó actualizado con la URL del frontend.
+9. Abro la URL pública del frontend.
+10. Registro o inicio sesión con un usuario de prueba.
+11. Abro el editor y realizo una prueba básica.
+12. Concluyo explicando que la aplicación quedó funcional en la web.
 
 ## 13. Problemas comunes
 
 | Problema | Causa probable | Solución |
 | --- | --- | --- |
 | Error de conexión a PostgreSQL | `DATABASE_URL` incorrecta o sin SSL. | Copio nuevamente la cadena desde Neon. |
-| El backend despliega pero la API falla | No ejecuté `schema.sql`. | Creo las tablas en la base remota. |
+| `/health` responde pero analytics falla | No ejecuté `schema.sql` o la base no está disponible. | Verifico Neon, cargo el esquema inicial y reviso `DATABASE_URL`. |
+| `/health` no responde | El servicio Express no inició o Render falló en build/start. | Revisar logs, `Root Directory`, `Build Command`, `Start Command` y versión de Node. |
 | Login no responde desde Netlify | `ARTIFY_API_URL` no apunta al backend correcto. | Reviso la variable en Netlify y ejecuto un nuevo despliegue. |
-| Error CORS | El backend no permite solicitudes del frontend. | Reviso la configuración de `cors()` en Express. |
+| Error CORS | `CORS_ORIGIN` no incluye la URL pública del frontend. | Agrego la URL de Netlify en `CORS_ORIGIN` y redespliego el backend. |
 | Usuario duplicado en pruebas | Repetí correo o cédula. | Uso datos nuevos de prueba. |
 | Variables visibles en pantalla | Abrí un panel con secretos. | Detengo la grabación y repito ocultando valores. |
 

@@ -9,6 +9,17 @@ const {
   validarUsuario,
 } = require('../utils/validacion');
 
+const MENSAJE_CREDENCIALES_INVALIDAS = 'Credenciales incorrectas';
+const CONFIG_DEFECTO = JSON.stringify({
+  notificaciones: true,
+  formatoDefecto: 'png',
+  autoguardado: false,
+});
+
+function esErrorDuplicado(error) {
+  return error?.code === '23505';
+}
+
 // ========== LOGIN DE USUARIO ==========
 function login(req, res) {
   const { correo, password } = req.body;
@@ -30,7 +41,7 @@ function login(req, res) {
     }
 
     if (results.length === 0) {
-      return res.status(401).json({ mensaje: 'Usuario no encontrado' });
+      return res.status(401).json({ mensaje: MENSAJE_CREDENCIALES_INVALIDAS });
     }
 
     const usuario = results[0];
@@ -39,7 +50,7 @@ function login(req, res) {
     const passwordValida = bcrypt.compareSync(password, usuario.usr_contrasena);
 
     if (!passwordValida) {
-      return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
+      return res.status(401).json({ mensaje: MENSAJE_CREDENCIALES_INVALIDAS });
     }
 
     const queryAcceso = `
@@ -84,9 +95,10 @@ function login(req, res) {
 }
 
 // ========== REGISTRO DE USUARIO ==========
-function registro(req, res) {
+async function registro(req, res) {
   const { nombres, apellidos, cedula, fechaNacimiento, correo, password } =
     req.body;
+  const dbPromise = db.promise();
   const errorValidacion = validarUsuario({
     nombres,
     apellidos,
@@ -102,16 +114,16 @@ function registro(req, res) {
 
   console.log('📨 Solicitud de registro recibida');
 
-  const queryBuscar =
-    'SELECT * FROM USUARIO WHERE usr_correo = ? OR usr_cedula = ?';
+  try {
+    await dbPromise.beginTransaction();
 
-  db.query(queryBuscar, [correo, cedula], (err, results) => {
-    if (err) {
-      console.error('❌ Error en la consulta:', err.message);
-      return res.status(500).json({ mensaje: 'Error en el servidor' });
-    }
+    const [usuariosExistentes] = await dbPromise.query(
+      'SELECT usr_id_usuario FROM USUARIO WHERE usr_correo = ? OR usr_cedula = ?',
+      [correo, cedula]
+    );
 
-    if (results.length > 0) {
+    if (usuariosExistentes.length > 0) {
+      await dbPromise.rollback();
       return res
         .status(400)
         .json({ mensaje: 'El correo o cédula ya está registrado' });
@@ -120,71 +132,66 @@ function registro(req, res) {
     // Encriptar la contraseña antes de persistir el nuevo usuario
     const hash = bcrypt.hashSync(password, 10);
 
-    const queryInsertar = `
-      INSERT INTO USUARIO
-        (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
-         usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
-      VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
-      RETURNING usr_id_usuario
-    `;
-
-    db.query(
-      queryInsertar,
-      [nombres, apellidos, cedula, fechaNacimiento, correo, hash],
-      (errInsertar, result) => {
-        if (errInsertar) {
-          console.error('❌ Error al insertar usuario:', errInsertar.message);
-          return res
-            .status(500)
-            .json({ mensaje: 'Error al registrar usuario' });
-        }
-
-        // Crear configuración inicial para que el editor tenga valores por defecto
-        const queryConfig = `
-          INSERT INTO CONFIGURACION
-            (cfg_usr_id_usuario, cfg_calidad_exportacion, cfg_configuracion_avanzada, cfg_fecha_actualizacion)
-          VALUES (?, 'media', ?, NOW())
-        `;
-
-        const configDefecto = JSON.stringify({
-          notificaciones: true,
-          formatoDefecto: 'png',
-          autoguardado: false,
-        });
-
-        db.query(queryConfig, [result.insertId, configDefecto], (errConfig) => {
-          if (errConfig) {
-            console.warn(
-              '⚠️ No se pudo crear configuración por defecto:',
-              errConfig.message
-            );
-          }
-
-          const usuario = {
-            id: result.insertId,
-            nombres,
-            apellidos,
-            correo,
-            rol: 'usuario',
-          };
-
-          // Devolver token desde el registro para mantener el flujo actual del frontend
-          const token = crearToken({
-            id: result.insertId,
-            correo,
-            rol: 'usuario',
-            tipo: 'usuario',
-          });
-
-          return res.json({
-            mensaje: 'Registro exitoso',
-            usuario,
-            token,
-          });
-        });
-      }
+    const [resultadoUsuario] = await dbPromise.query(
+      `
+        INSERT INTO USUARIO
+          (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
+           usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
+        VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
+        RETURNING usr_id_usuario
+      `,
+      [nombres, apellidos, cedula, fechaNacimiento, correo, hash]
     );
-  });
+
+    const idUsuario = resultadoUsuario.insertId;
+
+    // Crear configuración inicial para que el editor tenga valores por defecto
+    await dbPromise.query(
+      `
+        INSERT INTO CONFIGURACION
+          (cfg_usr_id_usuario, cfg_calidad_exportacion, cfg_configuracion_avanzada, cfg_fecha_actualizacion)
+        VALUES (?, 'media', ?, NOW())
+      `,
+      [idUsuario, CONFIG_DEFECTO]
+    );
+
+    await dbPromise.commit();
+
+    const usuario = {
+      id: idUsuario,
+      nombres,
+      apellidos,
+      correo,
+      rol: 'usuario',
+    };
+
+    // Devolver token desde el registro para mantener el flujo actual del frontend
+    const token = crearToken({
+      id: idUsuario,
+      correo,
+      rol: 'usuario',
+      tipo: 'usuario',
+    });
+
+    return res.json({
+      mensaje: 'Registro exitoso',
+      usuario,
+      token,
+    });
+  } catch (error) {
+    try {
+      await dbPromise.rollback();
+    } catch {}
+
+    if (esErrorDuplicado(error)) {
+      return res
+        .status(400)
+        .json({ mensaje: 'El correo o cédula ya está registrado' });
+    }
+
+    console.error('❌ Error al registrar usuario:', error.message);
+    return res.status(500).json({ mensaje: 'Error al registrar usuario' });
+  }
 }
 
 // ========== LOGIN DE ADMINISTRADOR ==========
@@ -202,7 +209,7 @@ function loginAdmin(req, res) {
     correo !== process.env.ADMIN_USER ||
     password !== process.env.ADMIN_PASSWORD
   ) {
-    return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
+    return res.status(401).json({ mensaje: MENSAJE_CREDENCIALES_INVALIDAS });
   }
 
   const admin = { correo, rol: 'admin' };

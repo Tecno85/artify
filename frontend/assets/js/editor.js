@@ -100,7 +100,7 @@ async function registrarOperacion(tipo, descripcion) {
       }),
     });
 
-    console.log('✅ Operación registrada en MySQL:', tipo);
+    console.log('✅ Operación registrada en PostgreSQL:', tipo);
   } catch (err) {
     console.warn('⚠️ No se pudo registrar la operación:', err);
   }
@@ -304,7 +304,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     actualizarEstado('Cargando imagen...', 'processing');
 
-    // Registrar imagen editada en MySQL
+    // Registrar imagen editada en PostgreSQL
     const userData = sessionStorage.getItem('artifyUser');
     const idSesion = sessionStorage.getItem('artifyIdSesion');
     if (userData && idSesion) {
@@ -321,7 +321,7 @@ window.addEventListener('DOMContentLoaded', async () => {
           formatoFinal: formatoOriginal,
           tamanoOriginal: file.size,
         }),
-      }).then(() => console.log('✅ Imagen registrada en MySQL:', file.name));
+      }).then(() => console.log('✅ Imagen registrada en PostgreSQL:', file.name));
     }
 
     const reader = new FileReader();
@@ -429,7 +429,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (!currentImage) return;
     actualizarEstado('Generando descarga...', 'processing');
 
-    // Obtener preferencias desde MySQL
+    // Obtener preferencias desde la API
     const prefs = await cargarPreferencias();
 
     // Si hay un formato convertido, usar ese; si no, usar las preferencias
@@ -746,7 +746,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       // Notificación removida
       actualizarEstado('Listo', 'success');
       guardarEstadoEnHistorial(`Filtro: ${currentFilter}`);
-      // Registrar filtro en MySQL
+      // Registrar filtro en PostgreSQL
       const filtrosNombres = {
         grayscale: 'Blanco y Negro',
         sepia: 'Sepia',
@@ -1573,7 +1573,7 @@ async function cargarPreferencias() {
     const data = await res.json();
 
     if (data.mensaje === 'ok') {
-      console.log('✅ Preferencias cargadas desde MySQL');
+      console.log('✅ Preferencias cargadas desde la API');
       return data.configuracion;
     }
     return { ...PREFERENCIAS_DEFAULT };
@@ -1605,7 +1605,7 @@ async function guardarPreferencias(prefs) {
     });
 
     const data = await res.json();
-    console.log('✅ Preferencias guardadas en MySQL:', data.mensaje);
+    console.log('✅ Preferencias guardadas en PostgreSQL:', data.mensaje);
     return true;
   } catch {
     console.warn('⚠️ No se pudo guardar configuración en el servidor');
@@ -1647,7 +1647,7 @@ async function abrirModalConfiguracion() {
     } catch {}
   }
 
-  // Cargar preferencias desde MySQL
+  // Cargar preferencias desde la API
   const prefs = await cargarPreferencias();
 
   const notif = document.getElementById('configNotificaciones');

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Versiones de herramientas verificadas para Artify</title>
-  <desc id="desc">Salida sanitizada de la verificación de Node.js, pnpm, MySQL y Git realizada en el equipo local.</desc>
+  <desc id="desc">Salida sanitizada de la verificación de Node.js, pnpm, PostgreSQL y Git realizada en el equipo local.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -26,8 +26,8 @@
   <text class="value" x="370" y="148">v26.0.0</text>
   <text class="cmd" x="112" y="194">$ pnpm --version</text>
   <text class="value" x="370" y="194">11.1.1</text>
-  <text class="cmd" x="112" y="240">$ mysql --version</text>
-  <text class="value" x="370" y="240">MySQL Community Server 8.4.7</text>
+  <text class="cmd" x="112" y="240">$ psql --version</text>
+  <text class="value" x="370" y="240">PostgreSQL 15.18</text>
   <text class="cmd" x="112" y="286">$ git --version</text>
   <text class="value" x="370" y="286">git 2.50.1</text>
   <text class="ok" x="112" y="332">Resultado: herramientas disponibles en el equipo local.</text>

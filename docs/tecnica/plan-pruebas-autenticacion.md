@@ -38,11 +38,11 @@ No incluyo pruebas funcionales del editor de imágenes, filtros, recorte, panel 
 | Sistema | Artify |
 | Frontend | HTML, CSS, JavaScript Vanilla |
 | Backend | Node.js + Express |
-| Base de datos | MySQL |
+| Base de datos | PostgreSQL |
 | Tabla principal | `USUARIO` |
 | Herramienta de encriptación | `bcryptjs` |
 | Archivo principal evaluado | `backend/controllers/auth.controller.js` |
-| Script de base de datos | `database/artify_db.sql` |
+| Script de base de datos | `database/postgresql/schema.sql` |
 
 ---
 
@@ -69,7 +69,7 @@ Funciones evaluadas:
 Tabla:
 
 ```sql
-USUARIO
+"USUARIO"
 ```
 
 Campo donde se almacena la contraseña:
@@ -134,7 +134,7 @@ Consulta SQL sugerida:
 
 ```sql
 SELECT usr_id_usuario, usr_correo, usr_contrasena, usr_fecha_registro
-FROM USUARIO
+FROM "USUARIO"
 WHERE usr_correo = 'correo_prueba@artify.local';
 ```
 
@@ -156,7 +156,7 @@ Consulta SQL sugerida:
 
 ```sql
 SELECT usr_correo, usr_contrasena
-FROM USUARIO
+FROM "USUARIO"
 WHERE usr_correo = 'correo_prueba@artify.local';
 ```
 
@@ -183,14 +183,14 @@ Interpretación:
 | Datos de entrada | Correo registrado y contraseña correcta. |
 | Pasos | Enviar correo y contraseña al endpoint `/api/login`. |
 | Resultado esperado | El sistema responde `Login exitoso`, retorna datos del usuario y genera un token. |
-| Validación en BD | Se actualiza `usr_ultimo_acceso` y `usr_sesion_activa` cambia a `1`. |
+| Validación en BD | Se actualiza `usr_ultimo_acceso` y `usr_sesion_activa` cambia a `true`. |
 | Estado | Aprobado. |
 
 Consulta SQL sugerida antes y después del login:
 
 ```sql
 SELECT usr_correo, usr_ultimo_acceso, usr_sesion_activa
-FROM USUARIO
+FROM "USUARIO"
 WHERE usr_correo = 'correo_prueba@artify.local';
 ```
 
@@ -204,7 +204,7 @@ WHERE usr_correo = 'correo_prueba@artify.local';
 | Precondición | El correo no debe existir en la base de datos. |
 | Datos de entrada | Correo no registrado y cualquier contraseña válida en formato. |
 | Pasos | Enviar solicitud de login. |
-| Resultado esperado | El sistema responde `Usuario no encontrado`. |
+| Resultado esperado | El sistema responde `Credenciales incorrectas`. |
 | Código esperado | HTTP 401. |
 | Validación en BD | No se modifica ningún registro de la tabla `USUARIO`. |
 | Estado | Aprobado. |
@@ -219,7 +219,7 @@ WHERE usr_correo = 'correo_prueba@artify.local';
 | Precondición | El correo debe existir en la base de datos. |
 | Datos de entrada | Correo válido y contraseña incorrecta. |
 | Pasos | Enviar solicitud de login. |
-| Resultado esperado | El sistema responde `Contraseña incorrecta`. |
+| Resultado esperado | El sistema responde `Credenciales incorrectas`. |
 | Código esperado | HTTP 401. |
 | Validación en BD | No debe actualizarse el acceso del usuario como sesión válida. |
 | Estado | Aprobado. |
@@ -276,7 +276,7 @@ WHERE usr_correo = 'correo_prueba@artify.local';
 
 ```sql
 SELECT usr_id_usuario, usr_nombres, usr_correo, usr_fecha_registro
-FROM USUARIO
+FROM "USUARIO"
 WHERE usr_correo = 'correo_prueba@artify.local';
 ```
 
@@ -284,7 +284,7 @@ WHERE usr_correo = 'correo_prueba@artify.local';
 
 ```sql
 SELECT usr_correo, usr_contrasena
-FROM USUARIO
+FROM "USUARIO"
 WHERE usr_correo = 'correo_prueba@artify.local';
 ```
 
@@ -299,7 +299,7 @@ Debe contener un hash bcrypt similar a: $2b$10$...
 
 ```sql
 SELECT usr_correo, usr_ultimo_acceso, usr_sesion_activa
-FROM USUARIO
+FROM "USUARIO"
 WHERE usr_correo = 'correo_prueba@artify.local';
 ```
 
@@ -307,7 +307,7 @@ Resultado esperado después de login exitoso:
 
 ```text
 usr_ultimo_acceso: fecha y hora actualizada
-usr_sesion_activa: 1
+usr_sesion_activa: true
 ```
 
 ---
@@ -348,7 +348,7 @@ Actualmente ejecuto 12 pruebas automatizadas que cubren las siguientes validacio
 - Rechazo de login con correo inválido.
 - Rechazo de login con correo no registrado.
 - Registro de usuario temporal.
-- Verificación en MySQL de que la contraseña se guarda como hash bcrypt.
+- Verificación en PostgreSQL de que la contraseña se guarda como hash bcrypt.
 - Login exitoso.
 - Generación de token.
 - Actualización de `usr_ultimo_acceso` y `usr_sesion_activa` después del login.
@@ -401,8 +401,8 @@ Considero aprobado el módulo de autenticación si cumple con los siguientes cri
 
 Después de realizar este plan de pruebas, concluyo que el módulo de autenticación de Artify cumple con los criterios básicos de seguridad esperados para el proyecto. La contraseña del usuario se encripta antes de almacenarse en la base de datos mediante `bcrypt`, y durante el login se compara la contraseña ingresada contra el hash almacenado.
 
-Las pruebas realizadas me permitieron confirmar que el sistema diferencia correctamente entre credenciales válidas, usuarios inexistentes, contraseñas incorrectas y formatos de correo inválidos. Además, verifiqué que un login exitoso genera un token de autenticación y actualiza información de acceso en la tabla `USUARIO`.
+Las pruebas realizadas me permitieron confirmar que el sistema diferencia entre credenciales válidas, credenciales inválidas y formatos de correo inválidos, sin exponer si el correo existe o si falló únicamente la contraseña. Además, verifiqué que un login exitoso genera un token de autenticación y actualiza información de acceso en la tabla `USUARIO`.
 
 También confirmé mediante pruebas automatizadas que el hash almacenado no coincide con la contraseña original y que las rutas protegidas rechazan solicitudes sin token o con un token inválido. Esto fortalece la evidencia del comportamiento esperado del módulo de autenticación.
 
-Como mejora futura, considero importante mantener las pruebas automatizadas y ampliarlas progresivamente para cubrir recuperación de contraseña, bloqueo por múltiples intentos fallidos y expiración de tokens.
+Como mejora futura, considero importante mantener las pruebas automatizadas y ampliarlas progresivamente para cubrir recuperación de contraseña, variaciones del límite de intentos fallidos y más escenarios de expiración de tokens.

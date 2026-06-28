@@ -18,11 +18,52 @@ const analyticsRoutes = require('./routes/analytics.routes');
 
 // ========== APP EXPRESS ==========
 const app = express();
+const origenesPermitidos = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origen) => origen.trim())
+  .filter(Boolean);
+
+function validarOrigenCors(origen, callback) {
+  if (!origen) {
+    return callback(null, true);
+  }
+
+  if (origenesPermitidos.length === 0) {
+    return callback(null, process.env.NODE_ENV !== 'production');
+  }
+
+  return callback(null, origenesPermitidos.includes(origen));
+}
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 
 // ========== MIDDLEWARES GLOBALES ==========
-app.use(cors());
+app.use(
+  cors({
+    origin: validarOrigenCors,
+  })
+);
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+});
 app.use(express.json());
 app.use(express.text({ type: 'text/plain' }));
+
+// ========== RUTA DE SALUD ==========
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    ok: true,
+    servicio: 'artify-api',
+    entorno: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // ========== MONTAJE DE RUTAS ==========
 app.use('/api', authRoutes);

@@ -1,16 +1,14 @@
-# API REST Analytics - Artify
+# API REST Analytics - Artify SENA PostgreSQL
 
-Este módulo expone endpoints que ofrecen información sobre el comportamiento de los usuarios.
+Este módulo expone endpoints que ofrecen información agregada sobre el comportamiento de los usuarios. En esta variante los datos se consultan desde PostgreSQL mediante el backend Node.js + Express.
 
 ---
 
 ## ¿Qué es esta API?
 
-Esta API permite que un **e-commerce externo** obtenga datos sobre cómo los usuarios
-de Artify editan imágenes. Con estos datos, el e-commerce puede entender qué ediciones
-funcionan mejor para vender productos.
+Esta API permite que un sistema externo obtenga datos agregados sobre cómo los usuarios de Artify editan imágenes. Los endpoints son públicos en la versión actual y devuelven conteos y porcentajes como valores numéricos.
 
-**Ejemplo real:**
+**Ejemplo de uso:**
 - Un e-commerce nota que fotos editadas con filtro "convertir" generan 33% del uso
 - Instruye a sus vendedores a usar ese filtro
 - Sus productos se venden mejor
@@ -23,7 +21,7 @@ funcionan mejor para vender productos.
 
 **¿Qué hace?**
 
-Devuelve cuál es el filtro más usado por los usuarios de Artify
+Devuelve los tipos de operación más usados por los usuarios de Artify.
 
 **URL:** `GET /api/v1/analytics/filtros-populares`
 
@@ -63,13 +61,13 @@ http://localhost:3000/api/v1/analytics/filtros-populares
 ```
 
 **¿Qué significan los campos?**
-- `filtro` → Nombre del filtro (sepia, blanco y negro, etc.)
-- `usos` → Cuántas veces fue usado (4 veces en este caso)
-- `porcentaje` → Qué % representa del total (33.33% del total)
+- `filtro` representa el tipo de operación registrada.
+- `usos` indica cuántas veces aparece esa operación.
+- `porcentaje` indica qué proporción representa frente al total consultado.
 
 **¿Para qué lo usa el e-commerce?**
 
-Sabe que "convertir" es el filtro favorito. Puede entrenar a vendedores a usarlo.
+Identifica qué operaciones son más frecuentes y puede orientar recomendaciones de edición.
 
 ---
 
@@ -87,8 +85,6 @@ Devuelve a qué horas del día los usuarios editan más imágenes
 http://localhost:3000/api/v1/analytics/horarios-edicion
 
 **Respuesta:**
-```json
-**Respuesta (Ejemplo):**
 ```json
 {
   "ok": true,
@@ -120,13 +116,13 @@ http://localhost:3000/api/v1/analytics/horarios-edicion
 ```
 
 **¿Qué significan los campos?**
-- `hora` → Hora del día (9 = 9am, 15 = 3pm)
-- `cantidad_ediciones` → Cuántas ediciones se hicieron en esa hora
-- `porcentaje` → Qué % del total ocurrió en esa hora
+- `hora` representa la hora del día en formato de 24 horas.
+- `cantidad_ediciones` indica cuántas operaciones se registraron en esa hora.
+- `porcentaje` indica qué proporción del total ocurrió en esa hora.
 
 **¿Para qué lo usa el e-commerce?**
 
-Sabe que 9am es la hora pico. Puede enviar emails a esa hora o lanzar promociones.
+Permite identificar horarios de mayor actividad para planear campañas o soporte.
 
 ---
 
@@ -134,7 +130,7 @@ Sabe que 9am es la hora pico. Puede enviar emails a esa hora o lanzar promocione
 
 **¿Qué hace?**
 
-Devuelve qué formato de imagen es el más descargado (PNG, JPG, etc.)
+Devuelve qué formato de imagen es el más registrado como descarga o salida preferida.
 
 **URL:** `GET /api/v1/analytics/formatos-preferidos`
 
@@ -164,13 +160,13 @@ http://localhost:3000/api/v1/analytics/formatos-preferidos
 ```
 
 **¿Qué significan los campos?**
-- `formato` → Extensión del archivo (jpeg, png, webp, etc.)
-- `descargas` → Cuántas imágenes fueron descargadas en ese formato
-- `porcentaje` → Qué % del total de descargas fue en ese formato
+- `formato` representa la extensión del archivo.
+- `descargas` indica cuántas imágenes fueron registradas en ese formato.
+- `porcentaje` indica qué proporción del total corresponde a ese formato.
 
 **¿Para qué lo usa el e-commerce?**
 
-Sabe que JPEG es preferido (100%). Puede recomendar JPEG a vendedores.
+Ayuda a definir recomendaciones sobre formato de salida.
 
 ---
 
@@ -193,7 +189,7 @@ http://localhost:3000/api/v1/analytics/tasa-conversion
   "mensaje": "Tasa de conversión de sesiones",
   "data": {
     "conversionData": {
-      "tasa_conversion_porcentaje": "0.00",
+      "tasa_conversion_porcentaje": 0,
       "total_sesiones": 246,
       "sesiones_exitosas": 0
     }
@@ -205,26 +201,25 @@ http://localhost:3000/api/v1/analytics/tasa-conversion
 ```
 
 **¿Qué significan los campos?**
-- `tasa_conversion_porcentaje` → % de sesiones donde se guardaron cambios (0% = ninguno guardó)
-- `total_sesiones` → Total de sesiones abiertas (246 sesiones)
-- `sesiones_exitosas` → Cuántas llegaron a guardar (0 en este caso)
+- `tasa_conversion_porcentaje` indica el porcentaje de sesiones donde se guardaron cambios.
+- `total_sesiones` indica el total de sesiones registradas.
+- `sesiones_exitosas` indica cuántas sesiones llegaron a guardar cambios.
 
 **¿Para qué lo usa el e-commerce?**
 
-Una tasa 0% significa que hay un problema. Los usuarios abren pero no guardan.
-   Esto le ayuda a identificar problemas en la interfaz o UX.
+Una tasa baja ayuda a identificar posibles problemas de experiencia o abandono en el flujo de edición.
 
 ---
 
 ## Resumen: ¿Quién consume estos datos?
 
-**El e-commerce externo** llama a estos endpoints para entender:
+Un sistema externo llama a estos endpoints para entender:
 - Qué ediciones usan los usuarios
 - Cuándo editan
 - Qué formatos prefieren
 - Si realmente completan la tarea
 
-**Resultado:** El e-commerce optimiza su plataforma basado en datos reales.
+**Resultado:** el sistema consumidor puede optimizar recomendaciones o decisiones con base en datos reales.
 
 ---
 

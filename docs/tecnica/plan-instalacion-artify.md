@@ -39,7 +39,7 @@ Elaborar el paso a paso para instalar y preparar el entorno local necesario para
 
 ## 3. Plataforma Seleccionada
 
-Para esta evidencia selecciono Node.js como plataforma principal de desarrollo e implantación local. Esta decisión se toma porque Artify utiliza JavaScript en el backend mediante Node.js y Express, lo que permite ejecutar una API local conectada a una base de datos MySQL.
+Para esta evidencia selecciono Node.js como plataforma principal de desarrollo e implantación local. Esta decisión se toma porque Artify utiliza JavaScript en el backend mediante Node.js y Express, lo que permite ejecutar una API local conectada a una base de datos PostgreSQL.
 
 La plataforma seleccionada se complementa con los siguientes componentes:
 
@@ -47,7 +47,7 @@ La plataforma seleccionada se complementa con los siguientes componentes:
 | --- | --- |
 | Node.js | Ejecutar el backend de Artify. |
 | Express | Construir y exponer la API del sistema. |
-| MySQL | Almacenar usuarios, sesiones, configuraciones y operaciones. |
+| PostgreSQL | Almacenar usuarios, sesiones, configuraciones y operaciones. |
 | pnpm | Instalar dependencias y ejecutar scripts del backend. |
 | Git | Clonar y versionar el proyecto. |
 | Navegador web | Acceder al frontend y validar el sistema. |
@@ -59,7 +59,7 @@ Aunque existen otras alternativas para montar entornos locales, como paquetes in
 
 ## 4. Justificación de la Plataforma
 
-Node.js es una plataforma adecuada para Artify porque permite ejecutar JavaScript fuera del navegador y construir servicios backend para aplicaciones web. En este proyecto se integra con Express para crear rutas, procesar solicitudes HTTP, validar usuarios y comunicarse con MySQL.
+Node.js es una plataforma adecuada para Artify porque permite ejecutar JavaScript fuera del navegador y construir servicios backend para aplicaciones web. En este proyecto se integra con Express para crear rutas, procesar solicitudes HTTP, validar usuarios y comunicarse con PostgreSQL.
 
 Selecciono Node.js por las siguientes razones:
 
@@ -67,7 +67,7 @@ Selecciono Node.js por las siguientes razones:
 - Se integra directamente con Express.
 - Facilita la creación de APIs para el frontend.
 - Permite trabajar en un entorno local de desarrollo e implantación.
-- Es compatible con la conexión a MySQL mediante paquetes de Node.js.
+- Es compatible con la conexión a PostgreSQL mediante paquetes de Node.js.
 - Se ajusta a la arquitectura actual de Artify sin requerir cambiar de tecnología.
 
 ---
@@ -81,7 +81,7 @@ Antes de instalar Artify en un entorno local, debo verificar que el equipo tenga
 | Sistema operativo | Windows, macOS o Linux | Ejecutar herramientas de desarrollo local. |
 | Node.js | 22.13 o superior | Ejecutar el backend de Artify. |
 | pnpm | 11.1.1 | Instalar dependencias y ejecutar scripts del backend. |
-| MySQL | 8.0 o superior | Crear y consultar la base de datos `artify_db`. |
+| PostgreSQL | 15 o superior | Crear y consultar la base de datos `artify_db`. |
 | Git | Versión estable | Clonar el repositorio del proyecto. |
 | Navegador web | Chrome, Edge, Firefox, Safari u otro moderno | Abrir y probar el frontend. |
 | Editor de código | Visual Studio Code u otro editor | Revisar archivos y configuración. |
@@ -97,9 +97,9 @@ Artify se organiza como una aplicación web con separación entre frontend, back
 | --- | --- |
 | Frontend | Interfaz construida con HTML, CSS y JavaScript Vanilla. |
 | Backend | Servidor Node.js + Express encargado de la API y la lógica de negocio. |
-| Base de datos | MySQL, donde se almacena la información persistente del sistema. |
+| Base de datos | PostgreSQL, donde se almacena la información persistente del sistema. |
 | API | Conjunto de rutas que comunican el frontend con el backend. |
-| Variables de entorno | Configuración de credenciales, puerto, secreto de token y conexión a MySQL. |
+| Variables de entorno | Configuración de credenciales, puerto, secreto de token y conexión a PostgreSQL. |
 | Navegador cliente | Medio desde el cual el usuario accede a la aplicación. |
 | Servidor local | Entorno donde se ejecutan backend, frontend y base de datos durante la instalación. |
 
@@ -113,7 +113,7 @@ Antes de ejecutar Artify, debo confirmar que las herramientas instaladas respond
 node -v
 pnpm -v
 git --version
-mysql --version
+psql --version
 ```
 
 Si alguna herramienta no responde, debo instalarla o corregir su configuración antes de continuar con el despliegue local.
@@ -127,8 +127,8 @@ Si alguna herramienta no responde, debo instalarla o corregir su configuración 
 El primer paso consiste en obtener el código fuente del proyecto desde el repositorio.
 
 ```bash
-git clone https://github.com/Tecno85/artify-sena.git
-cd artify-sena
+git clone https://github.com/Tecno85/artify-sena-postgresql.git
+cd artify-sena-postgresql
 ```
 
 ### 8.2 Revisar la estructura del proyecto
@@ -158,7 +158,7 @@ pnpm install
 
 ### 8.4 Configurar variables de entorno
 
-El backend necesita un archivo `.env` dentro de `backend/`. Este archivo contiene la configuración de conexión a MySQL, credenciales administrativas, puerto del servidor y secreto usado para firmar tokens.
+El backend necesita un archivo `.env` dentro de `backend/`. Este archivo contiene la configuración de conexión a PostgreSQL, credenciales administrativas, puerto del servidor y secreto usado para firmar tokens.
 
 ```bash
 cp ../.env.example .env
@@ -167,30 +167,34 @@ cp ../.env.example .env
 Ejemplo de configuración sin datos sensibles reales:
 
 ```env
+DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=contraseña_mysql
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=contraseña_postgresql
 DB_NAME=artify_db
 ADMIN_USER=admin@artify.com
 ADMIN_PASSWORD=contraseña_admin
 TOKEN_SECRET=secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
+
+`DATABASE_URL` es la variable principal para despliegues y servicios administrados. Las variables separadas se mantienen como soporte de configuración local. `CORS_ORIGIN` define desde qué origen del frontend se permite consumir la API.
 
 #### Imagen 3. Archivo `.env` configurado
 
 ![Archivo .env configurado sin datos sensibles](./evidencias/plan-instalacion/env-sanitizado.svg)
 
-*Descripción:* En esta captura muestro la configuración necesaria para conectar el backend con MySQL y definir variables requeridas por Artify, protegiendo los datos sensibles.
+*Descripción:* En esta captura muestro la configuración necesaria para conectar el backend con PostgreSQL y definir variables requeridas por Artify, protegiendo los datos sensibles.
 
-### 8.5 Crear o seleccionar la base de datos MySQL
+### 8.5 Crear o seleccionar la base de datos PostgreSQL
 
-Artify requiere una base de datos llamada `artify_db`. Puedo crearla o seleccionarla desde la consola de MySQL o desde una herramienta gráfica como MySQL Workbench.
+Artify requiere una base de datos llamada `artify_db`. En PostgreSQL primero creo la base y después cargo el esquema del proyecto conectado a esa base.
 
-```sql
-CREATE DATABASE IF NOT EXISTS artify_db;
-USE artify_db;
+```bash
+createdb artify_db
 ```
 
 ### 8.6 Ejecutar el script SQL del proyecto
@@ -198,25 +202,30 @@ USE artify_db;
 El script principal se encuentra en:
 
 ```text
-database/artify_db.sql
+database/postgresql/schema.sql
 ```
 
 Desde la raíz del proyecto puedo importarlo con:
 
 ```bash
-mysql -u root -p < database/artify_db.sql
+psql -d artify_db -f database/postgresql/schema.sql
+psql -d artify_db -f database/postgresql/seed.sql
 ```
 
-Luego verifico las tablas:
+Este procedimiento está pensado para una base nueva o una reinstalación controlada. Si `artify_db` ya contiene información que debo conservar, primero realizo una copia de seguridad porque `schema.sql` elimina y recrea los objetos del proyecto.
+
+Luego verifico la conexión y las tablas desde `psql`:
 
 ```sql
-USE artify_db;
-SHOW TABLES;
+\l
+\c artify_db
+\dt
+\dv
 ```
 
 #### Imagen 4. Base de datos `artify_db` y tablas creadas
 
-![Base de datos artify_db y tablas creadas](./evidencias/plan-instalacion/mysql-artify.svg)
+![Base de datos artify_db y tablas creadas](./evidencias/plan-instalacion/postgresql-artify.svg)
 
 *Descripción:* En esta captura evidencio que la base de datos fue creada y que las tablas necesarias para Artify están disponibles.
 
@@ -228,10 +237,10 @@ Después de instalar dependencias y configurar la base de datos, inicio el backe
 pnpm start
 ```
 
-La salida esperada debe indicar que el servidor está activo y que la conexión a MySQL fue correcta.
+La salida esperada debe indicar que el servidor está activo y que la conexión a PostgreSQL fue correcta.
 
 ```text
-Conectado a MySQL correctamente
+Conectado a PostgreSQL correctamente
 Servidor corriendo en http://localhost:3000
 ```
 
@@ -275,16 +284,20 @@ Los siguientes comandos resumen las acciones principales para instalar y ejecuta
 
 | Acción | Comando |
 | --- | --- |
-| Clonar repositorio | `git clone https://github.com/Tecno85/artify-sena.git` |
-| Entrar al proyecto | `cd artify-sena` |
+| Clonar repositorio | `git clone https://github.com/Tecno85/artify-sena-postgresql.git` |
+| Entrar al proyecto | `cd artify-sena-postgresql` |
 | Entrar al backend | `cd backend` |
 | Instalar dependencias | `pnpm install` |
 | Iniciar backend | `pnpm start` |
 | Validar sintaxis del backend | `pnpm run check` |
 | Ejecutar pruebas automatizadas | `pnpm test` |
-| Importar base de datos | `mysql -u root -p < database/artify_db.sql` |
-| Seleccionar base de datos | `USE artify_db;` |
-| Listar tablas | `SHOW TABLES;` |
+| Crear base de datos PostgreSQL | `createdb artify_db` |
+| Importar base de datos | `psql -d artify_db -f database/postgresql/schema.sql` |
+| Cargar datos de referencia | `psql -d artify_db -f database/postgresql/seed.sql` |
+| Listar bases disponibles | `\l` |
+| Seleccionar base de datos | `\c artify_db` |
+| Listar tablas | `\dt` |
+| Listar vistas | `\dv` |
 | Servir frontend | `npx http-server frontend -p 8080` |
 
 ---
@@ -311,18 +324,18 @@ El plan de instalación también debe considerar requisitos no funcionales que a
 
 | Requisito no funcional | Relación con la instalación local |
 | --- | --- |
-| Rendimiento | El equipo local debe contar con recursos suficientes para ejecutar backend, MySQL y navegador. |
+| Rendimiento | El equipo local debe contar con recursos suficientes para ejecutar backend, PostgreSQL y navegador. |
 | Seguridad | El archivo `.env` debe proteger credenciales y no debe subirse al repositorio. |
-| Disponibilidad local | Backend, frontend y MySQL deben estar activos durante la prueba. |
+| Disponibilidad local | Backend, frontend y PostgreSQL deben estar activos durante la prueba. |
 | Mantenibilidad | El uso de `pnpm`, scripts y documentación facilita repetir la instalación. |
 | Escalabilidad básica | La separación entre frontend, backend y base de datos permite crecer en etapas posteriores. |
-| Compatibilidad | El proyecto debe ejecutarse en sistemas compatibles con Node.js, MySQL y navegadores modernos. |
+| Compatibilidad | El proyecto debe ejecutarse en sistemas compatibles con Node.js, PostgreSQL y navegadores modernos. |
 
 ---
 
 ## 12. Consideración Sobre Máquinas Virtuales y Contenedores
 
-En esta evidencia realizo el despliegue local directo usando Node.js, MySQL y un servidor HTTP para el frontend. Esta opción es coherente con la arquitectura actual de Artify y permite montar el producto sin agregar capas adicionales.
+En esta evidencia realizo el despliegue local directo usando Node.js, PostgreSQL y un servidor HTTP para el frontend. Esta opción es coherente con la arquitectura actual de Artify y permite montar el producto sin agregar capas adicionales.
 
 En una etapa futura también sería posible usar una máquina virtual o contenedores para aislar el entorno, controlar versiones de servicios y reproducir la instalación con mayor precisión. Sin embargo, para este plan selecciono una instalación local directa porque permite verificar de forma clara los componentes principales del proyecto.
 
@@ -330,7 +343,7 @@ En una etapa futura también sería posible usar una máquina virtual o contened
 
 ## 13. Conclusión
 
-Después de elaborar este plan de instalación, concluyo que Artify puede desplegarse localmente de forma ordenada si se preparan correctamente Node.js, pnpm, MySQL, Git, el backend, la base de datos y el frontend. La selección de Node.js como plataforma principal es adecuada porque coincide con la arquitectura real del proyecto y permite ejecutar el backend desarrollado con Express.
+Después de elaborar este plan de instalación, concluyo que Artify puede desplegarse localmente de forma ordenada si se preparan correctamente Node.js, pnpm, PostgreSQL, Git, el backend, la base de datos y el frontend. La selección de Node.js como plataforma principal es adecuada porque coincide con la arquitectura real del proyecto y permite ejecutar el backend desarrollado con Express.
 
 Este informe me permite organizar el proceso de instalación paso a paso, identificar los componentes técnicos necesarios y definir evidencias visuales para demostrar el montaje local del producto. Con estas actividades puedo validar que Artify funciona como aplicación web y que sus componentes principales se comunican correctamente en un entorno local.
 
@@ -340,7 +353,7 @@ Este informe me permite organizar el proceso de instalación paso a paso, identi
 
 - Node.js Documentation. Documentación oficial del entorno de ejecución Node.js.
 - Express Documentation. Documentación oficial del framework Express.
-- MySQL Documentation. Documentación oficial de MySQL y sus herramientas.
+- PostgreSQL Documentation. Documentación oficial de PostgreSQL y sus herramientas.
 - pnpm Documentation. Documentación oficial del gestor de paquetes pnpm.
 - Git Documentation. Documentación oficial del sistema de control de versiones Git.
 - Mozilla Developer Network. Referencias sobre aplicaciones web, JavaScript y navegadores.

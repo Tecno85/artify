@@ -27,6 +27,6 @@
   <text class="cmd" x="112" y="224">$ pnpm run check</text>
   <text class="ok" x="112" y="260">server.js sin errores de sintaxis.</text>
   <text class="cmd" x="112" y="306">$ pnpm test</text>
-  <text class="text" x="112" y="342">tests 12    pass 12    fail 0</text>
-  <text class="ok" x="112" y="388">Registro, login, tokens y rutas protegidas verificados.</text>
+  <text class="text" x="112" y="342">tests 13    pass 13    fail 0</text>
+  <text class="ok" x="112" y="388">Health, registro, login, tokens y rutas protegidas verificados.</text>
 </svg>

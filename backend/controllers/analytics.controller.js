@@ -6,11 +6,17 @@ function filtrosPopulares(req, res) {
   const query = `
     SELECT
       opr_tipo_operacion as filtro,
-      COUNT(*) as usos,
+      COUNT(*)::int as usos,
       COALESCE(
-        ROUND(100 * COUNT(*) / NULLIF((SELECT COUNT(*) FROM OPERACION), 0), 2),
+        ROUND(
+          100.0 * COUNT(*) / NULLIF(
+            (SELECT COUNT(*) FROM OPERACION WHERE opr_estado_operacion = 'completada'),
+            0
+          ),
+          2
+        ),
         0
-      ) as porcentaje
+      )::float as porcentaje
     FROM OPERACION
     WHERE opr_estado_operacion = 'completada'
     GROUP BY opr_tipo_operacion
@@ -45,11 +51,17 @@ function horariosEdicion(req, res) {
   const query = `
     SELECT
       EXTRACT(HOUR FROM opr_fecha_hora)::int as hora,
-      COUNT(*) as cantidad_ediciones,
+      COUNT(*)::int as cantidad_ediciones,
       COALESCE(
-        ROUND(100 * COUNT(*) / NULLIF((SELECT COUNT(*) FROM OPERACION), 0), 2),
+        ROUND(
+          100.0 * COUNT(*) / NULLIF(
+            (SELECT COUNT(*) FROM OPERACION WHERE opr_estado_operacion = 'completada'),
+            0
+          ),
+          2
+        ),
         0
-      ) as porcentaje
+      )::float as porcentaje
     FROM OPERACION
     WHERE opr_estado_operacion = 'completada'
     GROUP BY EXTRACT(HOUR FROM opr_fecha_hora)
@@ -83,11 +95,17 @@ function formatosPreferidos(req, res) {
   const query = `
     SELECT
       img_formato as formato,
-      COUNT(*) as descargas,
+      COUNT(*)::int as descargas,
       COALESCE(
-        ROUND(100 * COUNT(*) / NULLIF((SELECT COUNT(*) FROM IMAGEN), 0), 2),
+        ROUND(
+          100.0 * COUNT(*) / NULLIF(
+            (SELECT COUNT(*) FROM IMAGEN WHERE img_estado_imagen = 'activa'),
+            0
+          ),
+          2
+        ),
         0
-      ) as porcentaje
+      )::float as porcentaje
     FROM IMAGEN
     WHERE img_estado_imagen = 'activa'
     GROUP BY img_formato
@@ -122,13 +140,13 @@ function tasaConversion(req, res) {
     SELECT
       COALESCE(
         ROUND(
-          100 * SUM(CASE WHEN ses_cambios_guardados = true THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0),
+          100.0 * SUM(CASE WHEN ses_cambios_guardados = true THEN 1 ELSE 0 END) / NULLIF(COUNT(*), 0),
           2
         ),
         0
-      ) as tasa_conversion_porcentaje,
-      COUNT(*) as total_sesiones,
-      COALESCE(SUM(CASE WHEN ses_cambios_guardados = true THEN 1 ELSE 0 END), 0) as sesiones_exitosas
+      )::float as tasa_conversion_porcentaje,
+      COUNT(*)::int as total_sesiones,
+      COALESCE(SUM(CASE WHEN ses_cambios_guardados = true THEN 1 ELSE 0 END), 0)::int as sesiones_exitosas
     FROM SESION_EDICION
     WHERE ses_estado_sesion = 'finalizada'
   `;

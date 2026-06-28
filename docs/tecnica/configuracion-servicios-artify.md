@@ -10,7 +10,7 @@
 
 ## 1. Introducción
 
-En este informe documento el proceso de configuración de los servicios necesarios para ejecutar Artify en un equipo cliente o entorno local. Para esta evidencia tomo como referencia una instalación tradicional, sin contenedores, porque este enfoque permite identificar de forma directa la función de MySQL, Node.js, Express, pnpm y el servidor HTTP usado por el frontend.
+En este informe documento el proceso de configuración de los servicios necesarios para ejecutar Artify en un equipo cliente o entorno local. Para esta evidencia tomo como referencia una instalación tradicional, sin contenedores, porque este enfoque permite identificar de forma directa la función de PostgreSQL, Node.js, Express, pnpm y el servidor HTTP usado por el frontend.
 
 Configuro la base de datos, el servidor de aplicaciones y las variables de entorno. Después verifico la comunicación entre los componentes mediante consultas SQL, respuestas HTTP, pruebas automatizadas y la carga real de la interfaz en el navegador.
 
@@ -26,7 +26,7 @@ Configuro la base de datos, el servidor de aplicaciones y las variables de entor
 
 ## 2. Objetivo
 
-Documentar y verificar la configuración tradicional del servidor de base de datos MySQL, el servidor de aplicaciones Node.js + Express y el frontend de Artify, incluyendo las variables de entorno, dependencias, puertos y pruebas necesarias para confirmar el funcionamiento local del sistema.
+Documentar y verificar la configuración tradicional del servidor de base de datos PostgreSQL, el servidor de aplicaciones Node.js + Express y el frontend de Artify, incluyendo las variables de entorno, dependencias, puertos y pruebas necesarias para confirmar el funcionamiento local del sistema.
 
 ---
 
@@ -35,7 +35,7 @@ Documentar y verificar la configuración tradicional del servidor de base de dat
 En esta evidencia realizo las siguientes actividades:
 
 - Verifico las herramientas instaladas en el equipo.
-- Compruebo que el servicio MySQL esté activo.
+- Compruebo que el servicio PostgreSQL esté activo.
 - Verifico la base de datos `artify_db` y sus tablas.
 - Reviso la configuración sanitizada de las variables de entorno.
 - Compruebo las dependencias del backend con pnpm.
@@ -69,12 +69,12 @@ La configuración local mantiene separados los componentes principales de Artify
 1. El navegador solicita el frontend por HTTP en el puerto `8080`.
 2. El frontend envía solicitudes a la API de Node.js + Express en el puerto `3000`.
 3. El backend procesa la autenticación y la lógica del sistema.
-4. El backend se conecta a MySQL mediante las variables del archivo `backend/.env`.
-5. MySQL conserva la información persistente en `artify_db` mediante su puerto habitual `3306`.
+4. El backend se conecta a PostgreSQL mediante las variables del archivo `backend/.env`.
+5. PostgreSQL conserva la información persistente en `artify_db` mediante su puerto habitual `5432`.
 
 | Servicio | Dirección o puerto local | Función |
 | --- | --- | --- |
-| MySQL | `127.0.0.1:3306` | Persistencia de usuarios, configuraciones, imágenes, operaciones y sesiones. |
+| PostgreSQL | `127.0.0.1:5432` | Persistencia de usuarios, configuraciones, imágenes, operaciones y sesiones. |
 | Backend Express | `http://localhost:3000` | API, autenticación y acceso a la base de datos. |
 | Frontend | `http://127.0.0.1:8080` | Interfaz web usada por el cliente. |
 
@@ -87,7 +87,7 @@ Antes de configurar los servicios, verifico que las herramientas respondan desde
 ```bash
 node --version
 pnpm --version
-mysql --version
+psql --version
 git --version
 ```
 
@@ -95,7 +95,7 @@ git --version
 | --- | --- | --- | --- | --- |
 | Node.js | Ejecutar el backend. | 22.13 o superior | 26.0.0 | Verificado |
 | pnpm | Administrar dependencias y scripts. | 11.1.1 | 11.1.1 | Verificado |
-| MySQL Community Server | Ejecutar la base de datos. | 8.0 o superior | 8.4.7 | Verificado |
+| PostgreSQL | Ejecutar la base de datos. | 15 o superior | 15.18 | Verificado |
 | Git | Gestionar el repositorio. | Versión estable | 2.50.1 | Verificado |
 | Navegador web | Abrir y probar el frontend. | Navegador moderno | Google Chrome | Verificado |
 | Terminal | Ejecutar comandos y servicios. | Incluida en el sistema | Terminal de macOS | Verificado |
@@ -105,74 +105,82 @@ git --version
 
 ![Versiones verificadas de las herramientas](./evidencias/configuracion-servicios/versiones-herramientas.svg)
 
-*Descripción:* En esta evidencia muestro las versiones de Node.js, pnpm, MySQL y Git disponibles en el equipo utilizado para configurar Artify.
+*Descripción:* En esta evidencia muestro las versiones de Node.js, pnpm, PostgreSQL y Git disponibles en el equipo utilizado para configurar Artify.
 
 ---
 
 ## 7. Configuración del Servidor de Base de Datos
 
-### 7.1 Verificar e iniciar MySQL
+### 7.1 Verificar e iniciar PostgreSQL
 
-Primero confirmo que MySQL esté instalado:
-
-```bash
-mysql --version
-```
-
-Después inicio el servicio mediante la herramienta correspondiente al sistema operativo. En macOS con la instalación oficial puedo usar el panel de preferencias de MySQL o el script del servicio:
+Primero confirmo que PostgreSQL esté instalado:
 
 ```bash
-sudo /usr/local/mysql/support-files/mysql.server start
+psql --version
 ```
 
-En Windows puedo iniciar `MySQL80` desde Servicios y, en distribuciones Linux con `systemd`, puedo usar:
+Después inicio el servicio mediante la herramienta correspondiente al sistema operativo. En macOS puedo usar Homebrew o `pg_ctl`, según la instalación:
 
 ```bash
-sudo systemctl start mysql
+brew services start postgresql@15
 ```
 
-El nombre y la forma de inicio pueden cambiar según la instalación. Para esta evidencia comprobé que el proceso `mysqld` estaba activo y aceptaba una conexión autenticada en el puerto local.
+En Windows puedo iniciar el servicio PostgreSQL desde Servicios y, en distribuciones Linux con `systemd`, puedo usar:
 
-#### Imagen 2. Servicio MySQL activo
+```bash
+sudo systemctl start postgresql
+```
 
-![Servicio MySQL activo](./evidencias/configuracion-servicios/mysql-servicio-activo.svg)
+El nombre y la forma de inicio pueden cambiar según la instalación. Para esta evidencia comprobé que el proceso `postgres` estaba activo y aceptaba una conexión autenticada en el puerto local.
 
-*Descripción:* En esta evidencia confirmo que el proceso de MySQL se encuentra activo y que el servidor acepta una conexión autenticada desde el equipo local.
+#### Imagen 2. Servicio PostgreSQL activo
 
-### 7.2 Acceder a MySQL
+![Servicio PostgreSQL activo](./evidencias/configuracion-servicios/postgresql-servicio-activo.svg)
+
+*Descripción:* En esta evidencia confirmo que el proceso de PostgreSQL se encuentra activo y que el servidor acepta una conexión autenticada desde el equipo local.
+
+### 7.2 Acceder a PostgreSQL
 
 Ingreso con un usuario autorizado. No escribo la contraseña dentro del comando para evitar que quede visible en el historial:
 
 ```bash
-mysql -h 127.0.0.1 -P 3306 -u usuario -p
+psql -h 127.0.0.1 -p 5432 -U usuario -d artify_db
 ```
 
-Después de ejecutar el comando, MySQL solicita la contraseña de forma interactiva.
+Después de ejecutar el comando, PostgreSQL solicita la contraseña de forma interactiva.
 
-### 7.3 Crear o importar la base de datos
+### 7.3 Crear la base de datos y cargar el esquema
 
-El script oficial del proyecto se encuentra en:
-
-```text
-database/artify_db.sql
-```
-
-Si la base de datos todavía no existe, puedo importarla desde la raíz del proyecto:
+En PostgreSQL la base de datos debe existir antes de cargar `schema.sql`. Primero creo la base:
 
 ```bash
-mysql -u usuario -p < database/artify_db.sql
+createdb artify_db
 ```
 
-Este script crea `artify_db` y sus objetos. Antes de importar nuevamente debo comprobar el estado de la base existente y realizar una copia de seguridad si contiene información necesaria.
+Después cargo el esquema oficial del proyecto:
+
+```text
+database/postgresql/schema.sql
+```
+
+Desde la raíz del proyecto ejecuto:
+
+```bash
+psql -d artify_db -f database/postgresql/schema.sql
+psql -d artify_db -f database/postgresql/seed.sql
+```
+
+El archivo `schema.sql` crea tablas, claves, restricciones, índices y la vista principal dentro de `artify_db`. El archivo `seed.sql` carga datos mínimos de referencia. Antes de ejecutar nuevamente estos scripts debo comprobar el estado de la base existente y realizar una copia de seguridad si contiene información necesaria, porque el esquema elimina y vuelve a crear los objetos del proyecto.
 
 ### 7.4 Verificar la base y sus tablas
 
 Ejecuto las siguientes consultas:
 
 ```sql
-SHOW DATABASES;
-USE artify_db;
-SHOW TABLES;
+\l
+\c artify_db
+\dt
+\dv
 ```
 
 La verificación realizada encontró los siguientes objetos:
@@ -186,28 +194,28 @@ La verificación realizada encontró los siguientes objetos:
 
 #### Imagen 3. Base de datos `artify_db`
 
-![Base de datos artify_db verificada](./evidencias/configuracion-servicios/mysql-base-artify.svg)
+![Base de datos artify_db verificada](./evidencias/configuracion-servicios/postgresql-base-artify.svg)
 
 *Descripción:* En esta evidencia presento el resultado de seleccionar `artify_db` y consultar sus tablas y vista principal.
 
 ---
 
-## 8. Especificaciones de Conexión con MySQL
+## 8. Especificaciones de Conexión con PostgreSQL
 
 Para que el backend se conecte correctamente, verifico los siguientes elementos:
 
 | Elemento | Especificación |
 | --- | --- |
-| Servicio | MySQL Community Server 8.0 o superior. |
+| Servicio | PostgreSQL 15 o superior. |
 | Host local | `localhost` o `127.0.0.1`. |
-| Puerto habitual | `3306`. |
+| Puerto habitual | `5432`. |
 | Base de datos | `artify_db`. |
-| Usuario | Usuario de MySQL con acceso a la base. |
+| Usuario | Usuario de PostgreSQL con acceso a la base. |
 | Contraseña | Credencial local protegida. |
-| Controlador de Node.js | `mysql2`. |
-| Codificación del esquema | `utf8mb4`. |
+| Controlador de Node.js | `pg`. |
+| Codificación del esquema | `UTF8`. |
 
-Confirmo que las credenciales definidas en `backend/.env` correspondan con un usuario real de MySQL y que dicho usuario pueda consultar y modificar los objetos requeridos por Artify.
+Confirmo que las credenciales definidas en `backend/.env` correspondan con un usuario real de PostgreSQL y que dicho usuario pueda consultar y modificar los objetos requeridos por Artify.
 
 ---
 
@@ -218,8 +226,8 @@ Confirmo que las credenciales definidas en `backend/.env` correspondan con un us
 Si el repositorio aún no está disponible en el equipo cliente, puedo obtenerlo con:
 
 ```bash
-git clone https://github.com/Tecno85/artify-sena.git
-cd artify-sena
+git clone https://github.com/Tecno85/artify-sena-postgresql.git
+cd artify-sena-postgresql
 ```
 
 En esta evidencia trabajo sobre el repositorio local existente.
@@ -232,19 +240,23 @@ El proyecto incluye `.env.example` como referencia. Creo el archivo local dentro
 cp .env.example backend/.env
 ```
 
+Si ejecuto el comando desde la carpeta `backend/`, uso `cp ../.env.example .env`.
+
 Luego reemplazo los valores de ejemplo por la configuración del equipo, sin publicar credenciales reales.
 
 | Variable | Descripción | Ejemplo sanitizado | Observación |
 | --- | --- | --- | --- |
-| `DB_HOST` | Dirección del servidor MySQL. | `localhost` | Puede usarse `127.0.0.1` según la conexión. |
-| `DB_USER` | Usuario autorizado en MySQL. | `usuario_artify` | No debe publicarse si identifica una cuenta real. |
-| `DB_PASSWORD` | Contraseña del usuario de MySQL. | `********` | Valor sensible. |
+| `DB_HOST` | Dirección del servidor PostgreSQL. | `localhost` | Puede usarse `127.0.0.1` según la conexión. |
+| `DB_USER` | Usuario autorizado en PostgreSQL. | `usuario_artify` | No debe publicarse si identifica una cuenta real. |
+| `DB_PASSWORD` | Contraseña del usuario de PostgreSQL. | `********` | Valor sensible. |
 | `DB_NAME` | Base de datos usada por el proyecto. | `artify_db` | Debe coincidir con el esquema importado. |
+| `DATABASE_URL` | Cadena completa de conexión PostgreSQL. | `postgresql://usuario:********@host:5432/artify_db` | Es la opción principal para despliegues como Render o Neon. |
 | `ADMIN_USER` | Correo del administrador de Artify. | `admin@ejemplo.com` | Dato de acceso administrativo. |
 | `ADMIN_PASSWORD` | Contraseña administrativa. | `********` | Debe ser segura y diferente entre entornos. |
 | `TOKEN_SECRET` | Secreto para firmar tokens. | `********` | Debe ser largo, aleatorio y privado. |
 | `PORT` | Puerto del backend. | `3000` | Debe estar disponible. |
 | `NODE_ENV` | Tipo de entorno. | `development` | En producción debe configurarse como corresponda. |
+| `CORS_ORIGIN` | Orígenes autorizados para consumir la API. | `http://localhost:8080` | En producción debe coincidir con la URL pública del frontend. |
 
 #### Imagen 4. Variables de entorno
 
@@ -281,22 +293,22 @@ La salida esperada es:
 
 ```text
 Servidor corriendo en http://localhost:3000
-Conectado a MySQL correctamente
+Conectado a PostgreSQL correctamente
 ```
 
-Esta salida confirma que Express está escuchando en el puerto configurado y que `mysql2` pudo establecer la conexión con `artify_db`.
+Esta salida confirma que Express está escuchando en el puerto configurado y que `pg` pudo establecer la conexión con `artify_db`.
 
 #### Imagen 5. Dependencias y pruebas del backend
 
 ![Dependencias y pruebas del backend verificadas](./evidencias/configuracion-servicios/dependencias-pruebas.svg)
 
-*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día, la sintaxis es válida y las doce pruebas automatizadas finalizaron correctamente.
+*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día, la sintaxis es válida y las trece pruebas automatizadas finalizaron correctamente.
 
 #### Imagen 6. Backend conectado y API disponible
 
 ![Backend de Artify y API funcionando](./evidencias/configuracion-servicios/backend-api.svg)
 
-*Descripción:* En esta evidencia confirmo que el backend se conectó a MySQL, escuchó en el puerto `3000` y respondió una solicitud de la API con estado HTTP `200`.
+*Descripción:* En esta evidencia confirmo que el backend se conectó a PostgreSQL, escuchó en el puerto `3000` y respondió una solicitud de la API con estado HTTP `200`.
 
 ---
 
@@ -320,7 +332,7 @@ Compruebo los siguientes puntos:
 - Los recursos CSS, JavaScript e imágenes aparecen correctamente.
 - Los enlaces de inicio de sesión y registro están disponibles.
 - El frontend puede comunicarse con la API local en el puerto `3000`.
-- El backend y MySQL permanecen activos durante las pruebas.
+- El backend y PostgreSQL permanecen activos durante las pruebas.
 
 #### Imagen 7. Frontend de Artify
 
@@ -334,7 +346,15 @@ Compruebo los siguientes puntos:
 
 ### 11.1 Prueba de la API
 
-Realizo una solicitud a un endpoint público:
+Realizo primero una solicitud al endpoint de salud del backend:
+
+```bash
+curl http://127.0.0.1:3000/health
+```
+
+La respuesta esperada contiene `ok: true` y confirma que Express está activo sin depender de una consulta a PostgreSQL.
+
+Después realizo una solicitud a un endpoint público que sí consulta información de la base de datos:
 
 ```bash
 curl http://127.0.0.1:3000/api/v1/analytics/filtros-populares
@@ -354,13 +374,14 @@ pnpm test
 El resultado obtenido fue:
 
 ```text
-tests 12
-pass 12
+tests 13
+pass 13
 fail 0
 ```
 
 La suite comprobó:
 
+- Respuesta del endpoint público de salud.
 - Respuesta del endpoint público de analítica.
 - Validación de correos.
 - Registro y login de usuario.
@@ -388,16 +409,17 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 
 | Elemento verificado | Resultado esperado | Evidencia | Estado |
 | --- | --- | --- | --- |
-| Herramientas del equipo | Node.js, pnpm, MySQL y Git disponibles. | Evidencia 1 | Verificado |
-| Servicio MySQL | Proceso activo y conexión autenticada. | Evidencia 2 | Verificado |
+| Herramientas del equipo | Node.js, pnpm, PostgreSQL y Git disponibles. | Evidencia 1 | Verificado |
+| Servicio PostgreSQL | Proceso activo y conexión autenticada. | Evidencia 2 | Verificado |
 | Base de datos | `artify_db` seleccionada y objetos disponibles. | Evidencia 3 | Verificado |
 | Variables de entorno | Archivo local completo y valores sensibles protegidos. | Evidencia 4 | Verificado |
 | Dependencias | Lockfile consistente y paquetes al día. | Evidencia 5 | Verificado |
 | Sintaxis del backend | `pnpm run check` finaliza sin errores. | Evidencia 5 | Verificado |
-| Pruebas automatizadas | Doce pruebas aprobadas y cero fallos. | Evidencia 5 | Verificado |
+| Pruebas automatizadas | Trece pruebas aprobadas y cero fallos. | Evidencia 5 | Verificado |
 | Servidor de aplicaciones | Express activo en el puerto `3000`. | Evidencia 6 | Verificado |
-| Conexión backend-MySQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
-| Endpoint de la API | Respuesta HTTP `200` y JSON válido. | Evidencia 6 | Verificado |
+| Conexión backend-PostgreSQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
+| Endpoint de salud | Respuesta HTTP `200` y JSON válido en `/health`. | Evidencia 6 | Verificado |
+| Endpoint de la API | Respuesta HTTP `200` y JSON válido en analytics. | Evidencia 6 | Verificado |
 | Servidor del frontend | Interfaz disponible en el puerto `8080`. | Evidencia 7 | Verificado |
 | Flujo de autenticación | Registro y login aprobados por la suite. | Evidencia 5 | Verificado |
 | Limpieza de datos temporales | Usuarios de prueba eliminados por la suite. | Resultado de `pnpm test` | Verificado |
@@ -408,11 +430,11 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 
 Considero que la configuración cumple la evidencia cuando:
 
-1. MySQL se encuentra activo y `artify_db` puede seleccionarse.
+1. PostgreSQL se encuentra activo y `artify_db` puede seleccionarse.
 2. Las tablas y la vista del proyecto están disponibles.
 3. El archivo `backend/.env` contiene todas las variables requeridas.
 4. Las dependencias corresponden con `pnpm-lock.yaml`.
-5. El backend inicia y establece conexión con MySQL.
+5. El backend inicia y establece conexión con PostgreSQL.
 6. La API responde por el puerto `3000`.
 7. El frontend carga por HTTP en el puerto `8080`.
 8. Las pruebas automatizadas finalizan sin fallos.
@@ -430,8 +452,8 @@ Durante la configuración aplico las siguientes medidas:
 - Oculto `DB_USER`, `DB_PASSWORD`, `ADMIN_USER`, `ADMIN_PASSWORD` y `TOKEN_SECRET` en las evidencias.
 - Uso un `TOKEN_SECRET` largo, aleatorio y diferente para cada entorno.
 - Verifico que las contraseñas de usuarios se almacenen mediante hash de bcryptjs.
-- Limito las credenciales de MySQL a los permisos necesarios para la aplicación.
-- Mantengo Node.js, pnpm, MySQL y dependencias en versiones compatibles y actualizadas.
+- Limito las credenciales de PostgreSQL a los permisos necesarios para la aplicación.
+- Mantengo Node.js, pnpm, PostgreSQL y dependencias en versiones compatibles y actualizadas.
 - No publico puertos de desarrollo directamente en Internet.
 
 ---
@@ -440,25 +462,27 @@ Durante la configuración aplico las siguientes medidas:
 
 | Problema | Posible causa | Verificación y solución |
 | --- | --- | --- |
-| MySQL no inicia | Servicio detenido, permisos o error del directorio de datos. | Revisar el servicio y el registro de errores de MySQL; iniciarlo con la herramienta del sistema. |
-| `Can't connect to MySQL server` | Host, puerto o servicio incorrectos. | Confirmar `DB_HOST`, puerto `3306` y estado de `mysqld`. |
-| `Access denied for user` | Usuario o contraseña incorrectos. | Revisar credenciales sin publicarlas y comprobar permisos sobre `artify_db`. |
-| `Unknown database` | La base no fue importada o `DB_NAME` es incorrecto. | Ejecutar el script SQL y confirmar `SHOW DATABASES;`. |
-| No aparecen tablas | No se seleccionó la base o falló la importación. | Ejecutar `USE artify_db;` y `SHOW TABLES;`. |
+| PostgreSQL no inicia | Servicio detenido, permisos o error del directorio de datos. | Revisar el servicio y el registro de errores de PostgreSQL; iniciarlo con la herramienta del sistema. |
+| `Can't connect to PostgreSQL server` | Host, puerto o servicio incorrectos. | Confirmar `DB_HOST`, puerto `5432` y estado de `postgres`. |
+| `password authentication failed` | Usuario o contraseña incorrectos. | Revisar credenciales sin publicarlas y comprobar permisos sobre `artify_db`. |
+| `database does not exist` | La base no fue creada o `DB_NAME` es incorrecto. | Crear la base y confirmar con `\l`. |
+| No aparecen tablas | No se cargó el esquema o se conectó a otra base. | Ejecutar `\c artify_db` y `\dt`. |
 | `pnpm: command not found` | pnpm no está instalado o no está en el `PATH`. | Instalar la versión indicada y abrir una terminal nueva. |
 | Dependencias faltantes | No se ejecutó `pnpm install`. | Ejecutar el comando dentro de `backend/`. |
 | El puerto `3000` está ocupado | Otro proceso usa el puerto del backend. | Detener el proceso o definir otro `PORT` y actualizar la configuración del frontend. |
-| El frontend no consume la API | Backend detenido o dirección incorrecta. | Confirmar la API en `http://localhost:3000`. |
+| `/health` no responde | Backend detenido o puerto incorrecto. | Ejecutar `pnpm start` dentro de `backend/` y revisar logs. |
+| `/health` responde pero analytics falla | PostgreSQL detenido, variables incompletas o esquema sin cargar. | Revisar `backend/.env`, conexión PostgreSQL y objetos de `artify_db`. |
+| El frontend no consume la API | Backend detenido, dirección incorrecta o CORS mal configurado. | Confirmar la API en `http://localhost:3000` y revisar `CORS_ORIGIN`. |
 | Login o registro falla | Error de conexión, datos inválidos o esquema incompleto. | Revisar terminal del backend, tabla `USUARIO` y respuesta de la API. |
-| Las pruebas fallan | Servicio MySQL detenido o variables incompletas. | Iniciar MySQL, revisar `backend/.env` y ejecutar nuevamente `pnpm test`. |
+| Las pruebas fallan | Servicio PostgreSQL detenido o variables incompletas. | Iniciar PostgreSQL, revisar `backend/.env` y ejecutar nuevamente `pnpm test`. |
 
 ---
 
 ## 16. Conclusión
 
-Después de realizar la configuración, concluyo que Artify puede ejecutarse correctamente mediante una instalación tradicional en un equipo cliente. La base de datos `artify_db`, el servidor MySQL, el backend Node.js + Express y el frontend web quedaron disponibles y comunicados mediante los puertos definidos para el entorno local.
+Después de realizar la configuración, concluyo que Artify puede ejecutarse correctamente mediante una instalación tradicional en un equipo cliente. La base de datos `artify_db`, el servidor PostgreSQL, el backend Node.js + Express y el frontend web quedaron disponibles y comunicados mediante los puertos definidos para el entorno local.
 
-La verificación práctica me permitió comprender cómo las variables de entorno conectan el backend con MySQL, cómo pnpm mantiene las dependencias y cómo las pruebas comprueban el registro, el inicio de sesión, los tokens y las rutas protegidas. También confirmé que la interfaz puede abrirse desde el navegador y que la API responde correctamente.
+La verificación práctica me permitió comprender cómo las variables de entorno conectan el backend con PostgreSQL, cómo pnpm mantiene las dependencias y cómo las pruebas comprueban el registro, el inicio de sesión, los tokens y las rutas protegidas. También confirmé que la interfaz puede abrirse desde el navegador y que la API responde correctamente.
 
 Este procedimiento prepara el proyecto para que otro desarrollador o compañero pueda instalarlo, configurarlo y comprobar su funcionamiento sin depender de contenedores.
 
@@ -469,7 +493,7 @@ Este procedimiento prepara el proyecto para que otro desarrollador o compañero 
 - Node.js Documentation. Documentación oficial del entorno de ejecución Node.js.
 - Express Documentation. Documentación oficial del framework Express.
 - pnpm Documentation. Documentación oficial del gestor de paquetes pnpm.
-- MySQL Reference Manual. Documentación oficial de MySQL Community Server.
+- PostgreSQL Reference Manual. Documentación oficial de PostgreSQL.
 - Git Documentation. Documentación oficial del sistema de control de versiones Git.
 - dotenv Documentation. Referencia para el uso de variables de entorno en Node.js.
 - Mozilla Developer Network. Referencias sobre HTTP, JavaScript y aplicaciones web.

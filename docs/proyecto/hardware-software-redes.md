@@ -44,7 +44,7 @@ La plataforma seleccionada se compone de:
 | Entorno de ejecución del usuario | Navegador web moderno |
 | Entorno de trabajo técnico | macOS con herramientas de desarrollo |
 | Backend | Node.js + Express |
-| Base de datos | MySQL |
+| Base de datos | PostgreSQL |
 | Control de versiones | Git y GitHub |
 
 ---
@@ -55,14 +55,14 @@ macOS es un sistema operativo adecuado para el alistamiento técnico porque perm
 
 Para esta evidencia, las características relevantes del sistema operativo seleccionado son:
 
-- Permite instalar y ejecutar herramientas de desarrollo como Node.js, pnpm, Git y MySQL.
+- Permite instalar y ejecutar herramientas de desarrollo como Node.js, pnpm, Git y PostgreSQL.
 - Incluye una terminal que facilita la ejecución de comandos, pruebas y scripts.
 - Soporta navegadores modernos para probar aplicaciones web.
 - Permite trabajar con redes locales, puertos, servicios y conexiones HTTP.
 - Facilita la integración con editores de código y sistemas de control de versiones.
 - Permite verificar servicios locales, como backend, frontend y base de datos.
 
-En el caso de Artify, estas características permiten preparar el backend, servir el frontend, conectarse a MySQL y verificar que la aplicación responda correctamente desde el navegador.
+En el caso de Artify, estas características permiten preparar el backend, servir el frontend, conectarse a PostgreSQL y verificar que la aplicación responda correctamente desde el navegador.
 
 ---
 
@@ -163,7 +163,7 @@ Elementos importantes:
 | Sistema operativo | macOS | Preparar el entorno técnico de trabajo y ejecutar herramientas locales. |
 | Backend | Node.js, Express y pnpm | Instalar dependencias, ejecutar el servidor y exponer la API. |
 | Frontend | Navegador moderno y servidor local | Probar la interfaz web y validar el acceso del usuario final. |
-| Base de datos | MySQL | Almacenar usuarios, sesiones, configuraciones y operaciones. |
+| Base de datos | PostgreSQL | Almacenar usuarios, sesiones, configuraciones y operaciones. |
 | Red local | HTTP, puertos `3000` y `8080` | Verificar comunicación entre navegador, frontend y backend. |
 | Configuración | Variables de entorno | Definir credenciales, puerto, secreto de token y conexión a base de datos. |
 | Control de versiones | Git y GitHub | Mantener trazabilidad de cambios y documentación del proyecto. |
