@@ -5,7 +5,6 @@ const db = require('../config/db');
 const { crearToken } = require('../utils/token');
 const {
   validarCredenciales,
-  validarCredencialesAdmin,
   validarUsuario,
 } = require('../utils/validacion');
 
@@ -194,40 +193,8 @@ async function registro(req, res) {
   }
 }
 
-// ========== LOGIN DE ADMINISTRADOR ==========
-function loginAdmin(req, res) {
-  const { correo, password } = req.body;
-  const errorValidacion = validarCredencialesAdmin({ correo, password });
-
-  if (errorValidacion) {
-    return res.status(400).json({ mensaje: errorValidacion });
-  }
-
-  console.log('📨 Intento de acceso al panel de administración recibido');
-
-  if (
-    correo !== process.env.ADMIN_USER ||
-    password !== process.env.ADMIN_PASSWORD
-  ) {
-    return res.status(401).json({ mensaje: MENSAJE_CREDENCIALES_INVALIDAS });
-  }
-
-  const admin = { correo, rol: 'admin' };
-
-  // Crear token administrativo para las rutas protegidas del panel
-  const token = crearToken({
-    id: 0,
-    correo,
-    rol: 'admin',
-    tipo: 'admin',
-  });
-
-  return res.json({ mensaje: 'Acceso concedido', admin, token });
-}
-
 // ========== EXPORTACIÓN ==========
 module.exports = {
   login,
   registro,
-  loginAdmin,
 };

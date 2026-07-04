@@ -30,6 +30,40 @@ function limpiarErrores() {
   });
 }
 
+function redirigirAccesoNoAutorizado() {
+  const usuarioGuardado = sessionStorage.getItem('artifyUser');
+  const token = obtenerTokenAuth();
+
+  if (usuarioGuardado && token) {
+    try {
+      const usuario = JSON.parse(usuarioGuardado);
+      if (usuario.rol === 'usuario') {
+        window.location.href = './editor.html';
+        return;
+      }
+    } catch {}
+  }
+
+  limpiarSesionAuth();
+  window.location.href = './login.html';
+}
+
+function obtenerUsuarioAdminActual() {
+  const usuarioGuardado = sessionStorage.getItem('artifyUser');
+  const token = obtenerTokenAuth();
+
+  if (!usuarioGuardado || !token) {
+    return null;
+  }
+
+  try {
+    const usuario = JSON.parse(usuarioGuardado);
+    return usuario.rol === 'admin' ? usuario : null;
+  } catch {
+    return null;
+  }
+}
+
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
   const fecha = new Date(fechaStr);
@@ -48,65 +82,6 @@ function escaparHtml(valor) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
-
-// ========== LOGIN DEL ADMINISTRADOR ==========
-document.getElementById('btnAdminLogin').addEventListener('click', async () => {
-  const correo = document.getElementById('adminEmail').value.trim();
-  const password = document.getElementById('adminPassword').value;
-
-  limpiarErrores();
-
-  if (!correo) {
-    mostrarError('adminEmail', 'Ingresa tu correo');
-    return;
-  }
-
-  if (!password) {
-    mostrarError('adminPassword', 'Ingresa tu contraseña');
-    return;
-  }
-
-  const btn = document.getElementById('btnAdminLogin');
-  btn.textContent = 'Verificando...';
-  btn.disabled = true;
-
-  try {
-    const res = await fetch(`${API}/api/admin/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ correo, password }),
-    });
-
-    const data = await res.json();
-
-    if (data.mensaje === 'Acceso concedido') {
-      sessionStorage.setItem('artifyAdmin', JSON.stringify(data.admin));
-      guardarTokenAuth(data.token);
-      document.getElementById('loginOverlay').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'block';
-      document.getElementById('adminName').textContent = data.admin.correo;
-      cargarUsuarios();
-    } else {
-      mostrarError('adminPassword', data.mensaje || 'Credenciales incorrectas');
-    }
-  } catch (err) {
-    mostrarError('adminEmail', 'Error al conectar con el servidor');
-  } finally {
-    btn.textContent = 'Ingresar al Panel';
-    btn.disabled = false;
-  }
-});
-
-// Enter en el login
-document.getElementById('adminPassword').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') document.getElementById('btnAdminLogin').click();
-});
-
-// Toggle contraseña login
-document.getElementById('toggleAdminPass').addEventListener('click', () => {
-  const input = document.getElementById('adminPassword');
-  input.type = input.type === 'password' ? 'text' : 'password';
-});
 
 // ========== CERRAR SESIÓN ==========
 document.getElementById('btnLogout').addEventListener('click', async () => {
@@ -140,8 +115,7 @@ async function cargarUsuarios() {
       renderizarTabla(todosLosUsuarios);
       actualizarEstadisticas(todosLosUsuarios);
     } else if (res.status === 401 || res.status === 403) {
-      document.getElementById('loginOverlay').style.display = 'flex';
-      document.getElementById('adminPanel').style.display = 'none';
+      redirigirAccesoNoAutorizado();
     }
   } catch (err) {
     console.error('❌ Error al cargar usuarios:', err);
@@ -463,60 +437,32 @@ document.getElementById('modalEliminar').addEventListener('click', (e) => {
 
 // ========== VERIFICAR SESIÓN AL CARGAR ==========
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🔍 artifyUser en admin:', sessionStorage.getItem('artifyUser'));
-  console.log(
-    '🔍 artifyAdmin en admin:',
-    sessionStorage.getItem('artifyAdmin')
-  );
-  // Verificar si viene desde el login principal con rol admin
-  const artifyUser = sessionStorage.getItem('artifyUser');
-  if (artifyUser) {
-    const usuario = JSON.parse(artifyUser);
-    if (usuario.rol === 'admin') {
-      sessionStorage.setItem(
-        'artifyAdmin',
-        JSON.stringify({ correo: usuario.correo })
-      );
-      document.getElementById('loginOverlay').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'block';
-      document.getElementById('adminName').textContent =
-        usuario.nombres + ' ' + usuario.apellidos;
+  const usuario = obtenerUsuarioAdminActual();
 
-      // Iniciar sesión de edición para el admin
-      fetchAuth(`${API}/api/sesion/iniciar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idUsuario: usuario.id }),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.mensaje === 'Sesión iniciada') {
-            sessionStorage.setItem('artifyIdSesion', data.idSesion);
-            console.log(
-              '✅ Sesión de edición iniciada para admin. ID:',
-              data.idSesion
-            );
-          }
-        });
-
-      cargarUsuarios();
-      return;
-    }
-  }
-
-  // Verificar si ya tiene sesión de admin guardada
-  const admin = sessionStorage.getItem('artifyAdmin');
-  if (admin) {
-    const data = JSON.parse(admin);
-    document.getElementById('loginOverlay').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    document.getElementById('adminName').textContent = data.correo;
-    cargarUsuarios();
+  if (!usuario) {
+    redirigirAccesoNoAutorizado();
     return;
   }
 
-  document.getElementById('loginOverlay').style.display = 'flex';
-  document.getElementById('adminPanel').style.display = 'none';
+  sessionStorage.setItem(
+    'artifyAdmin',
+    JSON.stringify({ correo: usuario.correo })
+  );
+  document.getElementById('adminPanel').style.display = 'block';
+  document.getElementById('adminName').textContent =
+    `${usuario.nombres} ${usuario.apellidos}`.trim() || usuario.correo;
 
-  console.log('✅ Panel de administración cargado correctamente');
+  fetchAuth(`${API}/api/sesion/iniciar`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ idUsuario: usuario.id }),
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.mensaje === 'Sesión iniciada') {
+        sessionStorage.setItem('artifyIdSesion', data.idSesion);
+      }
+    });
+
+  cargarUsuarios();
 });

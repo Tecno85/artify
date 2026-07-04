@@ -126,6 +126,21 @@ async function esperarActualizacionAcceso() {
   return usuario;
 }
 
+async function promoverUsuarioTemporalAAdmin() {
+  const db = await crearConexionDb();
+
+  try {
+    await db.query(
+      `UPDATE "USUARIO"
+       SET usr_rol = 'admin'
+       WHERE usr_id_usuario = $1`,
+      [idUsuario]
+    );
+  } finally {
+    await db.end();
+  }
+}
+
 async function limpiarUsuarioTemporal() {
   if (!idUsuario) {
     return;
@@ -508,21 +523,22 @@ test('rutas protegidas rechazan identificadores malformados', async () => {
   );
 });
 
-test('admin puede autenticarse y listar usuarios', async () => {
-  assert.ok(process.env.ADMIN_USER);
-  assert.ok(process.env.ADMIN_PASSWORD);
+test('admin puede autenticarse desde el login principal y listar usuarios', async () => {
+  assert.ok(idUsuario);
+  await promoverUsuarioTemporalAAdmin();
 
-  const login = await request('/api/admin/login', {
+  const login = await request('/api/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      correo: process.env.ADMIN_USER,
-      password: process.env.ADMIN_PASSWORD,
+      correo: usuarioPrueba.correo,
+      password: usuarioPrueba.password,
     }),
   });
 
   assert.equal(login.response.status, 200);
-  assert.equal(login.body.mensaje, 'Acceso concedido');
+  assert.equal(login.body.mensaje, 'Login exitoso');
+  assert.equal(login.body.usuario.rol, 'admin');
   assert.ok(login.body.token);
 
   const usuarios = await request('/api/admin/usuarios', {

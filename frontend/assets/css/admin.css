@@ -42,39 +42,6 @@ body {
   font-size: 25px;
 }
 
-/* ========== LOGIN OVERLAY ========== */
-.admin-login-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  background-image:
-    radial-gradient(
-      ellipse at 20% 50%,
-      rgba(0, 123, 255, 0.08) 0%,
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse at 80% 20%,
-      rgba(40, 255, 206, 0.06) 0%,
-      transparent 50%
-    );
-}
-
-.admin-login-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 48px 40px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: var(--shadow);
-  animation: fadeInUp 0.4s ease;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -84,29 +51,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.login-logo {
-  text-align: center;
-  margin-bottom: 36px;
-}
-
-.login-logo img {
-  width: 56px;
-  height: 56px;
-  margin-bottom: 12px;
-}
-
-.login-logo h1 {
-  font-family: var(--font-head);
-  font-size: 2rem;
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-
-.login-logo p {
-  color: var(--text-muted);
-  font-size: 0.9rem;
 }
 
 /* ========== FORM GROUPS ========== */
@@ -155,14 +99,6 @@ body {
   background: var(--card2);
 }
 
-.password-wrapper {
-  position: relative;
-}
-
-.password-wrapper input {
-  padding-right: 48px;
-}
-
 /* Calendario en modo oscuro */
 input[type='date'] {
   color-scheme: dark;
@@ -171,29 +107,6 @@ input[type='date'] {
 /* Ícono del ojo en modo oscuro */
 input[type='password'] {
   color-scheme: dark;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-}
-
-.toggle-password:hover {
-  color: var(--primary);
-}
-.toggle-password svg {
-  width: 18px;
-  height: 18px;
 }
 
 .error-message {
@@ -209,31 +122,6 @@ input[type='password'] {
 
 .required {
   color: var(--accent);
-}
-
-/* ========== BOTÓN LOGIN ========== */
-.btn-admin-login {
-  width: 100%;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  padding: 14px;
-  font-family: var(--font-head);
-  font-size: 1rem;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    transform 0.1s;
-  margin-top: 8px;
-}
-
-.btn-admin-login:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-.btn-admin-login:active {
-  transform: translateY(0);
 }
 
 /* ========== HEADER ========== */

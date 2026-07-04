@@ -48,18 +48,6 @@ function validarCredenciales({ correo, password }) {
   return null;
 }
 
-function validarCredencialesAdmin({ correo, password }) {
-  if (!esCorreo(correo)) {
-    return 'Ingresa un correo válido';
-  }
-
-  if (typeof password !== 'string' || password.length === 0) {
-    return 'Ingresa la contraseña';
-  }
-
-  return null;
-}
-
 function validarUsuario({
   nombres,
   apellidos,
@@ -130,7 +118,6 @@ function validarEdicionUsuario({
 module.exports = {
   normalizarIdEntero,
   validarCredenciales,
-  validarCredencialesAdmin,
   validarUsuario,
   validarEdicionUsuario,
 };

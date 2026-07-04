@@ -15,63 +15,6 @@
   </head>
 
   <body>
-    <!-- ===== LOGIN DEL ADMINISTRADOR ===== -->
-    <div class="admin-login-overlay" id="loginOverlay">
-      <div class="admin-login-card">
-        <div class="login-logo">
-          <img src="../assets/images/modx-icon.svg" alt="Logo Artify" />
-          <h1>Artify</h1>
-          <p>Panel de Administración</p>
-        </div>
-
-        <div class="login-form">
-          <div class="form-group">
-            <label for="adminEmail">Correo</label>
-            <input
-              type="email"
-              id="adminEmail"
-              placeholder="admin@artify.com"
-              autocomplete="email"
-            />
-            <span class="error-message" id="adminEmail-error"></span>
-          </div>
-
-          <div class="form-group">
-            <label for="adminPassword">Contraseña</label>
-            <div class="password-wrapper">
-              <input
-                type="password"
-                id="adminPassword"
-                placeholder="••••••••"
-                autocomplete="current-password"
-              />
-              <button
-                type="button"
-                class="toggle-password"
-                id="toggleAdminPass"
-                aria-label="Mostrar contraseña"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-            <span class="error-message" id="adminPassword-error"></span>
-          </div>
-
-          <button class="btn-admin-login" id="btnAdminLogin">
-            <span>Ingresar al Panel</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- ===== PANEL PRINCIPAL ===== -->
     <div class="admin-wrapper" id="adminPanel" style="display: none">
       <!-- HEADER -->
