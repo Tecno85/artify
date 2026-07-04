@@ -251,8 +251,6 @@ Luego reemplazo los valores de ejemplo por la configuración del equipo, sin pub
 | `DB_PASSWORD` | Contraseña del usuario de PostgreSQL. | `********` | Valor sensible. |
 | `DB_NAME` | Base de datos usada por el proyecto. | `artify_db` | Debe coincidir con el esquema importado. |
 | `DATABASE_URL` | Cadena completa de conexión PostgreSQL. | `postgresql://usuario:********@host:5432/artify_db` | Es la opción principal para despliegues como Render o Neon. |
-| `ADMIN_USER` | Correo del administrador de Artify. | `admin@ejemplo.com` | Dato de acceso administrativo. |
-| `ADMIN_PASSWORD` | Contraseña administrativa. | `********` | Debe ser segura y diferente entre entornos. |
 | `TOKEN_SECRET` | Secreto para firmar tokens. | `********` | Debe ser largo, aleatorio y privado. |
 | `PORT` | Puerto del backend. | `3000` | Debe estar disponible. |
 | `NODE_ENV` | Tipo de entorno. | `development` | En producción debe configurarse como corresponda. |
@@ -449,7 +447,7 @@ Durante la configuración aplico las siguientes medidas:
 - No subo `backend/.env` al repositorio.
 - Mantengo `.env.example` como plantilla sin credenciales reales.
 - No escribo contraseñas directamente en comandos almacenados o capturas.
-- Oculto `DB_USER`, `DB_PASSWORD`, `ADMIN_USER`, `ADMIN_PASSWORD` y `TOKEN_SECRET` en las evidencias.
+- Oculto `DB_USER`, `DB_PASSWORD`, `DATABASE_URL` y `TOKEN_SECRET` en las evidencias.
 - Uso un `TOKEN_SECRET` largo, aleatorio y diferente para cada entorno.
 - Verifico que las contraseñas de usuarios se almacenen mediante hash de bcryptjs.
 - Limito las credenciales de PostgreSQL a los permisos necesarios para la aplicación.

@@ -13,6 +13,7 @@ Resultado:
 - Relaciones dependientes con `ON DELETE CASCADE`, `ON DELETE SET NULL` donde corresponde y checks para métricas no negativas.
 - Índices de apoyo para analytics sobre operaciones completadas, formatos activos y sesiones finalizadas.
 - `seed.sql` insertó un usuario de referencia sin credenciales reales de acceso.
+- `promote-admin.sql` permite asignar `usr_rol = 'admin'` a un usuario registrado para acceder al CRUD desde el login principal.
 
 ## Cambios globales necesarios
 

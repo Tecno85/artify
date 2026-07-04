@@ -1,7 +1,8 @@
 -- Datos mínimos de referencia para Artify SENA PostgreSQL.
 -- Este registro permite verificar que el seed carga correctamente.
 -- No corresponde a credenciales reales de acceso.
--- El acceso administrativo real usa ADMIN_USER y ADMIN_PASSWORD del entorno.
+-- El acceso administrativo se realiza desde el login principal con un usuario
+-- de la tabla "USUARIO" cuyo campo "usr_rol" sea 'admin'.
 
 INSERT INTO "USUARIO" (
   "usr_id_usuario",

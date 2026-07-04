@@ -27,8 +27,8 @@
   <text x="112" y="174"><tspan class="key">DB_PORT</tspan><tspan class="value">=5432</tspan></text>
   <text x="112" y="206"><tspan class="key">DB_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="238"><tspan class="key">DB_NAME</tspan><tspan class="value">=artify_db</tspan></text>
-  <text x="112" y="270"><tspan class="key">ADMIN_USER</tspan><tspan class="value">=admin@artify.com</tspan></text>
-  <text x="112" y="302"><tspan class="key">ADMIN_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
+  <text x="112" y="270"><tspan class="key">DB_USER</tspan><tspan class="value">=********</tspan></text>
+  <text x="112" y="302"><tspan class="key">DATABASE_URL</tspan><tspan class="secret">=postgresql://********</tspan></text>
   <text x="112" y="334"><tspan class="key">TOKEN_SECRET</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="366"><tspan class="key">PORT</tspan><tspan class="value">=3000</tspan></text>
   <text x="112" y="398"><tspan class="key">NODE_ENV</tspan><tspan class="value">=development</tspan></text>

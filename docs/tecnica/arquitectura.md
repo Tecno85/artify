@@ -87,7 +87,7 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 
 | Módulo | Archivo | Función |
 | --- | --- | --- |
-| Autenticación | `auth.routes.js` | Login, registro y login administrativo. |
+| Autenticación | `auth.routes.js` | Login principal, registro y emisión de token con rol. |
 | Configuración | `configuracion.routes.js` | Consulta y guardado de preferencias. |
 | Sesiones | `sesion.routes.js` | Inicio y cierre de sesiones de edición. |
 | Actividad | `actividad.routes.js` | Estadísticas, operaciones e imágenes. |

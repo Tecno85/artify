@@ -158,7 +158,8 @@ v_usuarios_activos
 | POST | `/api/admin/usuario` | Agrega usuario nuevo. |
 | PUT | `/api/admin/usuario/:id` | Edita usuario por ID. |
 | DELETE | `/api/admin/usuario/:id` | Elimina usuario y datos dependientes. |
-| POST | `/api/admin/login` | Login del panel admin con token. |
+
+El panel administrativo no tiene login independiente. El usuario entra por `/api/login`; si el usuario autenticado tiene `usr_rol = 'admin'`, el frontend lo redirige a `admin.html` y el backend autoriza el CRUD con el token JWT.
 
 ### Sesiones, Operaciones e Imágenes
 
@@ -192,8 +193,6 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=tu_contrasena_postgresql
 DB_NAME=artify_db
-ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=tu_contrasena_admin
 TOKEN_SECRET=cambia_este_valor_por_un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
@@ -248,7 +247,7 @@ Enfoque recomendado:
 - Render para backend Node.js.
 - Neon PostgreSQL para base de datos.
 - Health check público: `GET /health`.
-- En producción se recomienda usar `DATABASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `TOKEN_SECRET`, `NODE_VERSION`, `NODE_ENV` y `CORS_ORIGIN`.
+- En producción se recomienda usar `DATABASE_URL`, `TOKEN_SECRET`, `NODE_VERSION`, `NODE_ENV` y `CORS_ORIGIN`.
 - `schema.sql` elimina y recrea objetos; solo se ejecuta para carga inicial o reinicio controlado con respaldo previo.
 
 ### Despliegue público validado
@@ -284,7 +283,7 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 
 - Las contraseñas de usuarios se guardan con bcrypt.
 - Las respuestas de login no diferencian si falló el correo o la contraseña.
-- El login administrativo usa `ADMIN_USER` y `ADMIN_PASSWORD` desde variables de entorno.
+- El acceso administrativo usa el login principal con un usuario de base de datos cuyo `usr_rol` sea `admin`.
 - El `seed.sql` no debe interpretarse como credenciales reales de acceso.
 - La versión histórica del proyecto base se conserva en el repositorio `artify-sena`.
 - Este repositorio debe mantenerse como referencia oficial de Artify SENA con PostgreSQL.

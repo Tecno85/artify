@@ -179,9 +179,9 @@ async function cargarUsuarios() {
 
 ```javascript
 // Ejemplo recomendado - tomado de admin.js
-document.getElementById('btnAdminLogin').addEventListener('click', async () => {
-  const correo   = document.getElementById('adminEmail').value.trim();
-  const password = document.getElementById('adminPassword').value;
+document.getElementById('btnLogout').addEventListener('click', async () => {
+  limpiarSesionAuth();
+  window.location.href = '../index.html';
   // ...
 });
 
@@ -289,11 +289,9 @@ const configDefecto = JSON.stringify({
 
 ```html
 <!-- Ejemplo recomendado - tomado de admin.html -->
-<div class="admin-login-overlay" id="loginOverlay">
-<div class="admin-login-card">
 <div class="modal-overlay" id="modalUsuario">
-<button class="btn-admin-login" id="btnAdminLogin">
-<span class="error-message" id="adminEmail-error">
+<button class="btn-agregar" id="btnAgregarUsuario">
+<span class="error-message" id="modalCorreo-error">
 
 <!-- Incorrecto -->
 <div class="adminLoginOverlay" id="login_overlay">
@@ -304,7 +302,6 @@ const configDefecto = JSON.stringify({
 
 ```html
 <!-- Ejemplo recomendado - tomado de admin.html -->
-<!-- ===== LOGIN DEL ADMINISTRADOR ===== -->
 <!-- ===== PANEL PRINCIPAL ===== -->
 <!-- HEADER -->
 <!-- SIDEBAR -->
@@ -319,9 +316,9 @@ const configDefecto = JSON.stringify({
 
 ```html
 <!-- Ejemplo recomendado - tomado de admin.html -->
-<input type="email" id="adminEmail" placeholder="admin@artify.com" autocomplete="email" />
-<input type="password" id="adminPassword" autocomplete="current-password" />
-<button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+<input type="email" id="modalCorreo" autocomplete="email" />
+<input type="password" id="modalPassword" autocomplete="new-password" />
+<button type="button" class="modal-close" aria-label="Cerrar modal">
 ```
 
 ---
@@ -353,10 +350,8 @@ const configDefecto = JSON.stringify({
 
 ```css
 /* Ejemplo recomendado - tomado de admin.css */
-.admin-login-overlay { ... }
-.admin-login-card { ... }
 .header-title { ... }
-.btn-admin-login { ... }
+.btn-agregar { ... }
 .content-toolbar { ... }
 .estado-badge { ... }
 .estado-activo { ... }

@@ -158,7 +158,7 @@ pnpm install
 
 ### 8.4 Configurar variables de entorno
 
-El backend necesita un archivo `.env` dentro de `backend/`. Este archivo contiene la configuración de conexión a PostgreSQL, credenciales administrativas, puerto del servidor y secreto usado para firmar tokens.
+El backend necesita un archivo `.env` dentro de `backend/`. Este archivo contiene la configuración de conexión a PostgreSQL, puerto del servidor y secreto usado para firmar tokens.
 
 ```bash
 cp ../.env.example .env
@@ -173,8 +173,6 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=contraseña_postgresql
 DB_NAME=artify_db
-ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=contraseña_admin
 TOKEN_SECRET=secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
@@ -182,6 +180,8 @@ CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
 
 `DATABASE_URL` es la variable principal para despliegues y servicios administrados. Las variables separadas se mantienen como soporte de configuración local. `CORS_ORIGIN` define desde qué origen del frontend se permite consumir la API.
+
+El usuario administrador no se configura en `.env`. Se registra como usuario normal y luego se promueve en PostgreSQL con `database/postgresql/promote-admin.sql`.
 
 #### Imagen 3. Archivo `.env` configurado
 

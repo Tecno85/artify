@@ -53,7 +53,7 @@ El proyecto usa `pnpm` como gestor oficial. No se debe mezclar con `npm install`
 
 ## 5. Configurar Variables de Entorno
 
-El backend necesita variables de entorno para conectarse a PostgreSQL, configurar el usuario administrador y firmar tokens.
+El backend necesita variables de entorno para conectarse a PostgreSQL y firmar tokens.
 
 Puedo crear `backend/.env` a partir de `.env.example`:
 
@@ -70,8 +70,6 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=tu_contrasena_postgresql
 DB_NAME=artify_db
-ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=tu_contrasena_admin
 TOKEN_SECRET=un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
@@ -82,7 +80,6 @@ CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 
 - `backend/.env` no debe subirse al repositorio.
 - `TOKEN_SECRET` debe ser largo y difícil de adivinar.
-- `ADMIN_PASSWORD` debe cambiarse por una contraseña segura en cada entorno.
 - `CORS_ORIGIN` debe incluir el origen desde el que se sirve el frontend.
 
 ---
@@ -123,10 +120,23 @@ Si prefiero validar en un solo comando desde la terminal, puedo usar `psql -d ar
 
 Antes de ejecutar `pnpm test`, confirmo dos condiciones:
 
-1. Existe `backend/.env` con `DATABASE_URL` o las variables `DB_*`, además de `TOKEN_SECRET`, `ADMIN_USER` y `ADMIN_PASSWORD`.
+1. Existe `backend/.env` con `DATABASE_URL` o las variables `DB_*`, además de `TOKEN_SECRET`.
 2. La base `artify_db` existe y ya recibió `schema.sql` y `seed.sql`.
 
-Si falta `backend/.env`, la suite puede fallar con secretos indefinidos, por ejemplo `TOKEN_SECRET`, `ADMIN_USER` o `ADMIN_PASSWORD`. Si falta la base o el esquema, `/health` puede responder, pero los endpoints que consultan PostgreSQL devuelven errores porque no encuentran la conexión, las tablas o la vista esperada.
+Si falta `backend/.env`, la suite puede fallar con secretos indefinidos, por ejemplo `TOKEN_SECRET`. Si falta la base o el esquema, `/health` puede responder, pero los endpoints que consultan PostgreSQL devuelven errores porque no encuentran la conexión, las tablas o la vista esperada.
+
+### Habilitar un Usuario Administrador
+
+El panel administrativo se abre desde el login principal. Para habilitar un administrador:
+
+1. Registro el usuario desde `registro.html`.
+2. Promuevo ese usuario en PostgreSQL:
+
+```bash
+psql -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+```
+
+3. Inicio sesión desde `login.html` con ese correo y contraseña. Si el rol es `admin`, el frontend redirige al CRUD; si el rol es `usuario`, redirige al editor.
 
 ---
 
@@ -260,7 +270,7 @@ Para ejecución local, `config.js` puede permanecer vacío para que el frontend 
 | --- | --- | --- |
 | `Error al conectar a PostgreSQL` | Variables incorrectas o servicio detenido. | Revisar `backend/.env` e iniciar PostgreSQL. |
 | `database "artify_db" does not exist` | La base local no fue creada. | Ejecutar `createdb artify_db` o `psql -d postgres -c 'CREATE DATABASE artify_db;'`. |
-| `TOKEN_SECRET`, `ADMIN_USER` o `ADMIN_PASSWORD` indefinidos en pruebas | Falta `backend/.env` o las variables no fueron cargadas. | Crear `backend/.env` desde `.env.example` y ajustar los valores locales. |
+| `TOKEN_SECRET` indefinido en pruebas | Falta `backend/.env` o la variable no fue cargada. | Crear `backend/.env` desde `.env.example` y ajustar los valores locales. |
 | `Unknown command: pnpm` | pnpm no está instalado o no está en el PATH. | Instalar pnpm y abrir una nueva terminal. |
 | `This version of pnpm requires at least Node.js v22.13` | La terminal está usando un Node anterior al requerido por pnpm. | Priorizar Node 22 en el `PATH` o actualizar Node. |
 | `/health` no responde | Backend no iniciado o puerto incorrecto. | Ejecutar `pnpm start` en `backend/`. |

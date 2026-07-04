@@ -14,6 +14,7 @@ El backend trabaja con PostgreSQL mediante `pg`. El esquema incluye reglas de in
 | --- | --- |
 | `schema.sql` | Esquema PostgreSQL equivalente al modelo actual. |
 | `seed.sql` | Datos mínimos para pruebas locales. |
+| `promote-admin.sql` | Promueve a rol `admin` un usuario ya registrado. |
 | `queries.md` | Inventario técnico de consultas y decisiones de compatibilidad. |
 
 ## Ejecución local prevista
@@ -22,6 +23,7 @@ El backend trabaja con PostgreSQL mediante `pg`. El esquema incluye reglas de in
 createdb artify_db
 psql -d artify_db -f database/postgresql/schema.sql
 psql -d artify_db -f database/postgresql/seed.sql
+psql -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
 ```
 
 Verificación:
@@ -39,6 +41,7 @@ Verificación:
 - Recordar que `schema.sql` crea objetos dentro de una base existente; la base se crea antes con `createdb artify_db` o desde el proveedor elegido.
 - Ejecutar `schema.sql` solo para carga inicial o reinicio controlado, porque elimina y vuelve a crear tablas y vista del proyecto.
 - Tratar `seed.sql` como datos mínimos de referencia, no como credenciales reales ni usuario administrador válido.
+- Usar `promote-admin.sql` solo después de registrar el usuario que actuará como administrador.
 - Conservar las cascadas y restricciones `CHECK` cuando se agreguen nuevas relaciones o campos numéricos.
 - Mantener índices coherentes con los endpoints de analytics antes de agregar nuevas consultas agregadas.
 - No eliminar pruebas existentes durante la migración.

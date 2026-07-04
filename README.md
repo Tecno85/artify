@@ -251,8 +251,6 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=tu_contraseña_postgresql
 DB_NAME=artify_db
-ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=tu_contraseña_admin
 TOKEN_SECRET=un_secreto_largo_y_aleatorio
 PORT=3000
 NODE_ENV=development
@@ -377,8 +375,6 @@ En producción, el backend debe recibir las variables desde el panel del proveed
 
 ```env
 DATABASE_URL=postgresql://usuario:contrasena@host/dbname?sslmode=require
-ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=contrasena_admin
 TOKEN_SECRET=secreto_largo_y_seguro
 NODE_VERSION=22.13.0
 NODE_ENV=production
@@ -447,6 +443,20 @@ El panel de administración implementa un **CRUD completo** sobre la tabla USUAR
 | **DELETE** | Elimina usuarios con confirmación previa |
 
 **Acceso:** Usuarios con rol `admin` son redirigidos automáticamente al panel al iniciar sesión.
+
+El acceso administrativo usa el mismo login principal de la aplicación. Para habilitar un administrador, primero registro el usuario desde la interfaz y luego promuevo su rol en PostgreSQL:
+
+```bash
+psql -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+```
+
+En un despliegue con Neon uso la misma instrucción cambiando `-d artify_db` por la cadena `DATABASE_URL`:
+
+```bash
+psql "$DATABASE_URL" -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+```
+
+Después de esa promoción, el usuario ingresa desde `login.html`. Si su rol es `admin`, el frontend lo envía al CRUD; si su rol es `usuario`, lo envía al editor.
 
 ---
 

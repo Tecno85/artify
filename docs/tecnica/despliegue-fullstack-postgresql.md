@@ -55,20 +55,17 @@ Antes de abrir los paneles externos preparo estos valores:
 
 | Valor | Uso | Ejemplo |
 | --- | --- | --- |
-| `ADMIN_USER` | Login del administrador de Artify. | `admin@artify.com` |
-| `ADMIN_PASSWORD` | Contraseña del administrador. | valor privado |
 | `TOKEN_SECRET` | Firma de tokens JWT. | secreto largo y privado |
 | `DATABASE_URL` | Conexión Render -> Neon. | se copia desde Neon |
 | `ARTIFY_API_URL` | Conexión Netlify -> Render. | URL pública del backend |
 | `CORS_ORIGIN` | Origen permitido en backend. | URL pública del frontend |
 
-`TOKEN_SECRET`, `ADMIN_PASSWORD` y `DATABASE_URL` no deben quedar en capturas, commits, documentos públicos ni videos.
+`TOKEN_SECRET` y `DATABASE_URL` no deben quedar en capturas, commits, documentos públicos ni videos.
 
 Para la grabación final evito:
 
 - Mostrar contraseñas, tokens o cadenas completas de conexión.
 - Abrir el archivo `.env` real si contiene secretos visibles.
-- Mostrar credenciales administrativas reales.
 - Publicar capturas donde aparezca la contraseña de la base de datos.
 
 ## 3. Flujo general del despliegue
@@ -256,11 +253,9 @@ Antes de pegarla en Render verifico:
 
 - No guardo la cadena real de Neon en el repositorio.
 - No la copio en `README.md`, documentos o evidencias visibles.
-- No reutilizo la contraseña de Neon como contraseña administrativa de Artify.
-- No reemplazo manualmente la contraseña de Neon por `ADMIN_PASSWORD`.
 - Si la cadena se expone durante una práctica o grabación, genero una nueva contraseña o una nueva cadena desde Neon antes del despliegue final.
 
-La contraseña dentro de `DATABASE_URL` pertenece al rol PostgreSQL de Neon. La contraseña `ADMIN_PASSWORD` pertenece al login administrativo de Artify. Son valores distintos y no deben intercambiarse.
+La contraseña dentro de `DATABASE_URL` pertenece al rol PostgreSQL de Neon. No es una contraseña de usuario de Artify. Los usuarios de Artify se autentican desde `login.html` contra la tabla `"USUARIO"`.
 
 ## 6. Creo las Tablas en PostgreSQL
 
@@ -351,6 +346,37 @@ También puedo verificar desde Neon con los meta-comandos de PostgreSQL:
 
 Si Neon muestra errores al ejecutar `seed.sql`, normalmente significa que no ejecuté primero `schema.sql` o que lo ejecuté en otra base.
 
+### 6.3 Promover un Usuario a Administrador
+
+El panel administrativo no usa variables de entorno propias para correo o contraseña en Render. El administrador es un usuario real de Artify almacenado en PostgreSQL con `usr_rol = 'admin'`.
+
+El proceso recomendado es:
+
+1. Termino de desplegar backend y frontend.
+2. Registro un usuario desde el frontend publicado en Netlify.
+3. Promuevo ese correo a administrador en Neon.
+4. Inicio sesión desde `login.html` con el mismo correo y contraseña.
+
+Si tengo `psql` en mi equipo, ejecuto desde la raíz del repositorio:
+
+```bash
+psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+```
+
+Si lo hago desde **Neon -> SQL Editor**, ejecuto una consulta equivalente:
+
+```sql
+UPDATE "USUARIO"
+SET "usr_rol" = 'admin'
+WHERE "usr_correo" = 'admin@artify.com';
+
+SELECT "usr_id_usuario", "usr_correo", "usr_estado_usuario", "usr_rol"
+FROM "USUARIO"
+WHERE "usr_correo" = 'admin@artify.com';
+```
+
+El resultado debe mostrar `usr_rol = admin`. Desde ese momento, el login principal redirige a ese usuario al CRUD administrativo. Los usuarios con `usr_rol = usuario` siguen entrando al editor.
+
 ## 7. Desplegar el backend en Render
 
 En Render publico primero el backend porque Netlify necesita conocer la URL pública de la API.
@@ -395,8 +421,6 @@ Variables de entorno mínimas del backend en producción:
 
 ```env
 DATABASE_URL=postgresql://usuario:contrasena@host/dbname?sslmode=require
-ADMIN_USER=admin@artify.com
-ADMIN_PASSWORD=contrasena_segura
 TOKEN_SECRET=secreto_largo_y_seguro
 NODE_VERSION=22.13.0
 NODE_ENV=production
@@ -425,8 +449,6 @@ No uso **Add from .env** si mi `.env` contiene datos locales, porque podría sub
 | Variable | Qué valor debe llevar | Observación |
 | --- | --- | --- |
 | `DATABASE_URL` | Connection string completa copiada desde Neon. | No va entre comillas y no debe contener `********`. |
-| `ADMIN_USER` | Correo del administrador de Artify. | Ejemplo: `admin@artify.com`. |
-| `ADMIN_PASSWORD` | Contraseña para entrar al panel admin de Artify. | No es la contraseña de Neon. |
 | `TOKEN_SECRET` | Texto largo aleatorio para firmar tokens. | Puede generarse con `openssl rand -hex 32`. |
 | `NODE_VERSION` | `22.13.0` | Compatible con `pnpm` y el backend. |
 | `NODE_ENV` | `production` | Debe escribirse exactamente así. |
@@ -451,7 +473,6 @@ Notas:
 - `DATABASE_URL` es la variable principal para conectar con Neon.
 - Las variables separadas `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` se reservan para configuración local o entornos donde no se use una cadena completa.
 - Defino `TOKEN_SECRET` como un valor largo y no lo comparto.
-- Uso una `ADMIN_PASSWORD` diferente a mis claves personales.
 - Render asigna el puerto mediante `PORT`; no necesito declararlo manualmente en el panel.
 - `NODE_VERSION` fija una versión compatible con `backend/package.json` y `backend/.node-version`.
 - Si todavía no conozco la URL de Netlify, dejo `CORS_ORIGIN` pendiente y lo actualizo al finalizar el despliegue del frontend.
@@ -815,7 +836,7 @@ Esto no es un error. Significa que la ruta consulta PostgreSQL correctamente, pe
 El login inválido controlado no prueba credenciales reales. Solo confirma que el frontend puede llegar al backend y que el backend responde con JSON. Las credenciales reales se validan aparte:
 
 - Usuarios normales: se crean desde `registro.html` y luego ingresan por `login.html`.
-- Administrador: ingresa por `admin.html` con `ADMIN_USER` y `ADMIN_PASSWORD` configurados en Render.
+- Administrador: se crea como usuario normal, se promueve en PostgreSQL con rol `admin` y luego ingresa por `login.html`. Si el rol es `admin`, el frontend lo envía al CRUD.
 
 ## 11. Guía para practicar antes del video
 
@@ -842,7 +863,9 @@ La primera práctica sirve para confirmar que el procedimiento es repetible y pa
 17. Copio la URL pública de Netlify.
 18. Actualizo `CORS_ORIGIN` en Render.
 19. Reinicio o redespliego el backend.
-20. Pruebo registro, login, editor y panel admin.
+20. Registro un usuario administrativo de prueba.
+21. Promuevo ese usuario a rol `admin` en Neon.
+22. Pruebo login, editor y panel admin.
 
 ### 11.1.1 Ensayo con las URLs de esta entrega
 
@@ -862,7 +885,7 @@ Antes de grabar confirmo:
 5. `https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares` responde `ok: true`.
 6. Puedo registrar un usuario nuevo desde Netlify.
 7. Puedo iniciar sesión con ese usuario.
-8. Puedo entrar al panel admin con las variables `ADMIN_USER` y `ADMIN_PASSWORD` de Render.
+8. Puedo promover un usuario a `admin` en Neon y entrar al panel desde el login principal.
 
 Si el login muestra **Error al conectar con el servidor**, reviso `ARTIFY_API_URL` y `CORS_ORIGIN`.
 
@@ -920,7 +943,7 @@ Antes de repetir el despliegue verifico:
 1. Que no voy a borrar una base con datos útiles.
 2. Que tengo los scripts `schema.sql` y `seed.sql` actualizados.
 3. Que el repositorio remoto contiene los últimos commits.
-4. Que tengo a mano `ADMIN_USER`, `ADMIN_PASSWORD` y `TOKEN_SECRET`.
+4. Que tengo a mano `TOKEN_SECRET`.
 5. Que no reutilizo una cadena `DATABASE_URL` de una base eliminada.
 
 ### 12.3 Dónde corregir cada configuración
@@ -930,11 +953,10 @@ Si no quiero borrar servicios y solo necesito corregir una configuración, uso e
 | Necesito corregir | Dónde entro | Qué cambio |
 | --- | --- | --- |
 | Cadena de PostgreSQL | Render -> servicio backend -> **Environment** | `DATABASE_URL` |
-| Contraseña admin Artify | Render -> servicio backend -> **Environment** | `ADMIN_PASSWORD` |
 | Secreto de tokens | Render -> servicio backend -> **Environment** | `TOKEN_SECRET` |
 | URL permitida del frontend | Render -> servicio backend -> **Environment** | `CORS_ORIGIN` |
 | URL del backend usada por el frontend | Netlify -> sitio frontend -> **Site configuration** -> **Environment variables** | `ARTIFY_API_URL` |
-| Esquema o datos iniciales | Neon -> proyecto -> **SQL Editor** | ejecutar `schema.sql` y luego `seed.sql` |
+| Esquema, datos iniciales o rol admin | Neon -> proyecto -> **SQL Editor** o `psql` | ejecutar `schema.sql`, `seed.sql` o `promote-admin.sql` según corresponda |
 | Código backend | GitHub y luego Render | commit, push y redeploy |
 | Código frontend | GitHub y luego Netlify | commit, push y deploy |
 
@@ -973,7 +995,7 @@ Para grabar la evidencia sin exponer credenciales:
 1. Muestro GitHub con el repositorio y la rama `main`.
 2. Muestro Neon solo en la vista general del proyecto o tablas, sin abrir la cadena completa de conexión.
 3. Muestro Render en el servicio `artify-sena-backend`.
-4. En Render puedo mostrar nombres de variables, pero oculto valores sensibles como `DATABASE_URL`, `ADMIN_PASSWORD` y `TOKEN_SECRET`.
+4. En Render puedo mostrar nombres de variables, pero oculto valores sensibles como `DATABASE_URL` y `TOKEN_SECRET`.
 5. Muestro que `CORS_ORIGIN` apunta a Netlify, sin mostrar otros secretos.
 6. Muestro Netlify con el sitio `artify-sena-postgresql`.
 7. Muestro que `ARTIFY_API_URL` apunta a Render.
