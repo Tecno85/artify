@@ -330,8 +330,16 @@ p b {
     font-size: 1rem;
   }
 
+  main {
+    gap: 48px;
+  }
+
+  .bienvenida {
+    transform: translateY(-20px);
+  }
+
   .bienvenida img {
-    width: 130px;
+    width: 115px;
   }
 
   .bienvenida h1 {
