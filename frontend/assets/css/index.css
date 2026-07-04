@@ -21,18 +21,26 @@
 }
 
 /* ========== Body ========== */
+html {
+  min-height: 100%;
+}
+
 body {
   background: #151515;
+  overflow-x: hidden;
+  min-height: 100%;
 }
 
 /*--- Contenedor principal ---*/
 .container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 50px;
-  padding: 40px;
+  justify-items: center;
+  gap: clamp(18px, 3vh, 36px);
+  padding: clamp(28px, 4vh, 44px) clamp(34px, 5vw, 72px);
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   color: whitesmoke;
   font-family: 'Inconsolata', sans-serif;
@@ -44,9 +52,10 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  align-self: start;
+  width: min(100%, 1120px);
   font-family: 'Inconsolata', sans-serif;
-  padding: 0px 40px;
+  padding: 0;
 }
 
 .header-img {
@@ -69,9 +78,9 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.1rem;
+  font-size: clamp(0.95rem, 0.55vw + 0.55rem, 1.1rem);
   letter-spacing: 1.4px;
-  gap: 8px;
+  gap: clamp(8px, 1.2vw, 18px);
   flex-wrap: wrap;
 }
 
@@ -79,22 +88,20 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 40px;
   border-radius: 8px;
+  border: 1px solid transparent;
   color: aliceblue;
   text-decoration: none;
   gap: 8px;
-  padding: 8px 14px;
+  padding: 8px clamp(12px, 1vw, 16px);
   transition: all 0.5s ease;
-}
-
-.btn-editor {
-  border: 0.5px solid rgba(227, 72, 0, 0.7);
 }
 
 .btn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid #e34800;
-  transform: translateX(-5px);
+  border-color: #e34800;
+  transform: translateY(-1px);
 }
 
 .btn:focus-visible {
@@ -108,8 +115,11 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 100px;
-  margin-bottom: 60px;
+  align-self: center;
+  min-height: 0;
+  width: min(100%, 1040px);
+  gap: clamp(38px, 6vh, 80px);
+  margin-bottom: 0;
 }
 
 /* Bienvenida */
@@ -122,7 +132,7 @@ main {
 }
 
 .bienvenida img {
-  width: 150px;
+  width: clamp(96px, 9vw, 150px);
 }
 
 .editor-brand {
@@ -132,21 +142,23 @@ main {
 }
 
 .bienvenida h1 {
-  font-size: 3.5rem;
+  font-size: clamp(2.7rem, 3vw, 3.5rem);
   font-family: 'Paytone One', sans-serif;
 }
 
 .bienvenida p {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 0.5vw + 0.7rem, 1.2rem);
   font-family: 'Inconsolata', sans-serif;
+  text-align: center;
 }
 
 /* Cards */
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-areas: 'card-1 card-2 card-3';
-  gap: 70px;
+  width: min(100%, 1000px);
+  gap: clamp(28px, 3vw, 52px);
 }
 
 .card {
@@ -154,10 +166,13 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  min-width: 0;
+  min-height: 185px;
+  gap: clamp(10px, 1.4vw, 15px);
   font-family: 'Inconsolata', sans-serif;
+  text-align: center;
   border: 1px solid grey;
-  padding: 20px;
+  padding: clamp(16px, 1.6vw, 20px);
   border-radius: 0.5rem;
   transition: all 0.5s ease;
   backdrop-filter: blur(10px);
@@ -167,8 +182,13 @@ main {
 
 .card:hover {
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid #e34800;
+  border-color: #e34800;
   transform: translateY(-10px);
+}
+
+.card h3,
+.card p {
+  line-height: 1.25;
 }
 
 .card-1 {
@@ -197,15 +217,19 @@ main {
 
 /* Footer */
 footer {
+  align-self: end;
   font-family: 'Inconsolata', sans-serif;
+  width: min(100%, 1120px);
 }
 
 footer p {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   letter-spacing: 1.2px;
-  font-size: 1rem;
+  line-height: 1.35;
+  font-size: clamp(0.9rem, 0.35vw + 0.65rem, 1rem);
   padding: 2.5px;
 }
 
@@ -217,166 +241,19 @@ p b {
   padding: 2px;
 }
 
-/* ========== MEDIA QUERY PARA 1920x1080 ========== */
-
-@media (max-width: 1920px) {
+/* ========== Escritorio y laptop compacta ========== */
+@media (max-width: 1199px) {
   .container {
-    padding: 35px 40px;
-    gap: 40px;
+    padding: 24px 32px;
+    gap: 24px;
   }
 
   header {
-    padding: 10px 35px;
+    width: min(100%, 960px);
   }
 
   .header-img img {
-    max-width: 28px;
-  }
-
-  .header-img p {
-    font-size: 1.05rem;
-  }
-
-  .enlaces {
-    font-size: 1.05rem;
-  }
-
-  main {
-    gap: 70px;
-    margin-bottom: 50px;
-  }
-
-  .bienvenida img {
-    width: 120px;
-  }
-
-  .bienvenida h1 {
-    font-size: 3rem;
-  }
-
-  .bienvenida p {
-    font-size: 1.1rem;
-  }
-
-  .cards {
-    gap: 50px;
-  }
-
-  .card {
-    padding: 18px;
-    gap: 14px;
-  }
-
-  .card h3 {
-    font-size: 1.05rem;
-  }
-
-  .card p {
-    font-size: 1rem;
-  }
-
-  .card-1 img {
-    width: 75px;
-  }
-
-  .card-2 img {
-    width: 70px;
-  }
-
-  .card-3 img {
-    width: 80px;
-  }
-
-  footer {
-    margin-top: 35px;
-  }
-
-  footer p {
-    font-size: 0.95rem;
-  }
-}
-
-/* ========== VENTANA DIVIDIDA ULTRAWIDE (~1280px) - Restaurar estilos originales ========== */
-@media (min-width: 1200px) and (max-width: 2500px) {
-  .container {
-    padding: 50px;
-    gap: 50px;
-  }
-
-  header {
-    padding: 0px 40px;
-  }
-
-  .header-img img {
-    max-width: 30px;
-  }
-
-  .header-img p {
-    font-size: 1.1rem;
-  }
-
-  .enlaces {
-    font-size: 1.1rem;
-  }
-
-  main {
-    gap: 80px;
-    margin-bottom: 40px;
-  }
-
-  .bienvenida img {
-    width: 150px;
-  }
-
-  .bienvenida h1 {
-    font-size: 3.5rem;
-  }
-
-  .bienvenida p {
-    font-size: 1.2rem;
-  }
-
-  .cards {
-    gap: 70px;
-  }
-
-  .card {
-    padding: 20px;
-    gap: 15px;
-  }
-
-  .card-1 img {
-    width: 80px;
-  }
-
-  .card-2 img {
-    width: 75px;
-  }
-
-  .card-3 img {
-    width: 85px;
-  }
-
-  footer p {
-    font-size: 1rem;
-  }
-}
-
-/* ========== MEDIA QUERY 1366×768 ========== */
-@media (min-width: 769px) and (max-width: 1199px) {
-  .container {
-    padding: 25px 20px;
-    gap: 10px;
-    min-height: 100vh;
-  }
-
-  header {
-    padding: 8px 70px;
-    margin-bottom: 0;
-  }
-
-  .header-img img {
-    max-width: 26px;
+    max-width: 24px;
   }
 
   .header-img p {
@@ -385,11 +262,12 @@ p b {
 
   .enlaces {
     font-size: 0.95rem;
+    gap: 8px;
   }
 
   main {
-    gap: 40px;
-    margin-bottom: 20px;
+    width: min(100%, 900px);
+    gap: 34px;
   }
 
   .bienvenida {
@@ -397,11 +275,11 @@ p b {
   }
 
   .bienvenida img {
-    width: 80px;
+    width: 90px;
   }
 
   .bienvenida h1 {
-    font-size: 2.7rem;
+    font-size: 2.55rem;
   }
 
   .bienvenida p {
@@ -409,10 +287,12 @@ p b {
   }
 
   .cards {
-    gap: 35px;
+    width: min(100%, 840px);
+    gap: 22px;
   }
 
   .card {
+    min-height: 165px;
     padding: 16px;
     gap: 12px;
   }
@@ -426,19 +306,15 @@ p b {
   }
 
   .card-1 img {
-    width: 65px;
+    width: 62px;
   }
 
   .card-2 img {
-    width: 60px;
+    width: 58px;
   }
 
   .card-3 img {
-    width: 70px;
-  }
-
-  footer {
-    margin-top: 30px;
+    width: 66px;
   }
 
   footer p {
@@ -447,10 +323,41 @@ p b {
   }
 }
 
-/* ========== MODO COMPACTO 1024px y menos ========== */
-@media (max-width: 1024px) {
+/* ========== Pantalla dividida de escritorio ========== */
+@media (min-width: 1100px) and (max-width: 1199px) {
+  .header-img p,
+  .enlaces {
+    font-size: 1rem;
+  }
+
+  .bienvenida img {
+    width: 130px;
+  }
+
+  .bienvenida h1 {
+    font-size: 2.55rem;
+  }
+
+  .bienvenida p {
+    font-size: 1.03rem;
+  }
+
+  .card h3 {
+    font-size: 1.03rem;
+  }
+
+  .card p {
+    font-size: 1rem;
+  }
+
+  footer p {
+    font-size: 0.95rem;
+  }
+}
+
+/* ========== Modo compacto por debajo de laptop ========== */
+@media (max-width: 900px) {
   header {
-    display: flex;
     flex-direction: column;
     gap: 10px;
   }
@@ -463,23 +370,15 @@ p b {
     gap: 40px;
   }
 
-  .bienvenida img {
-    width: 90px;
-  }
-
-  .bienvenida h1 {
-    font-size: 2.5rem;
-  }
-
   .cards {
     display: flex;
     flex-direction: column;
+    width: min(100%, 340px);
     gap: 30px;
   }
 
-  footer {
-    margin-top: 0px;
-    padding-top: 0px;
+  .card {
+    min-height: 155px;
   }
 }
 
