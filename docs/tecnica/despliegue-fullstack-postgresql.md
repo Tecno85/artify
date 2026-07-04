@@ -14,6 +14,15 @@ El resultado esperado es una aplicación distribuida en tres servicios:
 - Render ejecuta el backend Node.js + Express.
 - Neon aloja PostgreSQL y conserva los datos.
 
+Si no conozco estas herramientas, puedo entenderlas así:
+
+| Herramienta | Qué representa en Artify | Qué dato importante me entrega |
+| --- | --- | --- |
+| Neon | El servidor PostgreSQL en la nube. | Una cadena `DATABASE_URL` para conectar Render con la base de datos. |
+| Render | El servidor donde corre la API Node.js + Express. | Una URL pública del backend, por ejemplo `https://artify-sena-backend.onrender.com`. |
+| Netlify | El servidor que publica los archivos del frontend. | Una URL pública del sitio, por ejemplo `https://artify-sena.netlify.app`. |
+| GitHub | El repositorio desde donde Render y Netlify leen el código. | La rama `main` con los commits que se van a desplegar. |
+
 Esta guía no reemplaza la ejecución local. Antes de desplegar debo validar que el backend funciona localmente con PostgreSQL, porque los errores de código son más fáciles de corregir antes de configurar servicios externos.
 
 Para organizar el despliegue, separo el proceso en tres servicios:
@@ -88,14 +97,14 @@ No conviene empezar por Netlify porque el frontend necesita conocer la URL públ
 
 ## 4. Preparar el repositorio
 
-Antes de configurar servicios externos, confirmo que el proyecto esté actualizado:
+Antes de configurar servicios externos, confirmo que el proyecto esté actualizado. Estos comandos se ejecutan en la terminal, desde la raíz del repositorio `artify-sena-postgresql`:
 
 ```bash
 git status
 git log --oneline -3
 ```
 
-Si hay cambios pendientes, los reviso, los agrego y hago commit antes de desplegar:
+Si `git status` muestra archivos modificados, significa que tengo cambios locales que GitHub todavía no necesariamente conoce. Render y Netlify despliegan desde GitHub, no desde mi carpeta local. Por eso, si hay cambios pendientes, los reviso, los agrego y hago commit antes de desplegar:
 
 ```bash
 git diff --stat
@@ -104,7 +113,7 @@ git commit -m "docs(despliegue): describir ajuste realizado"
 git status
 ```
 
-También confirmo que el backend pasa la validación:
+También confirmo que el backend pasa la validación. Estos comandos se ejecutan dentro de la carpeta `backend`:
 
 ```bash
 cd backend
@@ -112,6 +121,8 @@ pnpm install
 pnpm run check
 pnpm test
 ```
+
+Si mi terminal muestra un error indicando que `pnpm` requiere Node.js `22.13` o superior, debo corregir primero la versión de Node antes de instalar dependencias o ejecutar pruebas.
 
 Si las pruebas dependen de una base local, debo tener PostgreSQL activo y el archivo `.env` configurado.
 
@@ -152,18 +163,28 @@ En Neon preparo primero la base de datos porque el backend de Render dependerá 
 
 ### 5.1 Crear el proyecto
 
-1. Ingreso a Neon con mi cuenta.
-2. Selecciono **New Project**.
-3. Uso un nombre identificable, por ejemplo `artify-sena-postgresql`.
-4. Selecciono PostgreSQL `16` como versión recomendada para esta entrega.
-5. Selecciono una región cercana al backend que usaré en Render, para reducir latencia.
-6. Confirmo la creación del proyecto.
+1. Ingreso a Neon desde el navegador.
+2. Inicio sesión con mi cuenta.
+3. En el panel principal busco el botón **New Project**.
+4. En **Project name** escribo un nombre identificable, por ejemplo `artify-sena-postgresql`.
+5. En la versión de PostgreSQL selecciono `16`.
+6. En región selecciono una ubicación cercana al backend que usaré en Render. Para esta práctica puede ser una región de Estados Unidos si Render está en Oregon u otra región cercana.
+7. Reviso si Neon muestra una base inicial llamada `neondb`. Esa base puede usarse para la práctica.
+8. Confirmo con **Create project** o el botón equivalente.
+9. Espero a que Neon termine de crear el proyecto.
 
 PostgreSQL 16 es una versión estable y compatible con el esquema de Artify. El proyecto no usa funciones específicas que obliguen a una versión superior, por lo que PostgreSQL 16 ofrece una base prudente para documentación, pruebas y despliegue.
 
+Después de crear el proyecto, Neon suele abrir una pantalla con dos opciones:
+
+- **Connect your app with one command**: asistente automático de Neon.
+- **Connect your app manually**: datos manuales de conexión.
+
+Para esta entrega uso **Connect your app manually**, porque necesito copiar de forma controlada la cadena `DATABASE_URL` y usarla después en Render.
+
 ### 5.2 Definir la base de datos activa
 
-Neon puede crear una base inicial por defecto. Para Artify debo trabajar con una base destinada al proyecto. Puedo usar la base que Neon crea inicialmente o crear una base llamada:
+Neon puede crear una base inicial por defecto llamada `neondb`. Para Artify puedo usar esa base inicial o crear una base llamada:
 
 ```text
 artify_db
@@ -171,21 +192,64 @@ artify_db
 
 Lo importante es que el nombre de la base en la cadena `DATABASE_URL` coincida con la base donde cargaré `schema.sql` y `seed.sql`.
 
+Para no confundirme durante la primera práctica, recomiendo usar la base que Neon entrega por defecto si ya aparece seleccionada en el panel. En ese caso, la URL de conexión terminará en:
+
+```text
+/neondb
+```
+
+Si decido crear `artify_db`, debo asegurarme de seleccionar esa base en la ventana de conexión y de ejecutar ahí los scripts del proyecto.
+
 ### 5.3 Obtener la cadena de conexión
 
-En el panel del proyecto abro la opción **Connect** y copio una cadena de conexión PostgreSQL. El formato esperado es:
+En el panel del proyecto abro la opción **Connect**. Neon muestra una ventana llamada **Connect to your database**. En esa ventana selecciono:
+
+1. **Branch**: `production`.
+2. **Compute**: `Primary`.
+3. **Database**: `neondb` o la base que haya elegido para Artify.
+4. **Role**: `neondb_owner` u otro rol creado para el proyecto.
+5. **Connection string** como formato de salida.
+
+El formato esperado es:
 
 ```env
 postgresql://usuario:contrasena@host/dbname?sslmode=require
 ```
 
-Para Render uso esta cadena como `DATABASE_URL`. Si Neon ofrece varias opciones, puedo usar la conexión directa o la conexión con pooler. Para este proyecto académico cualquiera de las dos funciona, pero mantengo una sola cadena consistente durante toda la configuración.
+Para Render uso esta cadena como `DATABASE_URL`. En la ventana **Connect to your database** confirmo:
+
+| Campo | Valor usado en Artify |
+| --- | --- |
+| Branch | `production` |
+| Database | `neondb` o la base creada para Artify |
+| Role | `neondb_owner` |
+| Connection string | cadena completa PostgreSQL |
+
+Neon puede mostrar la contraseña como asteriscos. Antes de copiar la cadena hago clic en **Show password** o uso directamente **Copy snippet** para copiar la cadena completa. No debo copiar una cadena que contenga `********`, porque Render no podrá autenticarse.
+
+La cadena se copia completa, desde `postgresql://` hasta el final de los parámetros. No debo borrar `sslmode=require` ni `channel_binding=require` si Neon los incluye.
+
+Si `Connection pooling` está desactivado, la cadena usa un host normal:
+
+```env
+postgresql://neondb_owner:contrasena_neon@host-neon.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+```
+
+Si `Connection pooling` está activado, la cadena usa un host con `-pooler`:
+
+```env
+postgresql://neondb_owner:contrasena_neon@host-neon-pooler.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+```
+
+Para este proyecto académico cualquiera de las dos opciones funciona. Lo importante es mantener una sola cadena consistente durante la configuración y pegarla completa en Render.
 
 Antes de pegarla en Render verifico:
 
 - Que incluya `sslmode=require`.
-- Que el nombre final de la ruta sea la base correcta, por ejemplo `/artify_db`.
+- Que incluya una contraseña real, no `********`.
+- Que el nombre final de la ruta sea la base correcta, por ejemplo `/neondb` o `/artify_db`.
 - Que no tenga espacios al inicio o al final.
+- Que esté en una sola línea.
 - Que no se muestre completa en capturas, videos o documentos versionados.
 
 ### 5.4 Criterios de seguridad
@@ -193,16 +257,32 @@ Antes de pegarla en Render verifico:
 - No guardo la cadena real de Neon en el repositorio.
 - No la copio en `README.md`, documentos o evidencias visibles.
 - No reutilizo la contraseña de Neon como contraseña administrativa de Artify.
+- No reemplazo manualmente la contraseña de Neon por `ADMIN_PASSWORD`.
 - Si la cadena se expone durante una práctica o grabación, genero una nueva contraseña o una nueva cadena desde Neon antes del despliegue final.
+
+La contraseña dentro de `DATABASE_URL` pertenece al rol PostgreSQL de Neon. La contraseña `ADMIN_PASSWORD` pertenece al login administrativo de Artify. Son valores distintos y no deben intercambiarse.
 
 ## 6. Creo las Tablas en PostgreSQL
 
-Con la base creada, debo ejecutar los scripts del proyecto desde la raíz del repositorio:
+Con la base creada, debo cargar dos archivos del proyecto:
+
+| Archivo | Qué hace |
+| --- | --- |
+| `database/postgresql/schema.sql` | Crea tablas, índices, vista y estructura PostgreSQL. |
+| `database/postgresql/seed.sql` | Inserta datos de referencia iniciales. |
+
+El orden es obligatorio: primero `schema.sql` y después `seed.sql`.
+
+### 6.1 Opción A: cargar los scripts desde la terminal con `psql`
+
+Uso esta opción si tengo `psql` instalado en mi equipo. Los comandos se ejecutan desde la raíz del repositorio `artify-sena-postgresql`, no desde `backend/`:
 
 ```bash
 psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -f database/postgresql/schema.sql
 psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -f database/postgresql/seed.sql
 ```
+
+Reemplazo la cadena de ejemplo por la connection string real de Neon. Si la cadena contiene caracteres especiales, la dejo entre comillas dobles como aparece en el ejemplo.
 
 Este paso corresponde al aprovisionamiento inicial o a un reinicio controlado de la base. El archivo `schema.sql` elimina y vuelve a crear los objetos del proyecto; por eso no debo ejecutarlo sobre una base con información útil sin realizar primero una copia de seguridad.
 
@@ -213,7 +293,7 @@ psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c "\\dt"
 psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c "\\dv"
 ```
 
-En la práctica reemplazo la cadena de ejemplo por la URL real entregada por Neon y evito mostrarla completa en capturas o videos.
+En la práctica evito mostrar la cadena completa en capturas o videos.
 
 Resultado esperado:
 
@@ -230,13 +310,25 @@ También puedo hacer una verificación mínima de datos:
 psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -c 'SELECT COUNT(*) FROM "USUARIO";'
 ```
 
-Si no tengo `psql` disponible en mi equipo, uso el editor SQL de Neon:
+### 6.2 Opción B: cargar los scripts desde el editor SQL de Neon
+
+Uso esta opción si no tengo `psql` disponible en mi equipo.
 
 1. Abro el proyecto en Neon.
-2. Entro al editor SQL.
-3. Ejecuto primero el contenido de `database/postgresql/schema.sql`.
-4. Luego ejecuto el contenido de `database/postgresql/seed.sql`.
-5. Verifico tablas y vista con consultas equivalentes:
+2. En el menú lateral de Neon entro a **SQL Editor**.
+3. Confirmo que arriba esté seleccionada la branch `production`.
+4. Confirmo que la base seleccionada sea `neondb` o la base elegida para Artify.
+5. En mi editor local abro `database/postgresql/schema.sql`.
+6. Copio todo el contenido de `schema.sql`.
+7. Pego el contenido en el editor SQL de Neon.
+8. Hago clic en **Run**.
+9. Espero a que Neon muestre que las consultas terminaron correctamente.
+10. Limpio el editor o abro una nueva consulta.
+11. Abro `database/postgresql/seed.sql`.
+12. Copio todo el contenido de `seed.sql`.
+13. Lo pego en el editor SQL de Neon.
+14. Hago clic en **Run**.
+15. Verifico tablas y vista con consultas equivalentes:
 
 ```sql
 SELECT table_name
@@ -250,22 +342,34 @@ WHERE table_schema = 'public'
 ORDER BY table_name;
 ```
 
+También puedo verificar desde Neon con los meta-comandos de PostgreSQL:
+
+```sql
+\dt
+\dv
+```
+
+Si Neon muestra errores al ejecutar `seed.sql`, normalmente significa que no ejecuté primero `schema.sql` o que lo ejecuté en otra base.
+
 ## 7. Desplegar el backend en Render
 
 En Render publico primero el backend porque Netlify necesita conocer la URL pública de la API.
 
 ### 7.1 Crear el servicio web
 
-1. Ingreso a Render.
-2. Selecciono **New**.
-3. Selecciono **Web Service**.
-4. Conecto mi cuenta de GitHub si todavía no está conectada.
-5. Selecciono el repositorio `artify-sena-postgresql`.
-6. Confirmo que Render usará la rama `main`.
+1. Ingreso a Render desde el navegador.
+2. Inicio sesión con mi cuenta.
+3. En el panel principal selecciono **New**.
+4. Selecciono **Web Service**.
+5. Render pedirá conectar un repositorio. Elijo GitHub como proveedor.
+6. Si Render solicita autorización, autorizo el acceso al repositorio.
+7. Busco y selecciono el repositorio `artify-sena-postgresql`.
+8. Confirmo que Render usará la rama `main`.
+9. Avanzo a la pantalla de configuración del servicio.
 
 ### 7.2 Configurar build y arranque
 
-Configuración sugerida:
+En la pantalla de configuración del servicio lleno estos campos:
 
 | Campo | Valor |
 | --- | --- |
@@ -279,9 +383,13 @@ Configuración sugerida:
 
 El valor crítico es `Root Directory = backend`. Si dejo la raíz del repositorio como directorio del servicio, Render intentará instalar dependencias desde el lugar equivocado y el backend no iniciará correctamente.
 
+No escribo `backend/pnpm start` ni `cd backend` en el Start Command. Como `Root Directory` ya es `backend`, Render ejecuta los comandos desde esa carpeta.
+
 ### 7.3 Configurar variables de entorno
 
-En la sección **Environment** agrego las variables del backend. No uso `backend/.env` en Render; cada valor se declara en el panel.
+En la misma pantalla de creación del servicio busco la sección **Environment Variables**. Ahí agrego las variables del backend una por una.
+
+No uso `backend/.env` en Render. Ese archivo es local y puede tener valores de mi computador. En Render cada valor se declara desde el panel.
 
 Variables de entorno mínimas del backend en producción:
 
@@ -303,6 +411,41 @@ CORS_ORIGIN=https://pendiente.netlify.app
 
 Cuando Netlify entregue la URL real del frontend, vuelvo a Render, actualizo `CORS_ORIGIN` y reinicio o redespliego el servicio.
 
+### 7.3.1 Reglas para diligenciar variables en Render
+
+En Render agrego las variables una por una con **Add Environment Variable**:
+
+1. Selecciono **Add Environment Variable**.
+2. En **Key** escribo el nombre de la variable, por ejemplo `DATABASE_URL`.
+3. En **Value** pego el valor correspondiente.
+4. Repito el proceso para cada variable.
+
+No uso **Add from .env** si mi `.env` contiene datos locales, porque podría subir a Render valores que solo sirven en mi computador.
+
+| Variable | Qué valor debe llevar | Observación |
+| --- | --- | --- |
+| `DATABASE_URL` | Connection string completa copiada desde Neon. | No va entre comillas y no debe contener `********`. |
+| `ADMIN_USER` | Correo del administrador de Artify. | Ejemplo: `admin@artify.com`. |
+| `ADMIN_PASSWORD` | Contraseña para entrar al panel admin de Artify. | No es la contraseña de Neon. |
+| `TOKEN_SECRET` | Texto largo aleatorio para firmar tokens. | Puede generarse con `openssl rand -hex 32`. |
+| `NODE_VERSION` | `22.13.0` | Compatible con `pnpm` y el backend. |
+| `NODE_ENV` | `production` | Debe escribirse exactamente así. |
+| `CORS_ORIGIN` | URL del frontend. | Temporalmente uso `https://pendiente.netlify.app`. |
+
+Si escribo `NODE_ENV=porduction` u otro valor con error tipográfico, el backend puede iniciar, pero el entorno quedará mal identificado. Debo corregirlo a `production`, guardar y redeployar.
+
+Si Render muestra `password authentication failed for user 'neondb_owner'`, significa que la contraseña dentro de `DATABASE_URL` no corresponde a Neon. En ese caso copio de nuevo la connection string desde Neon con **Show password** o **Copy snippet** y reemplazo todo el valor de `DATABASE_URL`.
+
+Si Render muestra `getaddrinfo ENOTFOUND base`, significa que el backend intenta conectarse a un host inválido llamado `base`. En ese caso reviso que `DATABASE_URL` sea la cadena completa de Neon y elimino variables separadas como `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` o `DB_NAME` si fueron agregadas con valores incorrectos.
+
+Si necesito corregir una variable después de crear el servicio:
+
+1. Entro al servicio **artify-sena-backend** en Render.
+2. Abro **Environment** en el menú lateral.
+3. Busco la variable.
+4. Edito su valor.
+5. Guardo con una opción que redespliegue, como **Save and deploy**.
+
 Notas:
 
 - `DATABASE_URL` es la variable principal para conectar con Neon.
@@ -320,10 +463,11 @@ Después de guardar la configuración:
 
 1. Selecciono **Create Web Service**.
 2. Espero a que Render ejecute el build.
-3. Reviso los logs del despliegue.
-4. Confirmo que aparezca la instalación con `pnpm`.
+3. Reviso los logs del despliegue en la misma pantalla de Render.
+4. Confirmo que aparezca la instalación con `pnpm install --frozen-lockfile`.
 5. Confirmo que el proceso ejecute `pnpm start`.
-6. Copio la URL pública del servicio, con formato similar a:
+6. Confirmo que aparezca un mensaje de servidor corriendo.
+7. Copio la URL pública del servicio, con formato similar a:
 
 ```text
 https://artify-sena-backend.onrender.com
@@ -331,9 +475,13 @@ https://artify-sena-backend.onrender.com
 
 No agrego `/api` a esta URL base. Las rutas se agregan desde el frontend y desde las pruebas manuales.
 
+Si Render muestra **Build successful** pero luego aparece un error de PostgreSQL, el servicio puede estar vivo pero con mala conexión a Neon. En ese caso no avanzo a Netlify hasta corregir `DATABASE_URL` y validar una ruta que consulte la base de datos.
+
 ## 8. Verificar el backend publicado
 
-Cuando Render termine el despliegue, abro la URL pública del backend y pruebo primero la ruta de salud:
+Cuando Render termine el despliegue, no asumo que todo funciona solo porque Render diga que el servicio está en vivo. Primero verifico dos rutas.
+
+La primera ruta es `/health`. Esta ruta confirma que Express inició:
 
 ```text
 https://url-del-backend.onrender.com/health
@@ -348,7 +496,7 @@ Resultado esperado:
 }
 ```
 
-Esta prueba confirma que Express inició correctamente. Después pruebo una ruta pública que sí consulta PostgreSQL:
+Esta prueba confirma que Express inició correctamente. Después pruebo una ruta pública de analytics, que sí consulta PostgreSQL y confirma que Render puede conectarse a Neon:
 
 ```text
 https://url-del-backend.onrender.com/api/v1/analytics/filtros-populares
@@ -364,6 +512,20 @@ Resultado esperado:
 ```
 
 Esta segunda prueba confirma que Render puede conectarse a Neon y que `schema.sql` ya fue cargado.
+
+Puedo hacer estas pruebas de dos formas:
+
+- Desde el navegador, pegando cada URL en la barra de direcciones.
+- Desde la terminal con `curl`, si quiero ver la respuesta como texto.
+
+Ejemplo:
+
+```bash
+curl https://artify-sena-backend.onrender.com/health
+curl https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares
+```
+
+Si la respuesta de analytics muestra `"filtros":[]`, eso no es un error. Significa que la tabla existe, la consulta funciona, pero todavía no hay operaciones registradas por usuarios.
 
 ### 8.1 Orden de diagnóstico
 
@@ -396,12 +558,14 @@ El proyecto ya incluye `netlify.toml` en la raíz del repositorio con esta confi
 ### 9.1 Crear el sitio en Netlify
 
 1. Ingreso a Netlify.
-2. Selecciono **Add new site**.
+2. En el panel principal selecciono **Add new project** o **Add new site**.
 3. Selecciono **Import an existing project**.
-4. Elijo GitHub como proveedor.
-5. Selecciono el repositorio `artify-sena-postgresql`.
-6. Mantengo la raíz del repositorio como base del proyecto.
-7. No configuro `frontend` como base directory, porque `netlify.toml` ya indica que se publica la carpeta `frontend`.
+4. Elijo **Deploy with GitHub** como proveedor.
+5. Autorizo Netlify si GitHub lo solicita.
+6. Selecciono el repositorio `artify-sena-postgresql`.
+7. En la pantalla de configuración del deploy confirmo la rama `main`.
+8. Mantengo la raíz del repositorio como base del proyecto.
+9. No configuro `frontend` como base directory, porque `netlify.toml` ya indica que se publica la carpeta `frontend`.
 
 Configuración esperada:
 
@@ -412,40 +576,141 @@ Configuración esperada:
 | Publish directory | `frontend` |
 | Branch | `main` |
 
+Si Netlify lee `netlify.toml`, puede mostrar automáticamente el build command y el publish directory. Si los muestra vacíos, los ingreso manualmente con los valores de la tabla.
+
 ### 9.2 Configurar la URL del backend
 
-Antes de lanzar o repetir el despliegue del frontend, configuro esta variable en Netlify:
+Antes de lanzar o repetir el despliegue del frontend, configuro la variable `ARTIFY_API_URL` en Netlify. Esta variable no se configura en Render, sino en el sitio frontend de Netlify.
 
-```env
-ARTIFY_API_URL=https://url-del-backend.onrender.com
+Si todavía estoy en la pantalla inicial de creación del sitio:
+
+1. Busco la sección **Environment variables**.
+2. Selecciono **Add environment variable**.
+3. En **Key** escribo:
+
+```text
+ARTIFY_API_URL
 ```
 
-Esta variable permite que el frontend publicado consuma el backend externo. No agrego `/api` al final porque el código ya construye las rutas completas.
+4. En **Value** escribo la URL base del backend de Render:
+
+```text
+https://artify-sena-backend.onrender.com
+```
+
+5. Guardo la variable.
+6. Continúo con **Deploy** o **Deploy site**.
+
+Si el sitio ya fue creado y necesito agregar o corregir la variable:
+
+1. Entro al sitio en Netlify.
+2. Abro **Site configuration**.
+3. Entro a **Environment variables**.
+4. Selecciono **Add a variable**.
+5. En **Key** escribo `ARTIFY_API_URL`.
+6. En **Value** escribo `https://artify-sena-backend.onrender.com`.
+7. Guardo los cambios.
+8. Voy a **Deploys**.
+9. Selecciono **Trigger deploy**.
+10. Selecciono **Deploy site** para que Netlify regenere `frontend/assets/js/config.js`.
+
+El valor esperado para esta entrega es:
+
+```env
+ARTIFY_API_URL=https://artify-sena-backend.onrender.com
+```
+
+No agrego `/api` al final porque el código ya construye las rutas completas. Tampoco agrego barra final; uso la URL base exacta del backend.
 
 El script `scripts/write-frontend-config.js` lee `ARTIFY_API_URL` y genera `frontend/assets/js/config.js` durante el build. Por eso, si cambio esta variable en Netlify, debo ejecutar un nuevo deploy para que el frontend tome el nuevo backend.
+
+Durante el deploy reviso los logs y busco una línea similar a:
+
+```text
+Configuración frontend generada en .../frontend/assets/js/config.js
+```
+
+Esa línea confirma que Netlify ejecutó el script que escribe la URL del backend.
 
 ### 9.3 Publicar y tomar la URL final
 
 Después de guardar la variable:
 
 1. Ejecuto el deploy en Netlify.
-2. Espero a que el build termine correctamente.
-3. Abro la URL pública que entrega Netlify.
-4. Copio la URL final, por ejemplo:
+2. Espero a que el build termine con estado **Published**.
+3. Abro la URL pública que entrega Netlify con **Open production deploy** o **Visit site**.
+4. Copio la URL final del sitio, por ejemplo:
 
 ```text
 https://artify-sena.netlify.app
 ```
 
+Esta URL final de Netlify será el valor que después debo copiar en `CORS_ORIGIN` dentro de Render.
+
 ### 9.4 Actualizar CORS en Render
 
-Cuando Netlify entregue la URL pública del frontend, regreso a Render y actualizo:
+Cuando Netlify entregue la URL pública del frontend, debo regresar a Render para permitir que ese frontend pueda consumir el backend. Este paso se llama configuración de CORS.
+
+En términos prácticos:
+
+- Netlify aloja la interfaz que ve el usuario.
+- Render aloja la API.
+- El navegador solo permitirá que Netlify llame a Render si el backend tiene autorizada la URL de Netlify en `CORS_ORIGIN`.
+
+Por eso debo cambiar el valor temporal:
 
 ```env
-CORS_ORIGIN=https://url-del-frontend.netlify.app
+CORS_ORIGIN=https://pendiente.netlify.app
 ```
 
-Después reinicio o redespliego el backend para que tome el origen definitivo. Este paso es obligatorio porque el backend solo permite peticiones desde los orígenes definidos en `CORS_ORIGIN`.
+por la URL real que Netlify me entregó.
+
+Para hacerlo en Render:
+
+1. Ingreso a Render.
+2. En el panel principal busco la lista de servicios.
+3. Abro el servicio del backend, por ejemplo **artify-sena-backend**.
+4. Verifico que estoy dentro del servicio correcto mirando la URL pública del backend, por ejemplo:
+
+```text
+https://artify-sena-backend.onrender.com
+```
+
+5. En el menú lateral izquierdo del servicio selecciono **Environment**.
+6. Bajo hasta la sección **Environment Variables**.
+7. Busco la variable `CORS_ORIGIN`.
+8. Si la variable ya existe, edito su valor.
+9. Si la variable no existe, selecciono **Add Environment Variable** y la creo.
+10. En **Key** escribo:
+
+```text
+CORS_ORIGIN
+```
+
+11. En **Value** pego la URL final de Netlify, sin barra final:
+
+```text
+https://url-del-frontend.netlify.app
+```
+
+Ejemplo:
+
+```env
+CORS_ORIGIN=https://artify-sena.netlify.app
+```
+
+12. Guardo los cambios.
+13. Si Render muestra varias opciones de guardado, selecciono una opción que redespliegue el servicio, por ejemplo **Save and deploy** o **Save, rebuild, and deploy**.
+14. Espero a que el deploy termine correctamente.
+15. Vuelvo a probar el backend en:
+
+```text
+https://artify-sena-backend.onrender.com/health
+```
+
+16. Abro el frontend de Netlify y pruebo registro o login.
+
+No debo colocar la URL de Render en `CORS_ORIGIN`. En `CORS_ORIGIN` va la URL del frontend de Netlify, porque ese es el origen desde donde saldrán las peticiones del navegador.
 
 Si durante la práctica uso más de un origen, puedo separarlos por coma:
 
@@ -453,7 +718,15 @@ Si durante la práctica uso más de un origen, puedo separarlos por coma:
 CORS_ORIGIN=https://url-del-frontend.netlify.app,http://localhost:8080
 ```
 
-Para la entrega pública dejo principalmente la URL real de Netlify.
+Para la entrega pública dejo principalmente la URL real de Netlify. Solo mantengo `localhost` si necesito seguir probando desde mi equipo.
+
+Si después de cambiar `CORS_ORIGIN` el frontend sigue mostrando error CORS, reviso:
+
+- Que la URL de Netlify esté escrita completa, con `https://`.
+- Que no tenga barra final.
+- Que no haya espacios antes o después.
+- Que guardé los cambios con una opción que redespliegue Render.
+- Que el frontend realmente esté llamando a `https://artify-sena-backend.onrender.com` mediante `ARTIFY_API_URL`.
 
 ## 10. Verificar el frontend publicado
 
@@ -471,12 +744,26 @@ Después del despliegue en Netlify y de actualizar `CORS_ORIGIN` en Render, real
 
 ### 10.1 Verificación desde el navegador
 
-En el navegador abro las herramientas de desarrollo y reviso la pestaña **Network**:
+En el navegador abro las herramientas de desarrollo y reviso la pestaña **Network**. En la mayoría de navegadores puedo hacerlo con clic derecho sobre la página y luego **Inspeccionar**, o con `F12` si el teclado lo permite.
 
 - Las peticiones deben apuntar a `https://url-del-backend.onrender.com`.
 - No deben aparecer errores CORS.
 - Las respuestas de login y registro deben ser `200`, `201`, `400` o `401` según el caso probado, no errores de red.
 - Si aparece `Failed to fetch`, reviso `ARTIFY_API_URL` en Netlify y `CORS_ORIGIN` en Render.
+
+Para validar que Netlify tomó la URL correcta del backend, puedo abrir en el navegador:
+
+```text
+https://url-del-frontend.netlify.app/assets/js/config.js
+```
+
+El archivo debe mostrar una línea similar a:
+
+```js
+window.ARTIFY_API_URL = "https://artify-sena-backend.onrender.com";
+```
+
+Si aparece vacío o muestra una URL antigua, debo corregir `ARTIFY_API_URL` en Netlify y ejecutar un nuevo deploy.
 
 ### 10.2 Verificación en Neon
 
@@ -495,6 +782,41 @@ Con esto confirmo el flujo completo:
 Netlify frontend -> Render backend -> Neon PostgreSQL
 ```
 
+### 10.3 Validación del despliegue actual
+
+Para esta entrega validé el despliegue público el **4 de julio de 2026** con estas URLs:
+
+| Servicio | URL |
+| --- | --- |
+| Frontend Netlify | `https://artify-sena-postgresql.netlify.app` |
+| Backend Render | `https://artify-sena-backend.onrender.com` |
+
+Resultados de validación:
+
+| Validación | Comando o ruta | Resultado esperado | Resultado obtenido |
+| --- | --- | --- | --- |
+| Frontend publicado | `https://artify-sena-postgresql.netlify.app/` | HTTP `200` | Correcto |
+| Configuración frontend | `/assets/js/config.js` | `window.ARTIFY_API_URL` apunta a Render | Correcto |
+| Salud backend | `/health` | `ok: true`, entorno `production` | Correcto |
+| Consulta PostgreSQL | `/api/v1/analytics/filtros-populares` | Respuesta `ok: true` | Correcto |
+| CORS desde Netlify | `OPTIONS /api/login` con origen Netlify | `access-control-allow-origin` igual a Netlify | Correcto |
+| Login inválido controlado | `POST /api/login` con correo inválido | Respuesta JSON de validación | Correcto |
+
+La respuesta de analytics puede mostrar:
+
+```json
+{
+  "filtros": []
+}
+```
+
+Esto no es un error. Significa que la ruta consulta PostgreSQL correctamente, pero todavía no hay operaciones de edición registradas.
+
+El login inválido controlado no prueba credenciales reales. Solo confirma que el frontend puede llegar al backend y que el backend responde con JSON. Las credenciales reales se validan aparte:
+
+- Usuarios normales: se crean desde `registro.html` y luego ingresan por `login.html`.
+- Administrador: ingresa por `admin.html` con `ADMIN_USER` y `ADMIN_PASSWORD` configurados en Render.
+
 ## 11. Guía para practicar antes del video
 
 La primera práctica sirve para confirmar que el procedimiento es repetible y para identificar en qué pantallas aparecen secretos. No uso esta práctica como evidencia final si durante el proceso se muestran contraseñas, tokens o cadenas completas.
@@ -504,7 +826,7 @@ La primera práctica sirve para confirmar que el procedimiento es repetible y pa
 1. Confirmo que `main` está actualizado en GitHub.
 2. Creo el proyecto en Neon.
 3. Selecciono PostgreSQL `16`.
-4. Confirmo o creo la base `artify_db`.
+4. Confirmo la base de Neon que usaré, por ejemplo `neondb` o `artify_db`.
 5. Copio `DATABASE_URL` sin mostrarla en pantalla.
 6. Ejecuto `schema.sql`.
 7. Ejecuto `seed.sql`.
@@ -521,6 +843,30 @@ La primera práctica sirve para confirmar que el procedimiento es repetible y pa
 18. Actualizo `CORS_ORIGIN` en Render.
 19. Reinicio o redespliego el backend.
 20. Pruebo registro, login, editor y panel admin.
+
+### 11.1.1 Ensayo con las URLs de esta entrega
+
+Para esta entrega uso estos valores públicos:
+
+```env
+ARTIFY_API_URL=https://artify-sena-backend.onrender.com
+CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
+```
+
+Antes de grabar confirmo:
+
+1. En Netlify, `ARTIFY_API_URL` tiene el valor de Render.
+2. En Render, `CORS_ORIGIN` tiene el valor de Netlify sin barra final.
+3. El archivo público `https://artify-sena-postgresql.netlify.app/assets/js/config.js` muestra la URL de Render.
+4. `https://artify-sena-backend.onrender.com/health` responde `ok: true`.
+5. `https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares` responde `ok: true`.
+6. Puedo registrar un usuario nuevo desde Netlify.
+7. Puedo iniciar sesión con ese usuario.
+8. Puedo entrar al panel admin con las variables `ADMIN_USER` y `ADMIN_PASSWORD` de Render.
+
+Si el login muestra **Error al conectar con el servidor**, reviso `ARTIFY_API_URL` y `CORS_ORIGIN`.
+
+Si el login muestra **Credenciales incorrectas**, la conexión ya funciona y debo revisar el correo/contraseña usado.
 
 ### 11.2 Registro de observaciones
 
@@ -577,7 +923,22 @@ Antes de repetir el despliegue verifico:
 4. Que tengo a mano `ADMIN_USER`, `ADMIN_PASSWORD` y `TOKEN_SECRET`.
 5. Que no reutilizo una cadena `DATABASE_URL` de una base eliminada.
 
-### 12.3 Repetición controlada sin eliminar servicios
+### 12.3 Dónde corregir cada configuración
+
+Si no quiero borrar servicios y solo necesito corregir una configuración, uso esta guía rápida:
+
+| Necesito corregir | Dónde entro | Qué cambio |
+| --- | --- | --- |
+| Cadena de PostgreSQL | Render -> servicio backend -> **Environment** | `DATABASE_URL` |
+| Contraseña admin Artify | Render -> servicio backend -> **Environment** | `ADMIN_PASSWORD` |
+| Secreto de tokens | Render -> servicio backend -> **Environment** | `TOKEN_SECRET` |
+| URL permitida del frontend | Render -> servicio backend -> **Environment** | `CORS_ORIGIN` |
+| URL del backend usada por el frontend | Netlify -> sitio frontend -> **Site configuration** -> **Environment variables** | `ARTIFY_API_URL` |
+| Esquema o datos iniciales | Neon -> proyecto -> **SQL Editor** | ejecutar `schema.sql` y luego `seed.sql` |
+| Código backend | GitHub y luego Render | commit, push y redeploy |
+| Código frontend | GitHub y luego Netlify | commit, push y deploy |
+
+### 12.4 Repetición controlada sin eliminar servicios
 
 Si solo quiero corregir configuración, no necesito borrar todo:
 
@@ -605,11 +966,34 @@ Si solo quiero corregir configuración, no necesito borrar todo:
 13. Verifico en Neon que el usuario de prueba quedó registrado.
 14. Concluyo explicando que la aplicación quedó funcional en la web.
 
+### 13.1 Guion detallado de pantallas para no mostrar secretos
+
+Para grabar la evidencia sin exponer credenciales:
+
+1. Muestro GitHub con el repositorio y la rama `main`.
+2. Muestro Neon solo en la vista general del proyecto o tablas, sin abrir la cadena completa de conexión.
+3. Muestro Render en el servicio `artify-sena-backend`.
+4. En Render puedo mostrar nombres de variables, pero oculto valores sensibles como `DATABASE_URL`, `ADMIN_PASSWORD` y `TOKEN_SECRET`.
+5. Muestro que `CORS_ORIGIN` apunta a Netlify, sin mostrar otros secretos.
+6. Muestro Netlify con el sitio `artify-sena-postgresql`.
+7. Muestro que `ARTIFY_API_URL` apunta a Render.
+8. Abro `https://artify-sena-postgresql.netlify.app/assets/js/config.js` para evidenciar que el frontend tomó el backend correcto.
+9. Abro `https://artify-sena-backend.onrender.com/health` para evidenciar que el backend está activo.
+10. Abro `https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares` para evidenciar conexión con PostgreSQL.
+11. Registro un usuario de prueba desde el frontend.
+12. Inicio sesión con ese usuario.
+13. Realizo una operación básica en el editor.
+14. Muestro en Neon una consulta de verificación del usuario u operación, evitando exponer contraseñas o cadenas de conexión.
+
 ## 14. Problemas comunes
 
 | Problema | Causa probable | Solución |
 | --- | --- | --- |
 | Error de conexión a PostgreSQL | `DATABASE_URL` incorrecta o sin SSL. | Copio nuevamente la cadena desde Neon. |
+| `password authentication failed for user 'neondb_owner'` | La contraseña dentro de `DATABASE_URL` no es la contraseña real de Neon. | Copiar la connection string completa desde Neon con **Show password** o **Copy snippet** y reemplazar todo `DATABASE_URL` en Render. |
+| `getaddrinfo ENOTFOUND base` | Render recibió un host inválido, normalmente por `DATABASE_URL` mal pegada o variables `DB_*` incorrectas. | Pegar la cadena completa de Neon en `DATABASE_URL` y eliminar `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` si no se usan. |
+| `DATABASE_URL` contiene `********` | Copié la cadena desde Neon sin mostrar la contraseña. | Usar **Show password** o **Copy snippet** antes de copiar. |
+| `/health` muestra `entorno: porduction` | `NODE_ENV` quedó mal escrito. | Cambiar `NODE_ENV` a `production`, guardar y redeployar. |
 | `/health` responde pero analytics falla | No ejecuté `schema.sql` o la base no está disponible. | Verifico Neon, cargo el esquema inicial y reviso `DATABASE_URL`. |
 | `/health` no responde | El servicio Express no inició o Render falló en build/start. | Revisar logs, `Root Directory`, `Build Command`, `Start Command` y versión de Node. |
 | Render despliega desde la raíz incorrecta | `Root Directory` no está en `backend`. | Cambiar `Root Directory` a `backend` y redeployar. |
@@ -626,6 +1010,8 @@ Si solo quiero corregir configuración, no necesito borrar todo:
 ## 15. Referencias
 
 - Netlify Docs. File-based configuration: https://docs.netlify.com/build/configure-builds/file-based-configuration/
-- Netlify Docs. Environment variables: https://docs.netlify.com/build/environment-variables/overview/
+- Netlify Docs. Build environment variables: https://docs.netlify.com/build/configure-builds/environment-variables/
 - Render Docs. Deploy a Node Express App: https://render.com/docs/deploy-node-express-app
+- Render Docs. Environment Variables and Secrets: https://render.com/docs/configure-environment-variables
 - Neon Docs. Connect from any application: https://neon.com/docs/connect/connect-from-any-app
+- Neon Docs. Query with Neon's SQL Editor: https://neon.com/docs/get-started/query-with-neon-sql-editor

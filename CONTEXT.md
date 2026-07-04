@@ -251,6 +251,33 @@ Enfoque recomendado:
 - En producción se recomienda usar `DATABASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `TOKEN_SECRET`, `NODE_VERSION`, `NODE_ENV` y `CORS_ORIGIN`.
 - `schema.sql` elimina y recrea objetos; solo se ejecuta para carga inicial o reinicio controlado con respaldo previo.
 
+### Despliegue público validado
+
+Validación realizada el 4 de julio de 2026:
+
+| Servicio | URL |
+| --- | --- |
+| Frontend Netlify | `https://artify-sena-postgresql.netlify.app` |
+| Backend Render | `https://artify-sena-backend.onrender.com` |
+
+Estado validado:
+
+- Netlify responde HTTP `200`.
+- `frontend/assets/js/config.js` publicado contiene `ARTIFY_API_URL=https://artify-sena-backend.onrender.com`.
+- Render responde `GET /health` con `ok: true` y `entorno: production`.
+- Analytics responde `ok: true`; `filtros: []` es válido cuando no hay operaciones registradas.
+- CORS permite el origen `https://artify-sena-postgresql.netlify.app`.
+
+Variables cruzadas requeridas:
+
+```env
+# Netlify
+ARTIFY_API_URL=https://artify-sena-backend.onrender.com
+
+# Render
+CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
+```
+
 ---
 
 ## 9. Notas Importantes
@@ -272,6 +299,7 @@ Enfoque recomendado:
 - [2026-06-24] Preparación de configuración frontend para despliegue con `ARTIFY_API_URL`.
 - [2026-06-27] Verificación completa de la migración con PostgreSQL temporal y pruebas automatizadas.
 - [2026-06-28] Formalización de PostgreSQL como motor oficial de esta versión.
+- [2026-07-04] Validación del despliegue público Netlify + Render + Neon y documentación del proceso replicable para evidencia en video.
 
 ---
 
