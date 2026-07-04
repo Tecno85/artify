@@ -2535,7 +2535,7 @@ header {
 }
 
 /* ======================================================
-   MODO OPTIMIZADO – 1366 × 768 (Solo laptops, NO ventana dividida)
+   MODO OPTIMIZADO - laptop compacta y pantalla dividida
    ====================================================== */
 @media (min-width: 1025px) and (max-width: 1199px) {
   /* ================= HEADER ================= */

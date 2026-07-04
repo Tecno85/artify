@@ -25,7 +25,7 @@ let startX, startY;
 let cropRatio = 'free'; // Proporción actual del recorte
 
 // ========== CONSTANTES DE RESOLUCIÓN ==========
-const RESOLUCION_MINIMA_ANCHO = 1366;
+const RESOLUCION_MINIMA_ANCHO = 1100;
 const RESOLUCION_MINIMA_ALTO = 768;
 const LOCAL_STORAGE_KEY = 'artify_no_mostrar_modal_resolucion';
 
