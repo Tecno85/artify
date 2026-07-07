@@ -1,4 +1,4 @@
-# API REST Analytics - Artify SENA PostgreSQL
+# API REST Analytics - Artify
 
 Este módulo expone endpoints que ofrecen información agregada sobre el comportamiento de los usuarios. En esta variante los datos se consultan desde PostgreSQL mediante el backend Node.js + Express.
 

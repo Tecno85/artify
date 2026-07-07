@@ -1,6 +1,6 @@
 # PostgreSQL
 
-Esta carpeta contiene los artefactos oficiales de base de datos para ejecutar Artify SENA PostgreSQL.
+Esta carpeta contiene los artefactos oficiales de base de datos para ejecutar Artify.
 
 ## Estado
 
@@ -37,7 +37,7 @@ Verificación:
 
 ## Reglas
 
-- Mantener `database/postgresql/schema.sql` como esquema activo de Artify SENA PostgreSQL.
+- Mantener `database/postgresql/schema.sql` como esquema activo de Artify.
 - Recordar que `schema.sql` crea objetos dentro de una base existente; la base se crea antes con `createdb artify_db` o desde el proveedor elegido.
 - Ejecutar `schema.sql` solo para carga inicial o reinicio controlado, porque elimina y vuelve a crear tablas y vista del proyecto.
 - Tratar `seed.sql` como datos mínimos de referencia, no como credenciales reales ni usuario administrador válido.

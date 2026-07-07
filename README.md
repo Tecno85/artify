@@ -1,4 +1,4 @@
-#  ![Logo del Proyecto](./frontend/assets/icons/modx.svg) Artify SENA PostgreSQL — Editor de Imágenes Web
+#  ![Logo del Proyecto](./frontend/assets/icons/modx.svg) Artify — Editor de Imágenes Web
 
 <div align="center">
 
@@ -8,9 +8,9 @@
 ![Node](https://img.shields.io/badge/Node.js-22.13+-339933?style=for-the-badge&logo=node.js)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-oficial-4169E1?style=for-the-badge&logo=postgresql)
 
-**Artify SENA PostgreSQL** es la versión oficial de Artify SENA con backend Node.js + Express y base de datos PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa `pg` como conector PostgreSQL en el backend.
+**Artify** es una aplicación web de edición de imágenes con backend Node.js + Express y base de datos PostgreSQL. Conserva el frontend HTML, CSS y JavaScript vanilla, y usa `pg` como conector PostgreSQL en el backend.
 
-Proyecto Artify SENA con PostgreSQL como motor oficial de base de datos.
+PostgreSQL es el motor oficial de base de datos del proyecto.
 
 </div>
 
@@ -205,7 +205,7 @@ Artify/
 │   │   └── evidencias/
 │
 └── skills/                     # Skills instalables de Codex
-    └── artify-sena/
+    └── artify/
         ├── SKILL.md            # Guía oficial de trabajo con Codex
         └── agents/openai.yaml  # Metadata del skill
 ```
@@ -229,8 +229,8 @@ Antes de instalar el proyecto asegúrate de tener:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone <repositorio-artify-sena-postgresql>
-cd artify-sena-postgresql
+git clone https://github.com/Tecno85/artify.git
+cd artify
 ```
 
 ### 2. Instalar dependencias del backend

@@ -1,4 +1,4 @@
--- Esquema PostgreSQL para Artify SENA PostgreSQL.
+-- Esquema PostgreSQL para Artify.
 -- Mantiene nombres de tablas y columnas del modelo anterior para reducir cambios en el backend.
 
 DROP VIEW IF EXISTS "v_usuarios_activos";

@@ -1,9 +1,9 @@
 ---
-name: artify-sena
-description: Usar cuando se trabaje en Artify SENA: código, documentación, pruebas, base de datos, autenticación, panel administrativo, editor de imágenes, analytics, evidencias académicas o pulido general del proyecto.
+name: artify
+description: Usar cuando se trabaje en Artify: código, documentación, pruebas, base de datos, autenticación, panel administrativo, editor de imágenes, analytics, evidencias académicas o pulido general del proyecto.
 ---
 
-# Artify SENA
+# Artify
 
 ## Propósito
 

@@ -1,6 +1,6 @@
 # Guía de Despliegue y Ejecución Local
 
-> **Proyecto:** Artify SENA PostgreSQL
+> **Proyecto:** Artify
 > **Entorno principal:** Local / desarrollo
 > **Backend:** Node.js + Express
 > **Frontend:** HTML, CSS y JavaScript Vanilla
@@ -11,7 +11,7 @@
 
 ## 1. Objetivo del Documento
 
-En este documento explico los pasos técnicos necesarios para preparar, ejecutar y verificar Artify SENA PostgreSQL en un entorno local. Esta guía complementa el `README.md` y se enfoca en la ejecución del backend, el frontend y la base de datos PostgreSQL.
+En este documento explico los pasos técnicos necesarios para preparar, ejecutar y verificar Artify en un entorno local. Esta guía complementa el `README.md` y se enfoca en la ejecución del backend, el frontend y la base de datos PostgreSQL.
 
 ---
 
@@ -32,8 +32,8 @@ Antes de ejecutar el proyecto confirmo que estén disponibles estas herramientas
 ## 3. Clonar el Proyecto
 
 ```bash
-git clone https://github.com/Tecno85/artify-sena-postgresql.git
-cd artify-sena-postgresql
+git clone https://github.com/Tecno85/artify.git
+cd artify
 ```
 
 ---

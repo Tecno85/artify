@@ -226,8 +226,8 @@ Confirmo que las credenciales definidas en `backend/.env` correspondan con un us
 Si el repositorio aún no está disponible en el equipo cliente, puedo obtenerlo con:
 
 ```bash
-git clone https://github.com/Tecno85/artify-sena-postgresql.git
-cd artify-sena-postgresql
+git clone https://github.com/Tecno85/artify.git
+cd artify
 ```
 
 En esta evidencia trabajo sobre el repositorio local existente.

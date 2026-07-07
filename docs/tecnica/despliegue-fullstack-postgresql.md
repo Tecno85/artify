@@ -1,7 +1,7 @@
 # Guía de Despliegue Full-Stack de Artify con PostgreSQL
 
-> **Proyecto:** Artify SENA PostgreSQL  
-> **Objetivo:** publicar una versión funcional de Artify con frontend estático, backend Node.js + Express y base de datos PostgreSQL.  
+> **Proyecto:** Artify
+> **Objetivo:** publicar una versión funcional de Artify con frontend estático, backend Node.js + Express y base de datos PostgreSQL.
 > **Enfoque:** despliegue de prueba para validación técnica y evidencia académica.
 
 ## 1. Propósito de la guía
@@ -19,8 +19,8 @@ Si no conozco estas herramientas, puedo entenderlas así:
 | Herramienta | Qué representa en Artify | Qué dato importante me entrega |
 | --- | --- | --- |
 | Neon | El servidor PostgreSQL en la nube. | Una cadena `DATABASE_URL` para conectar Render con la base de datos. |
-| Render | El servidor donde corre la API Node.js + Express. | Una URL pública del backend, por ejemplo `https://artify-sena-backend.onrender.com`. |
-| Netlify | El servidor que publica los archivos del frontend. | Una URL pública del sitio, por ejemplo `https://artify-sena.netlify.app`. |
+| Render | El servidor donde corre la API Node.js + Express. | Una URL pública del backend, por ejemplo `https://artify-backend.onrender.com`. |
+| Netlify | El servidor que publica los archivos del frontend. | Una URL pública del sitio, por ejemplo `https://artify.netlify.app`. |
 | GitHub | El repositorio desde donde Render y Netlify leen el código. | La rama `main` con los commits que se van a desplegar. |
 
 Esta guía no reemplaza la ejecución local. Antes de desplegar debo validar que el backend funciona localmente con PostgreSQL, porque los errores de código son más fáciles de corregir antes de configurar servicios externos.
@@ -94,7 +94,7 @@ No conviene empezar por Netlify porque el frontend necesita conocer la URL públ
 
 ## 4. Preparar el repositorio
 
-Antes de configurar servicios externos, confirmo que el proyecto esté actualizado. Estos comandos se ejecutan en la terminal, desde la raíz del repositorio `artify-sena-postgresql`:
+Antes de configurar servicios externos, confirmo que el proyecto esté actualizado. Estos comandos se ejecutan en la terminal, desde la raíz del repositorio `artify`:
 
 ```bash
 git status
@@ -163,7 +163,7 @@ En Neon preparo primero la base de datos porque el backend de Render dependerá 
 1. Ingreso a Neon desde el navegador.
 2. Inicio sesión con mi cuenta.
 3. En el panel principal busco el botón **New Project**.
-4. En **Project name** escribo un nombre identificable, por ejemplo `artify-sena-postgresql`.
+4. En **Project name** escribo un nombre identificable, por ejemplo `artify`.
 5. En la versión de PostgreSQL selecciono `16`.
 6. En región selecciono una ubicación cercana al backend que usaré en Render. Para esta práctica puede ser una región de Estados Unidos si Render está en Oregon u otra región cercana.
 7. Reviso si Neon muestra una base inicial llamada `neondb`. Esa base puede usarse para la práctica.
@@ -270,7 +270,7 @@ El orden es obligatorio: primero `schema.sql` y después `seed.sql`.
 
 ### 6.1 Opción A: cargar los scripts desde la terminal con `psql`
 
-Uso esta opción si tengo `psql` instalado en mi equipo. Los comandos se ejecutan desde la raíz del repositorio `artify-sena-postgresql`, no desde `backend/`:
+Uso esta opción si tengo `psql` instalado en mi equipo. Los comandos se ejecutan desde la raíz del repositorio `artify`, no desde `backend/`:
 
 ```bash
 psql "postgresql://usuario:contrasena@host/dbname?sslmode=require" -f database/postgresql/schema.sql
@@ -389,7 +389,7 @@ En Render publico primero el backend porque Netlify necesita conocer la URL púb
 4. Selecciono **Web Service**.
 5. Render pedirá conectar un repositorio. Elijo GitHub como proveedor.
 6. Si Render solicita autorización, autorizo el acceso al repositorio.
-7. Busco y selecciono el repositorio `artify-sena-postgresql`.
+7. Busco y selecciono el repositorio `artify`.
 8. Confirmo que Render usará la rama `main`.
 9. Avanzo a la pantalla de configuración del servicio.
 
@@ -399,7 +399,7 @@ En la pantalla de configuración del servicio lleno estos campos:
 
 | Campo | Valor |
 | --- | --- |
-| Name | `artify-sena-backend` |
+| Name | `artify-backend` |
 | Runtime | Node |
 | Root Directory | `backend` |
 | Build Command | `pnpm install --frozen-lockfile` |
@@ -462,7 +462,7 @@ Si Render muestra `getaddrinfo ENOTFOUND base`, significa que el backend intenta
 
 Si necesito corregir una variable después de crear el servicio:
 
-1. Entro al servicio **artify-sena-backend** en Render.
+1. Entro al servicio **artify-backend** en Render.
 2. Abro **Environment** en el menú lateral.
 3. Busco la variable.
 4. Edito su valor.
@@ -491,7 +491,7 @@ Después de guardar la configuración:
 7. Copio la URL pública del servicio, con formato similar a:
 
 ```text
-https://artify-sena-backend.onrender.com
+https://artify-backend.onrender.com
 ```
 
 No agrego `/api` a esta URL base. Las rutas se agregan desde el frontend y desde las pruebas manuales.
@@ -542,8 +542,8 @@ Puedo hacer estas pruebas de dos formas:
 Ejemplo:
 
 ```bash
-curl https://artify-sena-backend.onrender.com/health
-curl https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares
+curl https://artify-backend.onrender.com/health
+curl https://artify-backend.onrender.com/api/v1/analytics/filtros-populares
 ```
 
 Si la respuesta de analytics muestra `"filtros":[]`, eso no es un error. Significa que la tabla existe, la consulta funciona, pero todavía no hay operaciones registradas por usuarios.
@@ -583,7 +583,7 @@ El proyecto ya incluye `netlify.toml` en la raíz del repositorio con esta confi
 3. Selecciono **Import an existing project**.
 4. Elijo **Deploy with GitHub** como proveedor.
 5. Autorizo Netlify si GitHub lo solicita.
-6. Selecciono el repositorio `artify-sena-postgresql`.
+6. Selecciono el repositorio `artify`.
 7. En la pantalla de configuración del deploy confirmo la rama `main`.
 8. Mantengo la raíz del repositorio como base del proyecto.
 9. No configuro `frontend` como base directory, porque `netlify.toml` ya indica que se publica la carpeta `frontend`.
@@ -616,7 +616,7 @@ ARTIFY_API_URL
 4. En **Value** escribo la URL base del backend de Render:
 
 ```text
-https://artify-sena-backend.onrender.com
+https://artify-backend.onrender.com
 ```
 
 5. Guardo la variable.
@@ -629,7 +629,7 @@ Si el sitio ya fue creado y necesito agregar o corregir la variable:
 3. Entro a **Environment variables**.
 4. Selecciono **Add a variable**.
 5. En **Key** escribo `ARTIFY_API_URL`.
-6. En **Value** escribo `https://artify-sena-backend.onrender.com`.
+6. En **Value** escribo `https://artify-backend.onrender.com`.
 7. Guardo los cambios.
 8. Voy a **Deploys**.
 9. Selecciono **Trigger deploy**.
@@ -638,7 +638,7 @@ Si el sitio ya fue creado y necesito agregar o corregir la variable:
 El valor esperado para esta entrega es:
 
 ```env
-ARTIFY_API_URL=https://artify-sena-backend.onrender.com
+ARTIFY_API_URL=https://artify-backend.onrender.com
 ```
 
 No agrego `/api` al final porque el código ya construye las rutas completas. Tampoco agrego barra final; uso la URL base exacta del backend.
@@ -663,7 +663,7 @@ Después de guardar la variable:
 4. Copio la URL final del sitio, por ejemplo:
 
 ```text
-https://artify-sena.netlify.app
+https://artify.netlify.app
 ```
 
 Esta URL final de Netlify será el valor que después debo copiar en `CORS_ORIGIN` dentro de Render.
@@ -690,11 +690,11 @@ Para hacerlo en Render:
 
 1. Ingreso a Render.
 2. En el panel principal busco la lista de servicios.
-3. Abro el servicio del backend, por ejemplo **artify-sena-backend**.
+3. Abro el servicio del backend, por ejemplo **artify-backend**.
 4. Verifico que estoy dentro del servicio correcto mirando la URL pública del backend, por ejemplo:
 
 ```text
-https://artify-sena-backend.onrender.com
+https://artify-backend.onrender.com
 ```
 
 5. En el menú lateral izquierdo del servicio selecciono **Environment**.
@@ -717,7 +717,7 @@ https://url-del-frontend.netlify.app
 Ejemplo:
 
 ```env
-CORS_ORIGIN=https://artify-sena.netlify.app
+CORS_ORIGIN=https://artify.netlify.app
 ```
 
 12. Guardo los cambios.
@@ -726,7 +726,7 @@ CORS_ORIGIN=https://artify-sena.netlify.app
 15. Vuelvo a probar el backend en:
 
 ```text
-https://artify-sena-backend.onrender.com/health
+https://artify-backend.onrender.com/health
 ```
 
 16. Abro el frontend de Netlify y pruebo registro o login.
@@ -747,7 +747,7 @@ Si después de cambiar `CORS_ORIGIN` el frontend sigue mostrando error CORS, rev
 - Que no tenga barra final.
 - Que no haya espacios antes o después.
 - Que guardé los cambios con una opción que redespliegue Render.
-- Que el frontend realmente esté llamando a `https://artify-sena-backend.onrender.com` mediante `ARTIFY_API_URL`.
+- Que el frontend realmente esté llamando a `https://artify-backend.onrender.com` mediante `ARTIFY_API_URL`.
 
 ## 10. Verificar el frontend publicado
 
@@ -781,7 +781,7 @@ https://url-del-frontend.netlify.app/assets/js/config.js
 El archivo debe mostrar una línea similar a:
 
 ```js
-window.ARTIFY_API_URL = "https://artify-sena-backend.onrender.com";
+window.ARTIFY_API_URL = "https://artify-backend.onrender.com";
 ```
 
 Si aparece vacío o muestra una URL antigua, debo corregir `ARTIFY_API_URL` en Netlify y ejecutar un nuevo deploy.
@@ -809,14 +809,14 @@ Para esta entrega validé el despliegue público el **4 de julio de 2026** con e
 
 | Servicio | URL |
 | --- | --- |
-| Frontend Netlify | `https://artify-sena-postgresql.netlify.app` |
-| Backend Render | `https://artify-sena-backend.onrender.com` |
+| Frontend Netlify | `https://artify.netlify.app` |
+| Backend Render | `https://artify-backend.onrender.com` |
 
 Resultados de validación:
 
 | Validación | Comando o ruta | Resultado esperado | Resultado obtenido |
 | --- | --- | --- | --- |
-| Frontend publicado | `https://artify-sena-postgresql.netlify.app/` | HTTP `200` | Correcto |
+| Frontend publicado | `https://artify.netlify.app/` | HTTP `200` | Correcto |
 | Configuración frontend | `/assets/js/config.js` | `window.ARTIFY_API_URL` apunta a Render | Correcto |
 | Salud backend | `/health` | `ok: true`, entorno `production` | Correcto |
 | Consulta PostgreSQL | `/api/v1/analytics/filtros-populares` | Respuesta `ok: true` | Correcto |
@@ -872,17 +872,17 @@ La primera práctica sirve para confirmar que el procedimiento es repetible y pa
 Para esta entrega uso estos valores públicos:
 
 ```env
-ARTIFY_API_URL=https://artify-sena-backend.onrender.com
-CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
+ARTIFY_API_URL=https://artify-backend.onrender.com
+CORS_ORIGIN=https://artify.netlify.app
 ```
 
 Antes de grabar confirmo:
 
 1. En Netlify, `ARTIFY_API_URL` tiene el valor de Render.
 2. En Render, `CORS_ORIGIN` tiene el valor de Netlify sin barra final.
-3. El archivo público `https://artify-sena-postgresql.netlify.app/assets/js/config.js` muestra la URL de Render.
-4. `https://artify-sena-backend.onrender.com/health` responde `ok: true`.
-5. `https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares` responde `ok: true`.
+3. El archivo público `https://artify.netlify.app/assets/js/config.js` muestra la URL de Render.
+4. `https://artify-backend.onrender.com/health` responde `ok: true`.
+5. `https://artify-backend.onrender.com/api/v1/analytics/filtros-populares` responde `ok: true`.
 6. Puedo registrar un usuario nuevo desde Netlify.
 7. Puedo iniciar sesión con ese usuario.
 8. Puedo promover un usuario a `admin` en Neon y entrar al panel desde el login principal.
@@ -994,14 +994,14 @@ Para grabar la evidencia sin exponer credenciales:
 
 1. Muestro GitHub con el repositorio y la rama `main`.
 2. Muestro Neon solo en la vista general del proyecto o tablas, sin abrir la cadena completa de conexión.
-3. Muestro Render en el servicio `artify-sena-backend`.
+3. Muestro Render en el servicio `artify-backend`.
 4. En Render puedo mostrar nombres de variables, pero oculto valores sensibles como `DATABASE_URL` y `TOKEN_SECRET`.
 5. Muestro que `CORS_ORIGIN` apunta a Netlify, sin mostrar otros secretos.
-6. Muestro Netlify con el sitio `artify-sena-postgresql`.
+6. Muestro Netlify con el sitio `artify`.
 7. Muestro que `ARTIFY_API_URL` apunta a Render.
-8. Abro `https://artify-sena-postgresql.netlify.app/assets/js/config.js` para evidenciar que el frontend tomó el backend correcto.
-9. Abro `https://artify-sena-backend.onrender.com/health` para evidenciar que el backend está activo.
-10. Abro `https://artify-sena-backend.onrender.com/api/v1/analytics/filtros-populares` para evidenciar conexión con PostgreSQL.
+8. Abro `https://artify.netlify.app/assets/js/config.js` para evidenciar que el frontend tomó el backend correcto.
+9. Abro `https://artify-backend.onrender.com/health` para evidenciar que el backend está activo.
+10. Abro `https://artify-backend.onrender.com/api/v1/analytics/filtros-populares` para evidenciar conexión con PostgreSQL.
 11. Registro un usuario de prueba desde el frontend.
 12. Inicio sesión con ese usuario.
 13. Realizo una operación básica en el editor.

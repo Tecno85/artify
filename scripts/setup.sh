@@ -6,7 +6,7 @@
 # Este script prepara dependencias y plantilla .env.
 # La base PostgreSQL se crea y carga manualmente.
 
-echo "Iniciando configuración de Artify SENA PostgreSQL..."
+echo "Iniciando configuración de Artify..."
 echo ""
 
 # PASO 1: Instalar dependencias del backend

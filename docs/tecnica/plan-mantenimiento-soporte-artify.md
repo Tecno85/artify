@@ -1,16 +1,16 @@
-# Plan de mantenimiento y soporte del software Artify SENA PostgreSQL
+# Plan de mantenimiento y soporte del software Artify
 
-**Evidencia de desempeño:** Diseñar plan de mantenimiento y soporte del software. GA10-220501097-AA8-EV01  
-**Proyecto formativo:** Artify SENA PostgreSQL - Editor de Imágenes Web  
-**Aprendiz:** Iván Darío Madrid Daza  
-**Programa:** Análisis y Desarrollo de Software - SENA  
-**Fecha:** Julio de 2026  
+**Evidencia de desempeño:** Diseñar plan de mantenimiento y soporte del software. GA10-220501097-AA8-EV01
+**Proyecto formativo:** Artify - Editor de Imágenes Web
+**Aprendiz:** Iván Darío Madrid Daza
+**Programa:** Análisis y Desarrollo de Software - SENA
+**Fecha:** Julio de 2026
 
 ![Ciclo de mantenimiento de Artify](./evidencias/mantenimiento-soporte/mantenimiento-ciclo-iso14764.svg)
 
 ## Resumen
 
-En este documento presento el plan de mantenimiento y soporte para Artify SENA PostgreSQL, una aplicación web full stack para edición básica de imágenes. El plan se basa en la norma ISO/IEC/IEEE 14764, que define el mantenimiento como un proceso del ciclo de vida del software e incluye actividades como implementación del proceso, análisis de problemas, modificación, aceptación, migración y retiro (Organización Internacional de Normalización [ISO], 2022).
+En este documento presento el plan de mantenimiento y soporte para Artify, una aplicación web full stack para edición básica de imágenes. El plan se basa en la norma ISO/IEC/IEEE 14764, que define el mantenimiento como un proceso del ciclo de vida del software e incluye actividades como implementación del proceso, análisis de problemas, modificación, aceptación, migración y retiro (Organización Internacional de Normalización [ISO], 2022).
 
 Mi propósito es definir cómo voy a conservar Artify funcional, seguro, documentado y preparado para futuras mejoras. Para lograrlo separo el trabajo en mantenimiento preventivo y correctivo. El mantenimiento preventivo busca evitar fallos antes de que afecten al usuario; el correctivo se aplica cuando ya existe un error o comportamiento inesperado.
 
@@ -18,7 +18,7 @@ Mi propósito es definir cómo voy a conservar Artify funcional, seguro, documen
 
 ## Descripción del sistema
 
-Artify SENA PostgreSQL es una solución web que permite editar imágenes desde el navegador. El usuario puede registrarse, iniciar sesión, cargar una imagen, aplicar operaciones básicas y descargar el resultado. El proyecto también cuenta con panel administrativo, registro de sesiones, operaciones de edición y endpoints de analíticas.
+Artify es una solución web que permite editar imágenes desde el navegador. El usuario puede registrarse, iniciar sesión, cargar una imagen, aplicar operaciones básicas y descargar el resultado. El proyecto también cuenta con panel administrativo, registro de sesiones, operaciones de edición y endpoints de analíticas.
 
 El sistema se organiza en tres capas:
 
@@ -40,7 +40,7 @@ Como Artify maneja datos de usuarios y autenticación, el mantenimiento también
 
 ## Enfoque del mantenimiento preventivo y correctivo
 
-Este plan aplica a la variante `artify-sena-postgresql`. No busca cambiar la arquitectura ni agregar tecnologías nuevas, sino cuidar lo que ya existe: frontend vanilla, backend Express, PostgreSQL, pruebas y documentación.
+Este plan aplica a la variante `artify`. No busca cambiar la arquitectura ni agregar tecnologías nuevas, sino cuidar lo que ya existe: frontend vanilla, backend Express, PostgreSQL, pruebas y documentación.
 
 ### Mantenimiento preventivo
 
@@ -228,7 +228,7 @@ Para controlar el seguimiento usaré indicadores sencillos: pruebas exitosas ant
 
 ## Conclusiones
 
-Este plan me permite mantener Artify SENA PostgreSQL de forma ordenada y alineada con ISO/IEC/IEEE 14764. El mantenimiento no se limita a corregir errores; también incluye prevención, análisis, aceptación, migración y retiro.
+Este plan me permite mantener Artify de forma ordenada y alineada con ISO/IEC/IEEE 14764. El mantenimiento no se limita a corregir errores; también incluye prevención, análisis, aceptación, migración y retiro.
 
 En mi proyecto, el mantenimiento preventivo es importante porque reduce fallos en autenticación, dependencias, base de datos y documentación. El mantenimiento correctivo me da una ruta clara para atender errores sin improvisar.
 

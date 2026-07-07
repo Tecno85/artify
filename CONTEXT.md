@@ -1,18 +1,18 @@
-# CONTEXT.md — Proyecto Artify SENA PostgreSQL
+# CONTEXT.md — Proyecto Artify
 
 > Archivo de contexto para continuar el desarrollo.
 > Última actualización: Julio 2026
 
 ---
 
-## 1. ¿Qué es Artify SENA PostgreSQL?
+## 1. ¿Qué es Artify?
 
-Artify SENA PostgreSQL es la versión oficial de Artify SENA con backend Node.js + Express y base de datos PostgreSQL. Conserva el frontend HTML, CSS y JavaScript Vanilla, y usa `pg` como conector PostgreSQL del backend.
+Artify es una aplicación web de edición de imágenes con backend Node.js + Express y base de datos PostgreSQL. Conserva el frontend HTML, CSS y JavaScript Vanilla, y usa `pg` como conector PostgreSQL del backend.
 
-El repositorio se mantiene separado del proyecto base anterior para conservar trazabilidad histórica, pero PostgreSQL es el motor oficial de esta versión.
+PostgreSQL es el motor oficial de persistencia de esta versión.
 
 **Estudiante:** Ivan Dario Madrid Daza
-**GitHub:** https://github.com/Tecno85/artify-sena-postgresql
+**GitHub:** https://github.com/Tecno85/artify
 
 ---
 
@@ -39,14 +39,14 @@ El repositorio se mantiene separado del proyecto base anterior para conservar tr
 
 - Git + GitHub.
 - Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
-- Repositorio separado de `artify-sena` para no afectar la versión histórica del proyecto base.
+- Repositorio separado de `artify` para no afectar la versión histórica del proyecto base.
 
 ---
 
 ## 3. Estructura Principal
 
 ```text
-artify-sena-postgresql/
+artify/
 ├── README.md
 ├── CONTEXT.md
 ├── .env.example
@@ -257,25 +257,25 @@ Validación realizada el 4 de julio de 2026:
 
 | Servicio | URL |
 | --- | --- |
-| Frontend Netlify | `https://artify-sena-postgresql.netlify.app` |
-| Backend Render | `https://artify-sena-backend.onrender.com` |
+| Frontend Netlify | `https://artify.netlify.app` |
+| Backend Render | `https://artify-backend.onrender.com` |
 
 Estado validado:
 
 - Netlify responde HTTP `200`.
-- `frontend/assets/js/config.js` publicado contiene `ARTIFY_API_URL=https://artify-sena-backend.onrender.com`.
+- `frontend/assets/js/config.js` publicado contiene `ARTIFY_API_URL=https://artify-backend.onrender.com`.
 - Render responde `GET /health` con `ok: true` y `entorno: production`.
 - Analytics responde `ok: true`; `filtros: []` es válido cuando no hay operaciones registradas.
-- CORS permite el origen `https://artify-sena-postgresql.netlify.app`.
+- CORS permite el origen `https://artify.netlify.app`.
 
 Variables cruzadas requeridas:
 
 ```env
 # Netlify
-ARTIFY_API_URL=https://artify-sena-backend.onrender.com
+ARTIFY_API_URL=https://artify-backend.onrender.com
 
 # Render
-CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
+CORS_ORIGIN=https://artify.netlify.app
 ```
 
 ---
@@ -286,14 +286,15 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 - Las respuestas de login no diferencian si falló el correo o la contraseña.
 - El acceso administrativo usa el login principal con un usuario de base de datos cuyo `usr_rol` sea `admin`.
 - El `seed.sql` no debe interpretarse como credenciales reales de acceso.
-- La versión histórica del proyecto base se conserva en el repositorio `artify-sena`.
-- Este repositorio debe mantenerse como referencia oficial de Artify SENA con PostgreSQL.
+- La versión histórica del proyecto base se conserva fuera de este repositorio.
+- Este repositorio debe mantenerse como referencia oficial de Artify con PostgreSQL.
 
 ---
 
 ## 10. Historial Reciente
 
-- [2026-06-24] Creación del proyecto separado `artify-sena-postgresql`.
+- [2026-06-24] Creación del proyecto separado con PostgreSQL.
+- [2026-07-07] Renombrado del repositorio y carpeta local a `artify`.
 - [2026-06-24] Creación del esquema inicial PostgreSQL.
 - [2026-06-24] Migración del backend hacia PostgreSQL mediante `pg`.
 - [2026-06-24] Preparación de configuración frontend para despliegue con `ARTIFY_API_URL`.
@@ -303,5 +304,5 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 
 ---
 
-*Proyecto Artify SENA PostgreSQL — Análisis y Desarrollo de Software — SENA 2026*
+*Proyecto Artify — Análisis y Desarrollo de Software — SENA 2026*
 *Estudiante: Ivan Dario Madrid Daza*

@@ -127,8 +127,8 @@ Si alguna herramienta no responde, debo instalarla o corregir su configuración 
 El primer paso consiste en obtener el código fuente del proyecto desde el repositorio.
 
 ```bash
-git clone https://github.com/Tecno85/artify-sena-postgresql.git
-cd artify-sena-postgresql
+git clone https://github.com/Tecno85/artify.git
+cd artify
 ```
 
 ### 8.2 Revisar la estructura del proyecto
@@ -284,8 +284,8 @@ Los siguientes comandos resumen las acciones principales para instalar y ejecuta
 
 | Acción | Comando |
 | --- | --- |
-| Clonar repositorio | `git clone https://github.com/Tecno85/artify-sena-postgresql.git` |
-| Entrar al proyecto | `cd artify-sena-postgresql` |
+| Clonar repositorio | `git clone https://github.com/Tecno85/artify.git` |
+| Entrar al proyecto | `cd artify` |
 | Entrar al backend | `cd backend` |
 | Instalar dependencias | `pnpm install` |
 | Iniciar backend | `pnpm start` |

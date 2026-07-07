@@ -1,6 +1,6 @@
-# Arquitectura Técnica de Artify SENA PostgreSQL
+# Arquitectura Técnica de Artify
 
-> **Proyecto:** Artify SENA PostgreSQL
+> **Proyecto:** Artify
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
 > **Fecha:** Junio 2026
@@ -9,13 +9,13 @@
 
 ## 1. Objetivo del Documento
 
-En este documento describo la arquitectura técnica de Artify SENA PostgreSQL. Explico cómo organizo sus capas principales, qué responsabilidad tiene cada componente y cómo se comunican el frontend, el backend y la base de datos PostgreSQL.
+En este documento describo la arquitectura técnica de Artify. Explico cómo organizo sus capas principales, qué responsabilidad tiene cada componente y cómo se comunican el frontend, el backend y la base de datos PostgreSQL.
 
 ---
 
 ## 2. Vista General
 
-Artify SENA PostgreSQL utiliza una arquitectura web full stack organizada en tres capas principales:
+Artify utiliza una arquitectura web full stack organizada en tres capas principales:
 
 ```text
 ┌─────────────────────────────────────────────────┐
@@ -99,7 +99,7 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 
 ## 5. Capa de Base de Datos
 
-Artify SENA PostgreSQL utiliza PostgreSQL como sistema de persistencia. El esquema activo se encuentra en:
+Artify utiliza PostgreSQL como sistema de persistencia. El esquema activo se encuentra en:
 
 ```text
 database/postgresql/schema.sql

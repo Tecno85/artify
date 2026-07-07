@@ -1,6 +1,6 @@
-# Plan de Trabajo para Artify SENA PostgreSQL
+# Plan de Trabajo para Artify
 
-> **Proyecto:** Artify SENA PostgreSQL  
+> **Proyecto:** Artify
 > **Base:** versión oficial con PostgreSQL
 > **Objetivo:** documentar el proceso seguido para consolidar backend Node.js + Express y base de datos PostgreSQL
 > **Estado:** migración completada y formalizada
@@ -9,7 +9,7 @@
 
 ## 1. Objetivo
 
-En este documento registro el proceso seguido para consolidar Artify SENA PostgreSQL como versión oficial con backend Node.js + Express y base de datos PostgreSQL. El repositorio se mantiene separado del proyecto base anterior por trazabilidad histórica, no porque PostgreSQL sea una versión provisional.
+En este documento registro el proceso seguido para consolidar Artify como versión oficial con backend Node.js + Express y base de datos PostgreSQL. El repositorio se mantiene separado del proyecto base anterior por trazabilidad histórica, no porque PostgreSQL sea una versión provisional.
 
 ---
 

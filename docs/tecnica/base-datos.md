@@ -1,6 +1,6 @@
-# Base de Datos de Artify SENA PostgreSQL
+# Base de Datos de Artify
 
-> **Proyecto:** Artify SENA PostgreSQL
+> **Proyecto:** Artify
 > **Base de datos:** `artify_db`
 > **Motor:** PostgreSQL
 > **Script principal:** `database/postgresql/schema.sql`
@@ -10,13 +10,13 @@
 
 ## 1. Objetivo del Documento
 
-En este documento describo la estructura de la base de datos PostgreSQL usada por Artify SENA PostgreSQL. Incluyo las tablas principales, relaciones, tipos de datos y criterios de mantenimiento que debo tener en cuenta para ejecutar y desplegar la aplicación.
+En este documento describo la estructura de la base de datos PostgreSQL usada por Artify. Incluyo las tablas principales, relaciones, tipos de datos y criterios de mantenimiento que debo tener en cuenta para ejecutar y desplegar la aplicación.
 
 ---
 
 ## 2. Vista General
 
-Artify SENA PostgreSQL utiliza una base de datos relacional llamada `artify_db`. Su función es almacenar usuarios, sesiones de edición, operaciones realizadas, configuraciones personalizadas y metadatos de imágenes.
+Artify utiliza una base de datos relacional llamada `artify_db`. Su función es almacenar usuarios, sesiones de edición, operaciones realizadas, configuraciones personalizadas y metadatos de imágenes.
 
 La tabla principal del modelo es `USUARIO`. Las demás tablas se relacionan con ella para conservar trazabilidad de la actividad del usuario dentro del sistema.
 

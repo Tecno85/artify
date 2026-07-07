@@ -1,4 +1,4 @@
--- Datos mínimos de referencia para Artify SENA PostgreSQL.
+-- Datos mínimos de referencia para Artify.
 -- Este registro permite verificar que el seed carga correctamente.
 -- No corresponde a credenciales reales de acceso.
 -- El acceso administrativo se realiza desde el login principal con un usuario
