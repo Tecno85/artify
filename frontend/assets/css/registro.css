@@ -15,7 +15,7 @@
 :root {
   --primary: #007bff;
   --secondary: #28ffce;
-  --background-dark: #0a0a0a;
+  --background-dark: #000000;
   --text-light: #f5f5f5;
   --border: rgba(255, 255, 255, 0.1);
   --error: #e34800;
