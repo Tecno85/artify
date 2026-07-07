@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
   <title id="title">Flujo de mantenimiento correctivo para Artify</title>
-  <desc id="desc">Secuencia de atencion de incidentes desde reporte hasta cierre documentado.</desc>
+  <desc id="desc">Secuencia centrada de atencion de incidentes desde reporte hasta cierre documentado.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0b1120"/>
@@ -13,17 +13,24 @@
     <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto">
       <path d="M2 2 L10 6 L2 10 Z" fill="#67e8f9"/>
     </marker>
+    <clipPath id="roundedClip">
+      <rect width="1280" height="720" rx="34" ry="34"/>
+    </clipPath>
   </defs>
-  <rect width="1280" height="720" fill="url(#bg)"/>
-  <text x="78" y="84" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="#f8fafc">Ruta de soporte correctivo</text>
-  <text x="78" y="124" font-family="Inter, Arial, sans-serif" font-size="19" fill="#cbd5e1">De un error reportado a una version aceptada y documentada</text>
 
-  <path d="M172 282 H1106" stroke="#67e8f9" stroke-width="5" opacity="0.75" marker-end="url(#arrow)"/>
-  <path d="M1106 282 C1160 282 1160 442 1106 442 H172" stroke="#67e8f9" stroke-width="5" opacity="0.75" fill="none" marker-end="url(#arrow)"/>
+  <g clip-path="url(#roundedClip)">
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <text x="74" y="82" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="#f8fafc">Ruta de soporte correctivo</text>
+  <text x="74" y="122" font-family="Inter, Arial, sans-serif" font-size="19" fill="#cbd5e1">De un error reportado a una version aceptada y documentada</text>
+
+  <g stroke="#67e8f9" stroke-width="5" fill="none" opacity="0.76" marker-end="url(#arrow)">
+    <path d="M220 286 H1044"/>
+    <path d="M1044 286 C1108 286 1108 444 1044 444 H212"/>
+  </g>
 
   <g font-family="Inter, Arial, sans-serif" filter="url(#shadow)">
-    <g transform="translate(86 202)">
-      <rect width="184" height="160" rx="22" fill="#f8fafc"/>
+    <g transform="translate(104 206)">
+      <rect width="176" height="160" rx="22" fill="#f8fafc"/>
       <circle cx="36" cy="38" r="18" fill="#f97316"/>
       <text x="36" y="45" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">1</text>
       <text x="28" y="80" font-size="20" font-weight="800" fill="#0f172a">Reporte</text>
@@ -31,8 +38,9 @@
       <text x="28" y="130" font-size="14" fill="#334155">captura y pasos</text>
       <text x="28" y="150" font-size="14" fill="#334155">para reproducir.</text>
     </g>
-    <g transform="translate(310 202)">
-      <rect width="184" height="160" rx="22" fill="#f8fafc"/>
+
+    <g transform="translate(326 206)">
+      <rect width="176" height="160" rx="22" fill="#f8fafc"/>
       <circle cx="36" cy="38" r="18" fill="#0ea5e9"/>
       <text x="36" y="45" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">2</text>
       <text x="28" y="80" font-size="20" font-weight="800" fill="#0f172a">Diagnostico</text>
@@ -40,8 +48,9 @@
       <text x="28" y="130" font-size="14" fill="#334155">en frontend, API</text>
       <text x="28" y="150" font-size="14" fill="#334155">o PostgreSQL.</text>
     </g>
-    <g transform="translate(534 202)">
-      <rect width="184" height="160" rx="22" fill="#f8fafc"/>
+
+    <g transform="translate(548 206)">
+      <rect width="176" height="160" rx="22" fill="#f8fafc"/>
       <circle cx="36" cy="38" r="18" fill="#8b5cf6"/>
       <text x="36" y="45" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">3</text>
       <text x="28" y="80" font-size="20" font-weight="800" fill="#0f172a">Cambio</text>
@@ -49,8 +58,9 @@
       <text x="28" y="130" font-size="14" fill="#334155">corrijo causa</text>
       <text x="28" y="150" font-size="14" fill="#334155">y registro diff.</text>
     </g>
-    <g transform="translate(758 202)">
-      <rect width="184" height="160" rx="22" fill="#f8fafc"/>
+
+    <g transform="translate(770 206)">
+      <rect width="176" height="160" rx="22" fill="#f8fafc"/>
       <circle cx="36" cy="38" r="18" fill="#22c55e"/>
       <text x="36" y="45" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">4</text>
       <text x="28" y="80" font-size="20" font-weight="800" fill="#0f172a">Pruebas</text>
@@ -58,8 +68,9 @@
       <text x="28" y="130" font-size="14" fill="#334155">test y prueba</text>
       <text x="28" y="150" font-size="14" fill="#334155">manual dirigida.</text>
     </g>
-    <g transform="translate(982 202)">
-      <rect width="184" height="160" rx="22" fill="#f8fafc"/>
+
+    <g transform="translate(992 206)">
+      <rect width="176" height="160" rx="22" fill="#f8fafc"/>
       <circle cx="36" cy="38" r="18" fill="#14b8a6"/>
       <text x="36" y="45" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">5</text>
       <text x="28" y="80" font-size="20" font-weight="800" fill="#0f172a">Entrega</text>
@@ -69,9 +80,10 @@
     </g>
   </g>
 
-  <g transform="translate(158 436)" font-family="Inter, Arial, sans-serif" filter="url(#shadow)">
-    <rect width="936" height="116" rx="24" fill="#020617" opacity="0.64" stroke="#67e8f9" stroke-opacity="0.35"/>
+  <g transform="translate(164 462)" font-family="Inter, Arial, sans-serif" filter="url(#shadow)">
+    <rect width="952" height="116" rx="24" fill="#020617" opacity="0.66" stroke="#67e8f9" stroke-opacity="0.42"/>
     <text x="34" y="43" font-size="22" font-weight="800" fill="#f8fafc">Criterio de salida</text>
     <text x="34" y="77" font-size="16" fill="#dbeafe">El mantenimiento correctivo se cierra cuando el error esta reproducido, corregido, probado, aceptado y documentado.</text>
+  </g>
   </g>
 </svg>
