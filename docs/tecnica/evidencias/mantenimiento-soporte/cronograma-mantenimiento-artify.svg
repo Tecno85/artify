@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Cronograma de mantenimiento preventivo y correctivo de Artify</title>
+  <desc id="desc">Calendario semestral de actividades de mantenimiento para frontend, backend, base de datos, seguridad, pruebas y documentacion.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101827"/>
+      <stop offset="1" stop-color="#064e3b"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#020617" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <text x="74" y="82" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" fill="#f8fafc">Cronograma semestral de mantenimiento</text>
+  <text x="74" y="120" font-family="Inter, Arial, sans-serif" font-size="18" fill="#cbd5e1">Actividades preventivas programadas y respuesta correctiva bajo demanda</text>
+
+  <g transform="translate(74 176)" font-family="Inter, Arial, sans-serif" filter="url(#shadow)">
+    <rect width="1132" height="430" rx="24" fill="#f8fafc"/>
+    <g font-size="16" font-weight="800" fill="#0f172a">
+      <text x="258" y="48">Mes 1</text>
+      <text x="398" y="48">Mes 2</text>
+      <text x="538" y="48">Mes 3</text>
+      <text x="678" y="48">Mes 4</text>
+      <text x="818" y="48">Mes 5</text>
+      <text x="958" y="48">Mes 6</text>
+    </g>
+    <g stroke="#e2e8f0" stroke-width="2">
+      <line x1="224" y1="70" x2="224" y2="390"/>
+      <line x1="364" y1="70" x2="364" y2="390"/>
+      <line x1="504" y1="70" x2="504" y2="390"/>
+      <line x1="644" y1="70" x2="644" y2="390"/>
+      <line x1="784" y1="70" x2="784" y2="390"/>
+      <line x1="924" y1="70" x2="924" y2="390"/>
+      <line x1="1064" y1="70" x2="1064" y2="390"/>
+      <line x1="38" y1="96" x2="1094" y2="96"/>
+      <line x1="38" y1="150" x2="1094" y2="150"/>
+      <line x1="38" y1="204" x2="1094" y2="204"/>
+      <line x1="38" y1="258" x2="1094" y2="258"/>
+      <line x1="38" y1="312" x2="1094" y2="312"/>
+      <line x1="38" y1="366" x2="1094" y2="366"/>
+    </g>
+    <g font-size="15" font-weight="700" fill="#334155">
+      <text x="38" y="128">Dependencias</text>
+      <text x="38" y="182">Backups BD</text>
+      <text x="38" y="236">Pruebas API</text>
+      <text x="38" y="290">Revision seguridad</text>
+      <text x="38" y="344">Docs y evidencias</text>
+      <text x="38" y="398">Correctivos</text>
+    </g>
+    <g>
+      <rect x="244" y="110" width="90" height="26" rx="13" fill="#0ea5e9"/>
+      <rect x="524" y="110" width="90" height="26" rx="13" fill="#0ea5e9"/>
+      <rect x="804" y="110" width="90" height="26" rx="13" fill="#0ea5e9"/>
+      <rect x="944" y="110" width="90" height="26" rx="13" fill="#0ea5e9"/>
+
+      <rect x="244" y="164" width="90" height="26" rx="13" fill="#14b8a6"/>
+      <rect x="384" y="164" width="90" height="26" rx="13" fill="#14b8a6"/>
+      <rect x="524" y="164" width="90" height="26" rx="13" fill="#14b8a6"/>
+      <rect x="664" y="164" width="90" height="26" rx="13" fill="#14b8a6"/>
+      <rect x="804" y="164" width="90" height="26" rx="13" fill="#14b8a6"/>
+      <rect x="944" y="164" width="90" height="26" rx="13" fill="#14b8a6"/>
+
+      <rect x="244" y="218" width="90" height="26" rx="13" fill="#22c55e"/>
+      <rect x="524" y="218" width="90" height="26" rx="13" fill="#22c55e"/>
+      <rect x="804" y="218" width="90" height="26" rx="13" fill="#22c55e"/>
+      <rect x="944" y="218" width="90" height="26" rx="13" fill="#22c55e"/>
+
+      <rect x="244" y="272" width="90" height="26" rx="13" fill="#f97316"/>
+      <rect x="664" y="272" width="90" height="26" rx="13" fill="#f97316"/>
+      <rect x="944" y="272" width="90" height="26" rx="13" fill="#f97316"/>
+
+      <rect x="244" y="326" width="90" height="26" rx="13" fill="#8b5cf6"/>
+      <rect x="524" y="326" width="90" height="26" rx="13" fill="#8b5cf6"/>
+      <rect x="804" y="326" width="90" height="26" rx="13" fill="#8b5cf6"/>
+      <rect x="944" y="326" width="90" height="26" rx="13" fill="#8b5cf6"/>
+
+      <rect x="244" y="380" width="790" height="26" rx="13" fill="#ef4444" opacity="0.9"/>
+    </g>
+  </g>
+
+  <g transform="translate(74 636)" font-family="Inter, Arial, sans-serif">
+    <rect x="0" y="0" width="1132" height="46" rx="18" fill="#020617" opacity="0.48"/>
+    <circle cx="28" cy="23" r="8" fill="#0ea5e9"/><text x="44" y="29" font-size="14" fill="#e0f2fe">Preventivo tecnico</text>
+    <circle cx="204" cy="23" r="8" fill="#14b8a6"/><text x="220" y="29" font-size="14" fill="#ccfbf1">Respaldo</text>
+    <circle cx="336" cy="23" r="8" fill="#22c55e"/><text x="352" y="29" font-size="14" fill="#dcfce7">Pruebas</text>
+    <circle cx="458" cy="23" r="8" fill="#f97316"/><text x="474" y="29" font-size="14" fill="#ffedd5">Seguridad</text>
+    <circle cx="594" cy="23" r="8" fill="#8b5cf6"/><text x="610" y="29" font-size="14" fill="#ede9fe">Documentacion</text>
+    <circle cx="762" cy="23" r="8" fill="#ef4444"/><text x="778" y="29" font-size="14" fill="#fee2e2">Correctivo bajo demanda</text>
+  </g>
+</svg>

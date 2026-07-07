@@ -1,7 +1,7 @@
 # CONTEXT.md — Proyecto Artify SENA PostgreSQL
 
 > Archivo de contexto para continuar el desarrollo.
-> Última actualización: Junio 2026
+> Última actualización: Julio 2026
 
 ---
 
@@ -99,6 +99,7 @@ artify-sena-postgresql/
 └── docs/
     └── tecnica/
         ├── despliegue-fullstack-postgresql.md
+        ├── plan-mantenimiento-soporte-artify.md
         ├── plan-migracion-postgresql.md
         └── otros documentos heredados del proyecto base
 ```

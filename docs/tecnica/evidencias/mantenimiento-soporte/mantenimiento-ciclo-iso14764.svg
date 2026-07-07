@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Ciclo de mantenimiento de Artify basado en ISO 14764</title>
+  <desc id="desc">Diagrama visual con las etapas de implementacion, analisis, modificacion, aceptacion, migracion y retiro del mantenimiento de Artify.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset="0.54" stop-color="#13263b"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.07"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#020617" flood-opacity="0.28"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M2 2 L10 6 L2 10 Z" fill="#7dd3fc"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1100" cy="96" r="118" fill="#22d3ee" opacity="0.08"/>
+  <circle cx="156" cy="600" r="150" fill="#34d399" opacity="0.08"/>
+  <text x="80" y="82" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="700" fill="#f8fafc">Plan de mantenimiento Artify</text>
+  <text x="80" y="122" font-family="Inter, Arial, sans-serif" font-size="19" fill="#cbd5e1">Ciclo operativo alineado con ISO/IEC/IEEE 14764</text>
+
+  <g stroke="#7dd3fc" stroke-width="4" fill="none" marker-end="url(#arrow)" opacity="0.92">
+    <path d="M344 188 C456 116 612 112 738 176"/>
+    <path d="M886 248 C980 356 954 496 846 588"/>
+    <path d="M700 622 C564 674 398 624 322 506"/>
+    <path d="M240 390 C202 292 234 238 300 194"/>
+  </g>
+
+  <g filter="url(#shadow)" font-family="Inter, Arial, sans-serif">
+    <g transform="translate(302 150)">
+      <rect width="260" height="112" rx="18" fill="url(#card)" stroke="#67e8f9" stroke-opacity="0.45"/>
+      <text x="24" y="39" font-size="21" font-weight="700" fill="#f8fafc">1. Implementacion</text>
+      <text x="24" y="70" font-size="15" fill="#dbeafe">Defino roles, repositorio,</text>
+      <text x="24" y="91" font-size="15" fill="#dbeafe">ambientes y tablero de soporte.</text>
+    </g>
+    <g transform="translate(690 150)">
+      <rect width="280" height="112" rx="18" fill="url(#card)" stroke="#a7f3d0" stroke-opacity="0.45"/>
+      <text x="24" y="39" font-size="21" font-weight="700" fill="#f8fafc">2. Analisis</text>
+      <text x="24" y="70" font-size="15" fill="#dcfce7">Clasifico solicitudes, riesgos,</text>
+      <text x="24" y="91" font-size="15" fill="#dcfce7">impacto y prioridad.</text>
+    </g>
+    <g transform="translate(830 362)">
+      <rect width="282" height="112" rx="18" fill="url(#card)" stroke="#fbbf24" stroke-opacity="0.52"/>
+      <text x="24" y="39" font-size="21" font-weight="700" fill="#f8fafc">3. Modificacion</text>
+      <text x="24" y="70" font-size="15" fill="#fef3c7">Desarrollo, pruebas, revision</text>
+      <text x="24" y="91" font-size="15" fill="#fef3c7">y control de version.</text>
+    </g>
+    <g transform="translate(548 514)">
+      <rect width="292" height="112" rx="18" fill="url(#card)" stroke="#c4b5fd" stroke-opacity="0.52"/>
+      <text x="24" y="39" font-size="21" font-weight="700" fill="#f8fafc">4. Aceptacion</text>
+      <text x="24" y="70" font-size="15" fill="#ede9fe">Verifico criterios, evidencias</text>
+      <text x="24" y="91" font-size="15" fill="#ede9fe">y documentacion actualizada.</text>
+    </g>
+    <g transform="translate(208 438)">
+      <rect width="292" height="112" rx="18" fill="url(#card)" stroke="#fb7185" stroke-opacity="0.52"/>
+      <text x="24" y="39" font-size="21" font-weight="700" fill="#f8fafc">5. Migracion</text>
+      <text x="24" y="70" font-size="15" fill="#ffe4e6">Planeo cambios de plataforma,</text>
+      <text x="24" y="91" font-size="15" fill="#ffe4e6">datos y compatibilidad.</text>
+    </g>
+    <g transform="translate(156 236)">
+      <rect width="260" height="112" rx="18" fill="url(#card)" stroke="#93c5fd" stroke-opacity="0.52"/>
+      <text x="24" y="39" font-size="21" font-weight="700" fill="#f8fafc">6. Retiro</text>
+      <text x="24" y="70" font-size="15" fill="#dbeafe">Cierro versiones, respaldo</text>
+      <text x="24" y="91" font-size="15" fill="#dbeafe">y archivo evidencias.</text>
+    </g>
+  </g>
+
+  <g transform="translate(512 292)">
+    <rect width="260" height="122" rx="24" fill="#020617" opacity="0.56" stroke="#38bdf8" stroke-opacity="0.35"/>
+    <text x="130" y="52" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="800" fill="#f8fafc">Artify</text>
+    <text x="130" y="82" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" fill="#bae6fd">Frontend, backend</text>
+    <text x="130" y="104" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="16" fill="#bae6fd">y PostgreSQL</text>
+  </g>
+</svg>
