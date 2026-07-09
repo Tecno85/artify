@@ -461,4 +461,97 @@ p b {
     text-align: center;
   }
 }
-  
+
+/* ========== Portátiles y ventanas de escritorio con poca altura ========== */
+@media (min-width: 901px) and (max-height: 800px) {
+  .container {
+    min-height: 100dvh;
+    gap: clamp(8px, 1.5vh, 14px);
+    padding: clamp(10px, 2vh, 16px) clamp(24px, 4vw, 56px);
+  }
+
+  header {
+    width: min(100%, 1120px);
+  }
+
+  .header-img {
+    gap: 9px;
+  }
+
+  .header-img img {
+    max-width: 24px;
+  }
+
+  .header-img p,
+  .enlaces {
+    font-size: 0.9rem;
+  }
+
+  .enlace {
+    min-height: 34px;
+    padding: 5px 10px;
+  }
+
+  main {
+    width: min(100%, 1000px);
+    gap: clamp(12px, 2vh, 18px);
+  }
+
+  .bienvenida {
+    gap: 2px;
+    transform: none;
+  }
+
+  .bienvenida img {
+    width: clamp(64px, 11vh, 78px);
+  }
+
+  .editor-brand {
+    gap: 2px;
+  }
+
+  .bienvenida h1 {
+    font-size: 2rem;
+  }
+
+  .bienvenida p {
+    font-size: 0.88rem;
+  }
+
+  .cards {
+    width: min(100%, 1000px);
+    gap: clamp(16px, 2vw, 26px);
+  }
+
+  .card {
+    min-height: 138px;
+    gap: 7px;
+    padding: 10px 14px;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+  }
+
+  .card p {
+    font-size: 0.84rem;
+  }
+
+  .card-1 img {
+    width: 50px;
+  }
+
+  .card-2 img {
+    width: 47px;
+  }
+
+  .card-3 img {
+    width: 54px;
+  }
+
+  footer p {
+    padding: 1px;
+    font-size: 0.76rem;
+    line-height: 1.15;
+  }
+}
