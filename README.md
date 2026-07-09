@@ -545,7 +545,8 @@ Este proyecto sigue estándares de codificación documentados. Consulta el archi
 ## Notas Importantes
 
 ### Resolución Recomendada
-- **Mínima:** 1100 x 768 px
+- **Ventana útil mínima:** 1024 x 600 px
+- **Portátiles de 1366 x 768:** el editor activa un modo vertical compacto para aprovechar la altura disponible del navegador
 - **Óptima:** 1920 x 1080 px o superior
 
 ### Consideraciones de Rendimiento

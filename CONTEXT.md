@@ -24,6 +24,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 - Canvas API para manipulación de imágenes.
 - SessionStorage para manejo de sesión.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
+- Layout de escritorio con modo vertical compacto para ventanas desde 1024 x 600 px; conserva la distribución amplia cuando existe mayor altura disponible.
 
 ### Backend
 
@@ -312,6 +313,7 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 - [2026-07-08] Documentación de plan de migración y respaldo de datos de Artify con referencia en ISO 27001 para evidencia GA10-220501097-AA9.
 - [2026-07-09] Revalidación del despliegue público activo en Netlify + Render y corrección de URLs operativas.
 - [2026-07-09] Corrección de estado de cuentas, sesiones, descargas, analytics, validaciones y cobertura automatizada.
+- [2026-07-09] Ajuste responsive del editor para portátiles de 1366 x 768 y validación por tamaño útil de ventana.
 
 ---
 

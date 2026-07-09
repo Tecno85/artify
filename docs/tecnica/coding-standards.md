@@ -74,8 +74,8 @@ Las constantes que no cambian durante la ejecución se escriben en mayúsculas c
 
 ```javascript
 // Ejemplo recomendado - tomado de editor.js
-const RESOLUCION_MINIMA_ANCHO = 1366;
-const RESOLUCION_MINIMA_ALTO = 768;
+const RESOLUCION_MINIMA_ANCHO = 1024;
+const RESOLUCION_MINIMA_ALTO = 600;
 const LOCAL_STORAGE_KEY = 'artify_no_mostrar_modal_resolucion';
 
 // Incorrecto

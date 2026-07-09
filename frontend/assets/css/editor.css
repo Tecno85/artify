@@ -2744,3 +2744,245 @@ header {
     font-size: 0.95rem;
   }
 }
+
+/* ======================================================
+   MODO COMPACTO VERTICAL - portátiles y ventanas bajas
+   Conserva el layout amplio en ultrawide cuando hay altura suficiente.
+   ====================================================== */
+@media (min-width: 1024px) and (max-height: 800px) {
+  .container {
+    height: 100dvh;
+  }
+
+  header {
+    flex: 0 0 auto;
+    height: 64px;
+    padding: 8px 18px;
+  }
+
+  .header-left {
+    gap: 9px;
+  }
+
+  .header-left .logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .header-left h1 {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+  }
+
+  .user-info {
+    gap: 7px;
+    padding: 5px 10px;
+    font-size: 0.84rem;
+  }
+
+  .user-info img {
+    width: 22px;
+  }
+
+  .btn-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .btn-icon img {
+    width: 19px;
+  }
+
+  .editor-layout {
+    min-height: 0;
+    grid-template-columns:
+      clamp(185px, 15vw, 210px)
+      minmax(0, 1fr)
+      clamp(235px, 20vw, 275px);
+  }
+
+  .panel-left,
+  .panel-right,
+  .canvas-container {
+    min-height: 0;
+  }
+
+  .panel-left,
+  .panel-right {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .tool-section {
+    gap: 4px;
+  }
+
+  .section-title {
+    display: block;
+    margin-bottom: 0;
+    padding-bottom: 4px;
+    font-size: 0.78rem;
+    letter-spacing: 1px;
+  }
+
+  .tool-btn {
+    min-height: 30px;
+    gap: 8px;
+    padding: 5px 9px;
+    font-size: 0.82rem;
+  }
+
+  .tool-btn img {
+    width: 18px;
+  }
+
+  .tool-btn .expand-icon {
+    width: 13px;
+  }
+
+  .submenu {
+    gap: 2px;
+    margin-top: 2px;
+    padding-left: 12px;
+  }
+
+  .submenu-btn {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+
+  .canvas-container {
+    padding: 12px;
+  }
+
+  .drop-zone {
+    width: min(100%, 560px);
+    height: clamp(260px, 60vh, 340px);
+    max-height: calc(100% - 24px);
+    border-width: 2px;
+    border-radius: 12px;
+  }
+
+  .drop-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+  }
+
+  .drop-text {
+    margin-bottom: 5px;
+    font-size: 1.05rem;
+  }
+
+  .drop-subtext {
+    margin-bottom: 9px;
+    font-size: 0.88rem;
+  }
+
+  .drop-info {
+    padding: 4px 9px;
+    font-size: 0.76rem;
+  }
+
+  .canvas-wrapper {
+    gap: 8px;
+  }
+
+  #mainCanvas {
+    max-height: calc(100dvh - 205px);
+  }
+
+  .zoom-controls {
+    display: flex;
+    gap: 8px;
+    padding: 5px 10px;
+  }
+
+  .zoom-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .zoom-level {
+    min-width: 45px;
+    font-size: 0.82rem;
+  }
+
+  .image-dimensions {
+    display: block;
+    padding: 4px 8px;
+    font-size: 0.74rem;
+  }
+
+  .panel-title {
+    padding-bottom: 7px;
+    font-size: 1rem;
+  }
+
+  .properties-section {
+    margin: 0;
+    padding: 11px;
+  }
+
+  .prop-subtitle {
+    margin-bottom: 6px;
+    font-size: 0.92rem;
+  }
+
+  .prop-item {
+    padding: 6px 0;
+  }
+
+  .prop-label,
+  .prop-value,
+  .no-tool-selected,
+  .control-group label,
+  .checkbox-control {
+    font-size: 0.8rem;
+  }
+
+  .no-tool-selected {
+    padding-top: 8px;
+  }
+
+  .control-group {
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  .select-input,
+  .number-input {
+    padding: 7px 9px;
+    font-size: 0.82rem;
+  }
+
+  .btn-apply {
+    padding: 8px;
+    font-size: 0.86rem;
+  }
+
+  .status-bar {
+    flex: 0 0 auto;
+    height: 42px;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+  }
+
+  .status-item img {
+    width: 19px;
+  }
+
+  .status-indicator {
+    padding: 4px 8px;
+  }
+
+  .notifications-container {
+    top: 68px;
+    right: 18px;
+  }
+
+  .modal-resolucion-content {
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+}
