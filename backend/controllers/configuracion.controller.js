@@ -1,7 +1,10 @@
 // ========== DEPENDENCIAS ==========
 const db = require('../config/db');
 const { parsearConfiguracionAvanzada } = require('../utils/configuracion');
-const { normalizarIdEntero } = require('../utils/validacion');
+const {
+  normalizarIdEntero,
+  validarConfiguracion,
+} = require('../utils/validacion');
 
 // ========== CONSULTA DE CONFIGURACIÓN ==========
 function obtenerConfiguracion(req, res) {
@@ -51,11 +54,17 @@ function guardarConfiguracion(req, res) {
     autoguardado,
   } = req.body;
   const idUsuarioNormalizado = normalizarIdEntero(idUsuario);
+  const errorValidacion = validarConfiguracion({
+    calidadExportacion,
+    notificaciones,
+    formatoDefecto,
+    autoguardado,
+  });
 
-  if (idUsuarioNormalizado === null) {
+  if (idUsuarioNormalizado === null || errorValidacion) {
     return res
       .status(400)
-      .json({ mensaje: 'Datos de configuración inválidos' });
+      .json({ mensaje: errorValidacion || 'Datos de configuración inválidos' });
   }
 
   console.log('📨 Guardando configuración de usuario');

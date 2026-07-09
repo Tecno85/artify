@@ -9,6 +9,9 @@ let zoomLevel = 100;
 let currentFilter = null;
 let formatoActual = null; // Formato actual de la imagen después de conversión
 let calidadActual = null; // Calidad actual de la imagen después de conversión
+let archivoActual = null;
+let preferenciasActuales = null;
+let autoguardadoTimeout = null;
 
 // ========== ELEMENTOS DEL DOM ==========
 let fileInput, btnSubir, btnDescargar, dropZone, canvasWrapper, imageInfo;
@@ -80,7 +83,7 @@ function sincronizarImagenYCanvas(callback) {
 }
 
 // ========== FUNCIÓN PARA REGISTRAR OPERACIÓN EN BACKEND ==========
-async function registrarOperacion(tipo, descripcion) {
+async function registrarOperacion(tipo, descripcion, parametros = {}) {
   try {
     const userData = sessionStorage.getItem('artifyUser');
     const idSesion = sessionStorage.getItem('artifyIdSesion');
@@ -89,7 +92,7 @@ async function registrarOperacion(tipo, descripcion) {
 
     const usuario = JSON.parse(userData);
 
-    await fetchAuth(`${API}/api/operacion`, {
+    const response = await fetchAuth(`${API}/api/operacion`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -97,13 +100,93 @@ async function registrarOperacion(tipo, descripcion) {
         idSesion: parseInt(idSesion),
         tipo,
         descripcion,
+        parametros,
       }),
     });
+
+    if (!response.ok) {
+      throw new Error(`La API respondió ${response.status}`);
+    }
 
     console.log('✅ Operación registrada en PostgreSQL:', tipo);
   } catch (err) {
     console.warn('⚠️ No se pudo registrar la operación:', err);
   }
+}
+
+async function registrarImagenDescargada(formato, blob) {
+  try {
+    const userData = sessionStorage.getItem('artifyUser');
+    const idSesion = sessionStorage.getItem('artifyIdSesion');
+
+    if (!userData || !idSesion || !archivoActual || !blob) return;
+
+    const usuario = JSON.parse(userData);
+    const response = await fetchAuth(`${API}/api/imagen`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        idUsuario: usuario.id,
+        idSesion: parseInt(idSesion),
+        nombreOriginal: archivoActual.nombreOriginal,
+        formatoOriginal: archivoActual.formatoOriginal,
+        formatoFinal: formato,
+        tamanoOriginal: blob.size,
+        anchoOriginal: canvas.width,
+        altoOriginal: canvas.height,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`La API respondió ${response.status}`);
+    }
+
+    console.log('✅ Descarga registrada en PostgreSQL');
+  } catch (error) {
+    console.warn('⚠️ La descarga terminó, pero no se pudo registrar:', error);
+  }
+}
+
+function programarAutoguardado() {
+  clearTimeout(autoguardadoTimeout);
+  autoguardadoTimeout = setTimeout(autoguardarImagen, 750);
+}
+
+async function autoguardarImagen() {
+  const prefs = preferenciasActuales || (await cargarPreferencias());
+
+  if (!prefs.autoguardado || !currentImage || !canvas) {
+    return;
+  }
+
+  const formato = prefs.formatoDefecto || 'png';
+  const calidad = prefs.calidadExportacion || 'alta';
+  const calidadMap = { alta: 1.0, maxima: 1.0, media: 0.8, baja: 0.6 };
+  const mimeTypeMap = {
+    png: 'image/png',
+    jpeg: 'image/jpeg',
+    webp: 'image/webp',
+  };
+
+  canvas.toBlob(
+    (blob) => {
+      if (!blob) return;
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          localStorage.setItem('artify_backup_image', reader.result);
+          localStorage.setItem('artify_backup_timestamp', Date.now().toString());
+          console.log('💾 Backup automático guardado');
+        } catch {
+          console.warn('⚠️ No se pudo guardar backup (imagen muy grande)');
+        }
+      };
+      reader.readAsDataURL(blob);
+    },
+    mimeTypeMap[formato] || 'image/png',
+    calidadMap[calidad] || 1.0
+  );
 }
 
 // ========== FUNCIÓN PARA GUARDAR ESTADO EN HISTORIAL ==========
@@ -116,6 +199,11 @@ function guardarEstadoEnHistorial(descripcion) {
   // Guardar el estado actual del canvas como imagen
   canvas.toBlob(
     (blob) => {
+      if (!blob) {
+        console.warn('⚠️ No se pudo guardar el estado en el historial');
+        return;
+      }
+
       const url = URL.createObjectURL(blob);
       operationsHistory.push({
         imageUrl: url,
@@ -136,6 +224,7 @@ function guardarEstadoEnHistorial(descripcion) {
 
       actualizarBotonesHistorial();
       actualizarContadorOperaciones();
+      programarAutoguardado();
     },
     'image/png',
     1.0
@@ -200,9 +289,23 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // Cargar usuario e iniciar sesión de edición
   const usuarioData = sessionStorage.getItem('artifyUser');
+  const token = obtenerTokenAuth();
+
+  if (!usuarioData || !token) {
+    limpiarSesionAuth();
+    window.location.href = './login.html';
+    return;
+  }
+
   if (usuarioData) {
     try {
       const usuario = JSON.parse(usuarioData);
+
+      if (usuario.rol === 'admin') {
+        window.location.href = './admin.html';
+        return;
+      }
+
       const userNameElement = document.getElementById('userName');
       if (userNameElement) {
         userNameElement.textContent = `${usuario.nombres} ${usuario.apellidos}`;
@@ -219,9 +322,13 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (data.mensaje === 'Sesión iniciada') {
         sessionStorage.setItem('artifyIdSesion', data.idSesion);
         console.log('✅ Sesión de edición iniciada. ID:', data.idSesion);
+      } else if (res.status === 401 || res.status === 403) {
+        limpiarSesionAuth();
+        window.location.href = './login.html';
+        return;
       }
     } catch (error) {
-      console.warn('⚠️ Error al parsear datos del usuario');
+      console.warn('⚠️ No se pudo iniciar la sesión de edición');
     }
   }
   // Inicializar elementos del DOM
@@ -304,26 +411,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     actualizarEstado('Cargando imagen...', 'processing');
 
-    // Registrar imagen editada en PostgreSQL
-    const userData = sessionStorage.getItem('artifyUser');
-    const idSesion = sessionStorage.getItem('artifyIdSesion');
-    if (userData && idSesion) {
-      const usuario = JSON.parse(userData);
-      const formatoOriginal = file.type.replace('image/', '');
-      fetchAuth(`${API}/api/imagen`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          idUsuario: usuario.id,
-          idSesion: parseInt(idSesion),
-          nombreOriginal: file.name,
-          formatoOriginal: formatoOriginal,
-          formatoFinal: formatoOriginal,
-          tamanoOriginal: file.size,
-        }),
-      }).then(() => console.log('✅ Imagen registrada en PostgreSQL:', file.name));
-    }
-
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -333,6 +420,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0);
         currentImage = img;
+        archivoActual = {
+          nombreOriginal: file.name,
+          formatoOriginal: file.type.replace('image/', '').replace('jpg', 'jpeg'),
+        };
 
         // Resetear formato y calidad al cargar nueva imagen
         formatoActual = null;
@@ -459,6 +550,12 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     canvas.toBlob(
       (blob) => {
+        if (!blob) {
+          actualizarEstado('Error', 'error');
+          mostrarNotificacion('error', 'No se pudo generar la descarga');
+          return;
+        }
+
         const tamanoKB = (blob.size / 1024).toFixed(2);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -466,6 +563,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         a.download = `artify-editado-${Date.now()}.${extension}`;
         a.click();
         URL.revokeObjectURL(url);
+        registrarImagenDescargada(formato, blob);
 
         actualizarEstado('Listo', 'success');
         mostrarNotificacion(
@@ -621,58 +719,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  function autoguardarImagen() {
-    const prefs = cargarPreferencias();
-
-    if (!prefs.autoguardado || !currentImage) {
-      return;
-    }
-
-    const formato = prefs.formatoDefecto || 'png';
-    const calidad = prefs.calidadExportacion || 'alta';
-
-    const calidadMap = {
-      alta: 1.0,
-      media: 0.8,
-      baja: 0.6,
-    };
-
-    const calidadNumero = calidadMap[calidad];
-
-    // Mapeo de formatos con soporte para WebP
-    const mimeTypeMap = {
-      png: 'image/png',
-      jpeg: 'image/jpeg',
-      webp: 'image/webp',
-    };
-
-    const mimeType = mimeTypeMap[formato] || 'image/png';
-
-    // ✅ NO descargar automáticamente, solo guardar en localStorage como backup
-    canvas.toBlob(
-      (blob) => {
-        // Guardar en memoria temporal como backup
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          try {
-            // Guardar solo la imagen más reciente (no acumular)
-            localStorage.setItem('artify_backup_image', reader.result);
-            localStorage.setItem(
-              'artify_backup_timestamp',
-              Date.now().toString()
-            );
-            console.log('💾 Backup automático guardado');
-          } catch (e) {
-            console.warn('⚠️ No se pudo guardar backup (imagen muy grande)');
-          }
-        };
-        reader.readAsDataURL(blob);
-      },
-      mimeType,
-      calidadNumero
-    );
-  }
-
   // ========== FILTROS ==========
   btnFiltros.addEventListener('click', () => {
     if (btnFiltros.disabled) return;
@@ -755,7 +801,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       };
       registrarOperacion(
         'filtro',
-        `Filtro aplicado: ${filtrosNombres[currentFilter] || currentFilter}`
+        `Filtro aplicado: ${filtrosNombres[currentFilter] || currentFilter}`,
+        { filtro: filtrosNombres[currentFilter] || currentFilter }
       );
       // Resetear la selección del filtro para poder aplicar múltiples veces
       currentFilter = null;
@@ -1008,10 +1055,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const rect = canvas.getBoundingClientRect();
 
-    // Calcular escala considerando el zoom actual
-    const currentScale = zoomLevel / 100;
-    const scaleX = canvas.width / (rect.width / currentScale);
-    const scaleY = canvas.height / (rect.height / currentScale);
+    // Convertir las coordenadas visuales a coordenadas internas del canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
     // Ajustar coordenadas del mouse
     startX = (e.clientX - rect.left) * scaleX;
@@ -1031,10 +1077,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const rect = canvas.getBoundingClientRect();
 
-    // Calcular escala considerando el zoom actual
-    const currentScale = zoomLevel / 100;
-    const scaleX = canvas.width / (rect.width / currentScale);
-    const scaleY = canvas.height / (rect.height / currentScale);
+    // Convertir las coordenadas visuales a coordenadas internas del canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
 
     // Calcular posición actual del mouse
     const currentX = (e.clientX - rect.left) * scaleX;
@@ -1418,6 +1463,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // ========== NOTIFICACIONES ==========
   function mostrarNotificacion(tipo, mensaje) {
+    if (
+      preferenciasActuales?.notificacionesHabilitadas === false &&
+      !['error', 'warning'].includes(tipo)
+    ) {
+      return;
+    }
+
     // Buscar el contenedor de notificaciones en la barra de estado
     let container = document.getElementById('statusNotifications');
 
@@ -1605,6 +1657,12 @@ async function guardarPreferencias(prefs) {
     });
 
     const data = await res.json();
+
+    if (!res.ok) {
+      console.warn('⚠️ La configuración fue rechazada:', data.mensaje);
+      return false;
+    }
+
     console.log('✅ Preferencias guardadas en PostgreSQL:', data.mensaje);
     return true;
   } catch {
@@ -1614,6 +1672,7 @@ async function guardarPreferencias(prefs) {
 }
 
 function aplicarPreferencias(prefs) {
+  preferenciasActuales = { ...PREFERENCIAS_DEFAULT, ...prefs };
   console.log('✅ Preferencias aplicadas:', prefs);
   console.log('📊 Calidad de exportación:', prefs.calidadExportacion);
   console.log('📄 Formato por defecto:', prefs.formatoDefecto);

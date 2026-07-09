@@ -42,6 +42,14 @@ Resultado:
 | `backend/controllers/analytics.controller.js` | Migrado | Agregaciones, funciones de fecha y casts para devolver conteos/porcentajes numéricos. |
 | `backend/tests/api.test.js` | Migrado | Suite automatizada ejecutada contra PostgreSQL temporal. |
 
+## Ajustes de consistencia posteriores
+
+- El backend normaliza correos antes de registrar o autenticar usuarios.
+- Cada ruta privada confirma que la cuenta continúa activa y usa el rol vigente en PostgreSQL.
+- Las descargas registran dimensiones y formato final, enlazan la imagen con la sesión y marcan cambios guardados.
+- El cierre de sesión calcula duración y conserva el indicador activo mientras exista otra sesión abierta.
+- Analytics separa filtros visuales de otras operaciones y calcula formatos solo sobre salidas descargadas.
+
 ## Decisión inicial
 
 Mantener nombres de tablas y columnas equivalentes al modelo actual para reducir cambios funcionales. En PostgreSQL se usan comillas dobles en SQL directo cuando se referencian tablas en mayúscula. En el backend, `backend/config/db.js` conserva una capa de compatibilidad que adapta placeholders `?` a `$1`, `$2` y cita nombres de tablas antes de ejecutar las consultas con `pg`.

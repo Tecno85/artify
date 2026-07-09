@@ -11,6 +11,10 @@ function esCorreo(valor) {
   return esTexto(valor, 5, 150) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
 }
 
+function normalizarCorreo(valor) {
+  return typeof valor === 'string' ? valor.trim().toLowerCase() : valor;
+}
+
 function esPassword(valor) {
   return typeof valor === 'string' && valor.length >= 8 && valor.length <= 128;
 }
@@ -20,7 +24,16 @@ function esCedula(valor) {
 }
 
 function esFecha(valor) {
-  return typeof valor === 'string' && !Number.isNaN(Date.parse(valor));
+  if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+    return false;
+  }
+
+  const fecha = new Date(`${valor}T00:00:00.000Z`);
+  return (
+    !Number.isNaN(fecha.getTime()) &&
+    fecha.toISOString().slice(0, 10) === valor &&
+    fecha <= new Date()
+  );
 }
 
 function normalizarIdEntero(valor) {
@@ -37,7 +50,7 @@ function normalizarIdEntero(valor) {
 }
 
 function validarCredenciales({ correo, password }) {
-  if (!esCorreo(correo)) {
+  if (!esCorreo(normalizarCorreo(correo))) {
     return 'Ingresa un correo válido';
   }
 
@@ -115,8 +128,31 @@ function validarEdicionUsuario({
   return null;
 }
 
+function validarConfiguracion({
+  calidadExportacion,
+  notificaciones,
+  formatoDefecto,
+  autoguardado,
+}) {
+  if (!['baja', 'media', 'alta', 'maxima'].includes(calidadExportacion)) {
+    return 'Selecciona una calidad de exportación válida';
+  }
+
+  if (!['png', 'jpeg', 'webp'].includes(formatoDefecto)) {
+    return 'Selecciona un formato por defecto válido';
+  }
+
+  if (typeof notificaciones !== 'boolean' || typeof autoguardado !== 'boolean') {
+    return 'Las preferencias booleanas son inválidas';
+  }
+
+  return null;
+}
+
 module.exports = {
+  normalizarCorreo,
   normalizarIdEntero,
+  validarConfiguracion,
   validarCredenciales,
   validarUsuario,
   validarEdicionUsuario,

@@ -5,12 +5,26 @@ const db = require('../config/db');
 function filtrosPopulares(req, res) {
   const query = `
     SELECT
-      opr_tipo_operacion as filtro,
+      COALESCE(
+        NULLIF(BTRIM(opr_parametros ->> 'filtro'), ''),
+        NULLIF(
+          REGEXP_REPLACE(
+            COALESCE(opr_parametros ->> 'descripcion', ''),
+            '^Filtro aplicado:\\s*',
+            '',
+            'i'
+          ),
+          ''
+        ),
+        'Sin especificar'
+      ) as filtro,
       COUNT(*)::int as usos,
       COALESCE(
         ROUND(
           100.0 * COUNT(*) / NULLIF(
-            (SELECT COUNT(*) FROM OPERACION WHERE opr_estado_operacion = 'completada'),
+            (SELECT COUNT(*) FROM OPERACION
+             WHERE opr_estado_operacion = 'completada'
+               AND opr_tipo_operacion = 'filtro'),
             0
           ),
           2
@@ -19,7 +33,8 @@ function filtrosPopulares(req, res) {
       )::float as porcentaje
     FROM OPERACION
     WHERE opr_estado_operacion = 'completada'
-    GROUP BY opr_tipo_operacion
+      AND opr_tipo_operacion = 'filtro'
+    GROUP BY filtro
     ORDER BY usos DESC
     LIMIT 10
   `;
@@ -30,7 +45,6 @@ function filtrosPopulares(req, res) {
       return res.status(500).json({
         ok: false,
         mensaje: 'Error obteniendo datos',
-        error: err.message,
       });
     }
 
@@ -74,7 +88,6 @@ function horariosEdicion(req, res) {
       return res.status(500).json({
         ok: false,
         mensaje: 'Error obteniendo datos',
-        error: err.message,
       });
     }
 
@@ -99,7 +112,9 @@ function formatosPreferidos(req, res) {
       COALESCE(
         ROUND(
           100.0 * COUNT(*) / NULLIF(
-            (SELECT COUNT(*) FROM IMAGEN WHERE img_estado_imagen = 'activa'),
+            (SELECT COUNT(*) FROM IMAGEN
+             WHERE img_estado_imagen = 'activa'
+               AND img_fecha_modificacion IS NOT NULL),
             0
           ),
           2
@@ -108,6 +123,7 @@ function formatosPreferidos(req, res) {
       )::float as porcentaje
     FROM IMAGEN
     WHERE img_estado_imagen = 'activa'
+      AND img_fecha_modificacion IS NOT NULL
     GROUP BY img_formato
     ORDER BY descargas DESC
   `;
@@ -118,7 +134,6 @@ function formatosPreferidos(req, res) {
       return res.status(500).json({
         ok: false,
         mensaje: 'Error obteniendo datos',
-        error: err.message,
       });
     }
 
@@ -157,7 +172,6 @@ function tasaConversion(req, res) {
       return res.status(500).json({
         ok: false,
         mensaje: 'Error obteniendo datos',
-        error: err.message,
       });
     }
 

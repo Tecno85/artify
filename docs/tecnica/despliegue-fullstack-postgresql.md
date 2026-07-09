@@ -519,6 +519,14 @@ Resultado esperado:
 
 Esta prueba confirma que Express inició correctamente. Después pruebo una ruta pública de analytics, que sí consulta PostgreSQL y confirma que Render puede conectarse a Neon:
 
+También puedo usar `/ready` como verificación directa de PostgreSQL:
+
+```text
+https://url-del-backend.onrender.com/ready
+```
+
+`/ready` responde HTTP `200` cuando PostgreSQL está disponible y HTTP `503` cuando la conexión falla.
+
 ```text
 https://url-del-backend.onrender.com/api/v1/analytics/filtros-populares
 ```
@@ -543,6 +551,7 @@ Ejemplo:
 
 ```bash
 curl https://artify-sena-postgresql.onrender.com/health
+curl https://artify-sena-postgresql.onrender.com/ready
 curl https://artify-sena-postgresql.onrender.com/api/v1/analytics/filtros-populares
 ```
 
@@ -555,6 +564,7 @@ Si algo falla, reviso en este orden:
 | Resultado | Interpretación | Acción |
 | --- | --- | --- |
 | `/health` no responde | El servicio no inició o Render falló en build/start. | Revisar logs, `Root Directory`, comandos y `NODE_VERSION`. |
+| `/health` responde pero `/ready` falla | Express está activo, pero PostgreSQL no está disponible. | Revisar `DATABASE_URL`, Neon y conectividad. |
 | `/health` responde pero analytics falla | Express está vivo, pero falla la conexión o el esquema PostgreSQL. | Revisar `DATABASE_URL`, carga de `schema.sql` y disponibilidad de Neon. |
 | Render muestra error de módulo no encontrado | Dependencias no instaladas desde `backend`. | Confirmar `Root Directory = backend` y `Build Command`. |
 | Render inicia pero luego se detiene | Error de arranque o variable faltante. | Revisar logs de runtime y variables obligatorias. |

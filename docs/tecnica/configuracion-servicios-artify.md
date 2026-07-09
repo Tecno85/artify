@@ -352,6 +352,12 @@ curl http://127.0.0.1:3000/health
 
 La respuesta esperada contiene `ok: true` y confirma que Express está activo sin depender de una consulta a PostgreSQL.
 
+Para comprobar directamente la disponibilidad de PostgreSQL ejecuto:
+
+```bash
+curl http://127.0.0.1:3000/ready
+```
+
 Después realizo una solicitud a un endpoint público que sí consulta información de la base de datos:
 
 ```bash
@@ -372,8 +378,8 @@ pnpm test
 El resultado obtenido fue:
 
 ```text
-tests 13
-pass 13
+tests 18
+pass 18
 fail 0
 ```
 
@@ -413,7 +419,7 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 | Variables de entorno | Archivo local completo y valores sensibles protegidos. | Evidencia 4 | Verificado |
 | Dependencias | Lockfile consistente y paquetes al día. | Evidencia 5 | Verificado |
 | Sintaxis del backend | `pnpm run check` finaliza sin errores. | Evidencia 5 | Verificado |
-| Pruebas automatizadas | Trece pruebas aprobadas y cero fallos. | Evidencia 5 | Verificado |
+| Pruebas automatizadas | Dieciocho pruebas aprobadas y cero fallos. | Evidencia 5 | Verificado |
 | Servidor de aplicaciones | Express activo en el puerto `3000`. | Evidencia 6 | Verificado |
 | Conexión backend-PostgreSQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
 | Endpoint de salud | Respuesta HTTP `200` y JSON válido en `/health`. | Evidencia 6 | Verificado |

@@ -21,6 +21,8 @@ function limpiarSesionAuth() {
   sessionStorage.removeItem('artifyUser');
   sessionStorage.removeItem('artifyToken');
   sessionStorage.removeItem('artifyIdSesion');
+  localStorage.removeItem('artify_backup_image');
+  localStorage.removeItem('artify_backup_timestamp');
 }
 
 // ========== HEADERS DE AUTENTICACIÓN ==========
@@ -45,6 +47,11 @@ async function fetchAuth(url, options = {}) {
 
   if (response.status === 401) {
     limpiarSesionAuth();
+
+    const paginaActual = window.location.pathname.split('/').pop();
+    if (!['login.html', 'registro.html'].includes(paginaActual)) {
+      window.location.replace('./login.html');
+    }
   }
 
   return response;

@@ -1,3 +1,4 @@
+const db = require('../config/db');
 const { verificarToken } = require('../utils/token');
 const { normalizarIdEntero } = require('../utils/validacion');
 
@@ -28,7 +29,6 @@ function autenticarToken(req, res, next) {
 
   try {
     req.auth = verificarToken(token);
-    return next();
   } catch (error) {
     if (error.message === 'TOKEN_EXPIRADO') {
       return responder401(res, 'Token expirado');
@@ -36,6 +36,39 @@ function autenticarToken(req, res, next) {
 
     return responder401(res);
   }
+
+  const idUsuario = normalizarIdEntero(req.auth?.id);
+  if (idUsuario === null) {
+    return responder401(res);
+  }
+
+  const query = `
+    SELECT usr_id_usuario, usr_correo, usr_rol, usr_estado_usuario
+    FROM USUARIO
+    WHERE usr_id_usuario = ?
+  `;
+
+  return db.query(query, [idUsuario], (error, usuarios) => {
+    if (error) {
+      console.error('❌ Error al validar la cuenta autenticada:', error.message);
+      return res.status(500).json({ mensaje: 'Error en el servidor' });
+    }
+
+    const usuario = usuarios[0];
+    if (!usuario || usuario.usr_estado_usuario !== 'activo') {
+      return responder401(res);
+    }
+
+    req.auth = {
+      ...req.auth,
+      id: usuario.usr_id_usuario,
+      correo: usuario.usr_correo,
+      rol: usuario.usr_rol,
+      tipo: usuario.usr_rol === 'admin' ? 'admin' : 'usuario',
+    };
+
+    return next();
+  });
 }
 
 function requiereAdmin(req, res, next) {

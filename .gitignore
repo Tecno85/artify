@@ -2,6 +2,7 @@
 # 1. DEPENDENCIAS Y PAQUETES
 # ----------------------------------------
 node_modules/
+.pnpm-store/
 package-lock.json        # (Opcional: Descomenta si no quieres lock en el repo)
 artify-angular/
 

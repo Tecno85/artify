@@ -1,4 +1,4 @@
-// ========== LIMITADOR SIMPLE DE INTENTOS ==========
+// ========== LIMITADOR SIMPLE DE INTENTOS FALLIDOS ==========
 function limitarIntentos({
   ventanaMs = 15 * 60 * 1000,
   maxIntentos = 10,
@@ -10,26 +10,39 @@ function limitarIntentos({
     const ahora = Date.now();
     const correo = String(req.body?.correo || '').trim().toLowerCase();
     const clave = `${req.ip}:${req.originalUrl}:${correo}`;
-    const registro = intentos.get(clave);
+    let registro = intentos.get(clave);
 
-    if (!registro || registro.expira <= ahora) {
-      intentos.set(clave, { total: 1, expira: ahora + ventanaMs });
-      return next();
+    if (registro?.expira <= ahora) {
+      intentos.delete(clave);
+      registro = null;
     }
 
-    registro.total += 1;
-
-    if (registro.total > maxIntentos) {
+    if (registro?.total >= maxIntentos) {
       return res.status(429).json({ mensaje });
     }
 
-    if (intentos.size > 1000) {
-      for (const [key, value] of intentos.entries()) {
-        if (value.expira <= ahora) {
-          intentos.delete(key);
+    res.on('finish', () => {
+      if (res.statusCode === 401) {
+        const vigente = intentos.get(clave);
+
+        if (!vigente || vigente.expira <= Date.now()) {
+          intentos.set(clave, { total: 1, expira: Date.now() + ventanaMs });
+        } else {
+          vigente.total += 1;
+        }
+      } else if (res.statusCode >= 200 && res.statusCode < 300) {
+        intentos.delete(clave);
+      }
+
+      if (intentos.size > 1000) {
+        const momentoLimpieza = Date.now();
+        for (const [key, value] of intentos.entries()) {
+          if (value.expira <= momentoLimpieza) {
+            intentos.delete(key);
+          }
         }
       }
-    }
+    });
 
     return next();
   };

@@ -65,6 +65,26 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.get('/ready', async (req, res) => {
+  try {
+    await db.pool.query('SELECT 1');
+    return res.status(200).json({
+      ok: true,
+      servicio: 'artify-api',
+      baseDatos: 'disponible',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('❌ PostgreSQL no está disponible:', error.message);
+    return res.status(503).json({
+      ok: false,
+      servicio: 'artify-api',
+      baseDatos: 'no_disponible',
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
 // ========== MONTAJE DE RUTAS ==========
 app.use('/api', authRoutes);
 app.use('/api', configuracionRoutes);
@@ -78,11 +98,28 @@ app.use('/api', analyticsRoutes);
 setInterval(
   () => {
     const query = `
-      UPDATE SESION_EDICION
-      SET ses_fecha_fin = NOW(),
-          ses_estado_sesion = 'finalizada'
-      WHERE ses_estado_sesion = 'activa'
-      AND ses_fecha_inicio < NOW() - INTERVAL '8 hours'
+      WITH sesiones_cerradas AS (
+        UPDATE SESION_EDICION
+        SET ses_fecha_fin = NOW(),
+            ses_duracion_minutos = GREATEST(
+              0,
+              FLOOR(EXTRACT(EPOCH FROM (NOW() - ses_fecha_inicio)) / 60)::int
+            ),
+            ses_estado_sesion = 'finalizada'
+        WHERE ses_estado_sesion = 'activa'
+          AND ses_fecha_inicio < NOW() - INTERVAL '8 hours'
+        RETURNING ses_usr_id_usuario
+      )
+      UPDATE USUARIO u
+      SET usr_sesion_activa = EXISTS (
+        SELECT 1
+        FROM SESION_EDICION s
+        WHERE s.ses_usr_id_usuario = u.usr_id_usuario
+          AND s.ses_estado_sesion = 'activa'
+      )
+      WHERE u.usr_id_usuario IN (
+        SELECT DISTINCT ses_usr_id_usuario FROM sesiones_cerradas
+      )
     `;
 
     db.query(query, (err, result) => {
@@ -93,7 +130,7 @@ setInterval(
 
       if (result.affectedRows > 0) {
         console.log(
-          `🧹 Limpieza automática: ${result.affectedRows} sesión(es) cerrada(s) por inactividad`
+          `🧹 Limpieza automática: ${result.affectedRows} usuario(s) actualizado(s) por inactividad`
         );
       }
     });

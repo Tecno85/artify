@@ -143,6 +143,7 @@ v_usuarios_activos
 | Método | Ruta | Descripción |
 | --- | --- | --- |
 | GET | `/health` | Verifica que el proceso Express esté activo sin depender de PostgreSQL. |
+| GET | `/ready` | Verifica que el proceso Express pueda consultar PostgreSQL. |
 
 ### Autenticación
 
@@ -162,6 +163,8 @@ v_usuarios_activos
 
 El panel administrativo no tiene login independiente. El usuario entra por `/api/login`; si el usuario autenticado tiene `usr_rol = 'admin'`, el frontend lo redirige a `admin.html` y el backend autoriza el CRUD con el token JWT.
 
+El login rechaza cuentas inactivas o suspendidas. En las rutas privadas, el backend vuelve a consultar el estado y el rol actuales del usuario para invalidar tokens de cuentas suspendidas, eliminadas o cuyo rol haya cambiado.
+
 ### Sesiones, Operaciones e Imágenes
 
 | Método | Ruta | Descripción |
@@ -180,6 +183,8 @@ El panel administrativo no tiene login independiente. El usuario entra por `/api
 | GET | `/api/v1/analytics/horarios-edicion` | Horas pico de edición. |
 | GET | `/api/v1/analytics/formatos-preferidos` | Formatos de imagen más descargados. |
 | GET | `/api/v1/analytics/tasa-conversion` | Porcentaje de sesiones con cambios guardados. |
+
+Los filtros se agrupan por el nombre real guardado en los parámetros de la operación. Los formatos se calculan a partir de descargas registradas, y una descarga correcta marca `ses_cambios_guardados = true` en su sesión.
 
 ---
 
@@ -230,7 +235,9 @@ La versión PostgreSQL fue validada con:
 - Endpoint de salud `GET /health` para verificación de despliegue.
 - `pnpm run check`.
 - `pnpm test` contra una instancia temporal de PostgreSQL.
-- Resultado de pruebas automatizadas: 13/13 correctas.
+- Resultado de pruebas automatizadas: 18/18 correctas.
+- Auditoría de dependencias de producción sin vulnerabilidades conocidas.
+- Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y pruebas en `push` o `pull_request`.
 
 ---
 
@@ -304,6 +311,7 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 - [2026-07-04] Validación del despliegue público Netlify + Render + Neon y documentación del proceso replicable para evidencia en video.
 - [2026-07-08] Documentación de plan de migración y respaldo de datos de Artify con referencia en ISO 27001 para evidencia GA10-220501097-AA9.
 - [2026-07-09] Revalidación del despliegue público activo en Netlify + Render y corrección de URLs operativas.
+- [2026-07-09] Corrección de estado de cuentas, sesiones, descargas, analytics, validaciones y cobertura automatizada.
 
 ---
 

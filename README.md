@@ -327,7 +327,7 @@ Si prefieres abrir archivos manualmente, usa `frontend/index.html`, pero para pr
 
 ## Pruebas
 
-El backend incluye pruebas automatizadas de integración para autenticación, rutas protegidas y configuración básica.
+El backend incluye 18 pruebas automatizadas de integración para autenticación, rutas protegidas, sesiones, configuración, imágenes y analytics.
 
 ```bash
 cd backend
@@ -340,6 +340,8 @@ También puedes validar sintaxis del servidor con:
 cd backend
 pnpm run check
 ```
+
+GitHub Actions ejecuta automáticamente PostgreSQL, la validación de sintaxis y las pruebas en cada `push` a `main` y en cada pull request.
 
 ---
 
@@ -390,6 +392,8 @@ Render asigna el puerto del servicio mediante `PORT`; normalmente no es necesari
 ```text
 https://url-del-backend.onrender.com/health
 ```
+
+Para comprobar además que PostgreSQL está disponible, se puede consultar `GET /ready`.
 
 La carga de `database/postgresql/schema.sql` es para aprovisionamiento inicial o reinicio controlado: ese archivo elimina y recrea los objetos del proyecto. Antes de ejecutarlo sobre una base con datos útiles, se debe hacer respaldo.
 
@@ -541,7 +545,7 @@ Este proyecto sigue estándares de codificación documentados. Consulta el archi
 ## Notas Importantes
 
 ### Resolución Recomendada
-- **Mínima:** 1366 x 768 px
+- **Mínima:** 1100 x 768 px
 - **Óptima:** 1920 x 1080 px o superior
 
 ### Consideraciones de Rendimiento
@@ -552,6 +556,7 @@ Este proyecto sigue estándares de codificación documentados. Consulta el archi
 - Las contraseñas se encriptan con bcrypt antes de almacenarse
 - Las credenciales de la base de datos se manejan con variables de entorno
 - El login usa un mensaje genérico para credenciales inválidas y limita intentos repetidos
+- Las cuentas inactivas, suspendidas o eliminadas no pueden usar tokens anteriores
 - En producción el backend restringe CORS mediante `CORS_ORIGIN`
 - El archivo `.env` nunca se sube al repositorio
 
@@ -592,7 +597,7 @@ Las contribuciones son bienvenidas. Por favor:
 - [ ] Herramienta de texto sobre imágenes
 - [ ] Exportación a PDF
 - [ ] Procesamiento por lotes
-- [ ] Despliegue full-stack con frontend estático, backend Node.js y PostgreSQL
+- [x] Despliegue full-stack con frontend estático, backend Node.js y PostgreSQL
 - [ ] Integración con servicios en la nube
 
 ---

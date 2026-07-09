@@ -122,7 +122,7 @@ Esta tabla registra metadatos de las imágenes procesadas por los usuarios.
 | `img_tamano_bytes` | `bigint` | Tamaño del archivo en bytes; no admite valores negativos. |
 | `img_hash_archivo` | `varchar(255)` | Hash opcional del archivo. |
 | `img_fecha_subida` | `timestamp` | Fecha de registro. |
-| `img_fecha_modificacion` | `timestamp` | Fecha de modificación. |
+| `img_fecha_modificacion` | `timestamp` | Fecha en que se generó y registró la salida descargada. |
 | `img_estado_imagen` | `varchar(20)` | Estado: `activa`, `archivada`, `eliminada`. |
 
 ### Relación
@@ -130,6 +130,7 @@ Esta tabla registra metadatos de las imágenes procesadas por los usuarios.
 - `img_usr_id_usuario` referencia a `USUARIO.usr_id_usuario`.
 - La relación usa `ON DELETE CASCADE` y `ON UPDATE CASCADE`.
 - Existe un índice compuesto sobre estado y formato para apoyar consultas de formatos activos.
+- Las nuevas filas se registran al completar una descarga, con dimensiones y formato final reales.
 
 ---
 
@@ -156,6 +157,8 @@ Esta tabla registra las sesiones de trabajo de los usuarios dentro del editor.
 - La relación con usuario usa `ON DELETE CASCADE` y `ON UPDATE CASCADE`.
 - La relación con imagen usa `ON DELETE SET NULL` y `ON UPDATE CASCADE`.
 - `ses_numero_operaciones` no permite valores negativos.
+- Una descarga enlaza la imagen con la sesión y marca `ses_cambios_guardados = true`.
+- Al cerrar una sesión se calcula `ses_duracion_minutos` y se conserva `usr_sesion_activa = true` si el usuario mantiene otra sesión abierta.
 
 ---
 
@@ -212,6 +215,7 @@ Esta vista se basa en `USUARIO`, `IMAGEN` y `SESION_EDICION`.
 - Los campos `usr_correo` y `usr_cedula` tienen restricciones únicas para evitar duplicados.
 - Las claves foráneas usan reglas explícitas de cascada o nulificación para mantener consistencia al eliminar usuarios, sesiones o imágenes.
 - Las operaciones protegidas se validan desde el backend antes de consultar o modificar la base de datos.
+- El correo se normaliza a minúsculas y el estado/rol vigentes se consultan al autorizar cada ruta privada.
 - El archivo `.env` debe permanecer fuera del repositorio porque contiene credenciales de conexión.
 
 ---

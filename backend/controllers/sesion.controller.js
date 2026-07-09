@@ -3,38 +3,57 @@ const db = require('../config/db');
 const { normalizarIdEntero } = require('../utils/validacion');
 
 // ========== SESIONES DE EDICIÓN ==========
-function iniciarSesionEdicion(req, res) {
-  const { idUsuario } = req.body;
-  const idUsuarioNormalizado = normalizarIdEntero(idUsuario);
+async function iniciarSesionEdicion(req, res) {
+  const idUsuario = normalizarIdEntero(req.body?.idUsuario);
+  const dbPromise = db.promise();
 
-  if (idUsuarioNormalizado === null) {
+  if (idUsuario === null) {
     return res.status(400).json({ mensaje: 'Datos de sesión inválidos' });
   }
 
   console.log('📨 Iniciando sesión de edición');
 
-  const query = `
-    INSERT INTO SESION_EDICION
-      (ses_usr_id_usuario, ses_fecha_inicio, ses_estado_sesion)
-    VALUES (?, NOW(), 'activa')
-    RETURNING ses_id_sesion
-  `;
+  try {
+    await dbPromise.beginTransaction();
 
-  db.query(query, [idUsuarioNormalizado], (err, result) => {
-    if (err) {
-      console.error('❌ Error al iniciar sesión:', err.message);
-      return res.status(500).json({ mensaje: 'Error en el servidor' });
-    }
+    const [resultado] = await dbPromise.query(
+      `
+        INSERT INTO SESION_EDICION
+          (ses_usr_id_usuario, ses_fecha_inicio, ses_estado_sesion)
+        VALUES (?, NOW(), 'activa')
+        RETURNING ses_id_sesion
+      `,
+      [idUsuario]
+    );
+
+    await dbPromise.query(
+      `
+        UPDATE USUARIO
+        SET usr_sesion_activa = true
+        WHERE usr_id_usuario = ?
+      `,
+      [idUsuario]
+    );
+
+    await dbPromise.commit();
 
     return res.json({
       mensaje: 'Sesión iniciada',
-      idSesion: result.insertId,
+      idSesion: resultado.insertId,
     });
-  });
+  } catch (error) {
+    try {
+      await dbPromise.rollback();
+    } catch {}
+
+    console.error('❌ Error al iniciar sesión:', error.message);
+    return res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
 }
 
-function cerrarSesionEdicion(req, res) {
+async function cerrarSesionEdicion(req, res) {
   const idSesion = normalizarIdEntero(req.body?.idSesion);
+  const dbPromise = db.promise();
 
   if (idSesion === null) {
     return res.status(400).json({ mensaje: 'Datos de sesión inválidos' });
@@ -42,68 +61,72 @@ function cerrarSesionEdicion(req, res) {
 
   console.log('📨 Cerrando sesión de edición');
 
-  const queryValidar = `
-    SELECT ses_id_sesion, ses_usr_id_usuario
-    FROM SESION_EDICION
-    WHERE ses_id_sesion = ?
-  `;
+  try {
+    await dbPromise.beginTransaction();
 
-  db.query(queryValidar, [idSesion], (errValidar, results) => {
-    if (errValidar) {
-      console.error('❌ Error al validar sesión:', errValidar.message);
-      return res.status(500).json({ mensaje: 'Error en el servidor' });
-    }
+    const [sesiones] = await dbPromise.query(
+      `
+        SELECT ses_id_sesion, ses_usr_id_usuario
+        FROM SESION_EDICION
+        WHERE ses_id_sesion = ?
+      `,
+      [idSesion]
+    );
 
-    if (results.length === 0) {
+    if (sesiones.length === 0) {
+      await dbPromise.rollback();
       return res.status(404).json({ mensaje: 'Sesión no encontrada' });
     }
 
-    const sesion = results[0];
-
-    // Permitir el cierre solo al dueño de la sesión o a un administrador
+    const sesion = sesiones[0];
     const puedeCerrar =
       req.auth?.rol === 'admin' || req.auth?.id === sesion.ses_usr_id_usuario;
 
     if (!puedeCerrar) {
+      await dbPromise.rollback();
       return res
         .status(403)
         .json({ mensaje: 'No puedes cerrar sesiones de otro usuario' });
     }
 
-    // Cerrar la sesión y reflejar el cambio en el estado del usuario
-    const query = `
-      UPDATE SESION_EDICION
-      SET ses_fecha_fin = NOW(),
-          ses_estado_sesion = 'finalizada'
-      WHERE ses_id_sesion = ?
-    `;
+    await dbPromise.query(
+      `
+        UPDATE SESION_EDICION
+        SET ses_fecha_fin = COALESCE(ses_fecha_fin, NOW()),
+            ses_duracion_minutos = GREATEST(
+              0,
+              FLOOR(EXTRACT(EPOCH FROM (COALESCE(ses_fecha_fin, NOW()) - ses_fecha_inicio)) / 60)::int
+            ),
+            ses_estado_sesion = 'finalizada'
+        WHERE ses_id_sesion = ?
+      `,
+      [idSesion]
+    );
 
-    db.query(query, [idSesion], (errCerrar) => {
-      if (errCerrar) {
-        console.error('❌ Error al cerrar sesión:', errCerrar.message);
-        return res.status(500).json({ mensaje: 'Error en el servidor' });
-      }
+    await dbPromise.query(
+      `
+        UPDATE USUARIO
+        SET usr_sesion_activa = EXISTS (
+          SELECT 1
+          FROM SESION_EDICION
+          WHERE ses_usr_id_usuario = ?
+            AND ses_estado_sesion = 'activa'
+        )
+        WHERE usr_id_usuario = ?
+      `,
+      [sesion.ses_usr_id_usuario, sesion.ses_usr_id_usuario]
+    );
 
-      const queryInactiva = `
-        UPDATE USUARIO u
-        SET usr_sesion_activa = false
-        FROM SESION_EDICION s
-        WHERE s.ses_id_sesion = ?
-        AND u.usr_id_usuario = s.ses_usr_id_usuario
-      `;
+    await dbPromise.commit();
+    return res.json({ mensaje: 'Sesión cerrada' });
+  } catch (error) {
+    try {
+      await dbPromise.rollback();
+    } catch {}
 
-      db.query(queryInactiva, [idSesion], (errInactiva) => {
-        if (errInactiva) {
-          console.warn(
-            '⚠️ No se pudo actualizar sesión activa:',
-            errInactiva.message
-          );
-        }
-
-        return res.json({ mensaje: 'Sesión cerrada' });
-      });
-    });
-  });
+    console.error('❌ Error al cerrar sesión:', error.message);
+    return res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
 }
 
 // ========== EXPORTACIÓN ==========

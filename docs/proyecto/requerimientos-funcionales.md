@@ -74,6 +74,7 @@ El sistema debe permitir que un usuario registrado inicie sesión con correo ele
 - El sistema compara la contraseña ingresada contra el hash almacenado.
 - Si las credenciales son correctas, el sistema genera un token firmado.
 - Si las credenciales son incorrectas, el sistema responde con un mensaje claro.
+- Las cuentas inactivas o suspendidas no pueden iniciar sesión.
 
 ### RF-03 Redirección por rol
 
@@ -95,6 +96,7 @@ El sistema debe proteger las rutas privadas mediante token de autenticación y v
 - Las rutas protegidas rechazan tokens inválidos o expirados.
 - Un usuario no puede acceder o modificar recursos de otro usuario.
 - Las acciones administrativas requieren rol `admin`.
+- El backend invalida el acceso si la cuenta fue suspendida, eliminada o cambió de rol después de emitir el token.
 
 ### RF-05 Carga de imágenes
 
@@ -174,6 +176,7 @@ El sistema debe registrar sesiones de edición asociadas al usuario autenticado.
 - Al iniciar el uso del editor, el sistema registra una sesión.
 - Al cerrar o finalizar la sesión, el sistema actualiza su estado.
 - El sistema puede cerrar sesiones abandonadas por inactividad.
+- El indicador del usuario permanece activo mientras exista al menos una sesión abierta.
 
 ### RF-13 Registro de operaciones
 
@@ -184,6 +187,7 @@ El sistema debe registrar operaciones realizadas por el usuario durante la edici
 - El sistema registra el tipo de operación realizada.
 - La operación queda asociada al usuario y a la sesión correspondiente.
 - El sistema evita registrar operaciones sobre sesiones que no pertenecen al usuario.
+- Los filtros guardan su nombre como parámetro para permitir analíticas precisas.
 
 ### RF-14 Configuración personalizada
 
@@ -245,6 +249,7 @@ El sistema debe exponer endpoints REST para consultar información agregada del 
 - La API permite consultar horarios de edición.
 - La API permite consultar formatos preferidos.
 - La API permite consultar tasa de conversión.
+- Los formatos y la tasa de conversión se calculan a partir de descargas registradas correctamente.
 
 ---
 

@@ -1,0 +1,65 @@
+name: Pruebas backend
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: artify_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d artify_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: artify_db
+      TOKEN_SECRET: secreto-exclusivo-para-pruebas-automatizadas-de-ci
+      NODE_ENV: test
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+
+      - name: Preparar pnpm
+        run: corepack enable && corepack prepare pnpm@11.1.1 --activate
+
+      - name: Instalar dependencias
+        working-directory: backend
+        run: pnpm install --frozen-lockfile
+
+      - name: Cargar esquema PostgreSQL
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h 127.0.0.1 -U postgres -d artify_db -f database/postgresql/schema.sql
+          psql -h 127.0.0.1 -U postgres -d artify_db -f database/postgresql/seed.sql
+
+      - name: Validar sintaxis
+        working-directory: backend
+        run: pnpm run check
+
+      - name: Ejecutar pruebas
+        working-directory: backend
+        run: pnpm test

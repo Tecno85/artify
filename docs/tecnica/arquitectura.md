@@ -94,6 +94,7 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 | Administración | `admin.routes.js` | CRUD de usuarios. |
 | Analíticas | `analytics.routes.js` | Endpoints públicos de analíticas. |
 | Salud | `server.js` | `GET /health` para verificación de disponibilidad del proceso Express. |
+| Disponibilidad | `server.js` | `GET /ready` para comprobar la conexión real con PostgreSQL. |
 
 ---
 
@@ -139,6 +140,7 @@ La autenticación de Artify se apoya en correo, contraseña, `bcryptjs` y un tok
 - Las rutas privadas requieren encabezado `Authorization: Bearer <token>`.
 - El backend valida que un usuario no acceda a recursos de otro usuario.
 - Las acciones administrativas requieren rol `admin`.
+- El estado y el rol se consultan nuevamente en PostgreSQL para cada ruta privada.
 - Las variables sensibles se cargan desde `.env` y no deben subirse al repositorio.
 
 ---

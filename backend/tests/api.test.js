@@ -23,6 +23,7 @@ const usuarioPrueba = {
 let serverProcess;
 let idUsuario;
 let tokenUsuario;
+let tokenAdmin;
 let idSesion;
 
 function crearConexionDb() {
@@ -141,6 +142,21 @@ async function promoverUsuarioTemporalAAdmin() {
   }
 }
 
+async function actualizarEstadoUsuario(estado) {
+  const db = await crearConexionDb();
+
+  try {
+    await db.query(
+      `UPDATE "USUARIO"
+       SET usr_estado_usuario = $1
+       WHERE usr_id_usuario = $2`,
+      [estado, idUsuario]
+    );
+  } finally {
+    await db.end();
+  }
+}
+
 async function limpiarUsuarioTemporal() {
   if (!idUsuario) {
     return;
@@ -218,6 +234,14 @@ test('health público responde sin consultar credenciales', async () => {
   assert.match(body.timestamp, /^\d{4}-\d{2}-\d{2}T/);
 });
 
+test('ready confirma que PostgreSQL está disponible', async () => {
+  const { response, body } = await request('/ready');
+
+  assert.equal(response.status, 200);
+  assert.equal(body.ok, true);
+  assert.equal(body.baseDatos, 'disponible');
+});
+
 test('analytics público responde correctamente', async () => {
   const { response, body } = await request(
     '/api/v1/analytics/filtros-populares'
@@ -253,11 +277,31 @@ test('login rechaza correo no registrado', async () => {
   assert.equal(body.mensaje, 'Credenciales incorrectas');
 });
 
+test('registro rechaza fechas de nacimiento inexistentes', async () => {
+  const { response, body } = await request('/api/registro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...usuarioPrueba,
+      cedula: `${stamp}99`.slice(-10),
+      correo: `fecha.${stamp}@artify.local`,
+      fechaNacimiento: '2026-02-31',
+    }),
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal(body.mensaje, 'Ingresa una fecha de nacimiento válida');
+});
+
 test('registro, login y flujo básico de usuario funcionan', async () => {
   const registro = await request('/api/registro', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(usuarioPrueba),
+    body: JSON.stringify({
+      ...usuarioPrueba,
+      nombres: ` ${usuarioPrueba.nombres} `,
+      correo: ` ${usuarioPrueba.correo.toUpperCase()} `,
+    }),
   });
 
   assert.equal(registro.response.status, 200);
@@ -311,14 +355,33 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
   assert.equal(configuracion.response.status, 200);
   assert.equal(configuracion.body.mensaje, 'ok');
 
+  const configuracionInvalida = await request('/api/configuracion', {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({
+      idUsuario,
+      calidadExportacion: 'ilimitada',
+      notificaciones: true,
+      formatoDefecto: 'png',
+      autoguardado: false,
+    }),
+  });
+
+  assert.equal(configuracionInvalida.response.status, 400);
+  assert.equal(
+    configuracionInvalida.body.mensaje,
+    'Selecciona una calidad de exportación válida'
+  );
+
   const operacion = await request('/api/operacion', {
     method: 'POST',
     headers: authHeaders,
     body: JSON.stringify({
       idUsuario,
       idSesion,
-      tipo: 'prueba_automatizada',
-      descripcion: 'Prueba básica automatizada',
+      tipo: 'filtro',
+      descripcion: 'Filtro aplicado: Sepia',
+      parametros: { filtro: 'Sepia' },
     }),
   });
 
@@ -327,13 +390,32 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
 
   const analytics = await request('/api/v1/analytics/filtros-populares');
   const filtroPrueba = analytics.body.data.filtros.find(
-    (item) => item.filtro === 'prueba_automatizada'
+    (item) => item.filtro === 'Sepia'
   );
 
   assert.equal(analytics.response.status, 200);
   assert.ok(filtroPrueba);
   assert.equal(typeof filtroPrueba.usos, 'number');
   assert.equal(typeof filtroPrueba.porcentaje, 'number');
+
+  const imagen = await request('/api/imagen', {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({
+      idUsuario,
+      idSesion,
+      nombreOriginal: 'prueba.png',
+      formatoOriginal: 'png',
+      formatoFinal: 'webp',
+      tamanoOriginal: 2048,
+      anchoOriginal: 640,
+      altoOriginal: 480,
+    }),
+  });
+
+  assert.equal(imagen.response.status, 200);
+  assert.equal(imagen.body.mensaje, 'Imagen registrada');
+  assert.ok(imagen.body.idImagen);
 
   const estadisticas = await request(`/api/estadisticas/${idUsuario}`, {
     headers: { Authorization: `Bearer ${tokenUsuario}` },
@@ -351,6 +433,19 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
 
   assert.equal(cierre.response.status, 200);
   assert.equal(cierre.body.mensaje, 'Sesión cerrada');
+
+  const formatos = await request('/api/v1/analytics/formatos-preferidos');
+  const formatoWebp = formatos.body.data.formatos.find(
+    (item) => item.formato === 'webp'
+  );
+
+  assert.equal(formatos.response.status, 200);
+  assert.ok(formatoWebp);
+  assert.ok(formatoWebp.descargas >= 1);
+
+  const conversion = await request('/api/v1/analytics/tasa-conversion');
+  assert.equal(conversion.response.status, 200);
+  assert.ok(conversion.body.data.conversionData.sesiones_exitosas >= 1);
 });
 
 test('registro rechaza correo o cédula duplicados', async () => {
@@ -388,6 +483,58 @@ test('login rechaza contraseña incorrecta', async () => {
     usuarioDespues.usr_ultimo_acceso,
     usuarioAntes.usr_ultimo_acceso
   );
+});
+
+test('logins correctos repetidos no consumen el límite de fallos', async () => {
+  for (let intento = 0; intento < 11; intento++) {
+    const { response, body } = await request('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        correo: usuarioPrueba.correo,
+        password: usuarioPrueba.password,
+      }),
+    });
+
+    assert.equal(response.status, 200);
+    assert.equal(body.mensaje, 'Login exitoso');
+  }
+});
+
+test('el indicador de sesión permanece activo mientras exista otra sesión abierta', async () => {
+  const headers = {
+    Authorization: `Bearer ${tokenUsuario}`,
+    'Content-Type': 'application/json',
+  };
+  const sesionUno = await request('/api/sesion/iniciar', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ idUsuario }),
+  });
+  const sesionDos = await request('/api/sesion/iniciar', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ idUsuario }),
+  });
+
+  assert.equal(sesionUno.response.status, 200);
+  assert.equal(sesionDos.response.status, 200);
+
+  const primerCierre = await request('/api/sesion/cerrar', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ idSesion: sesionUno.body.idSesion }),
+  });
+  assert.equal(primerCierre.response.status, 200);
+  assert.equal((await obtenerUsuarioTemporal()).usr_sesion_activa, true);
+
+  const segundoCierre = await request('/api/sesion/cerrar', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ idSesion: sesionDos.body.idSesion }),
+  });
+  assert.equal(segundoCierre.response.status, 200);
+  assert.equal((await obtenerUsuarioTemporal()).usr_sesion_activa, false);
 });
 
 test('rutas protegidas rechazan solicitudes sin token', async () => {
@@ -540,6 +687,7 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
   assert.equal(login.body.mensaje, 'Login exitoso');
   assert.equal(login.body.usuario.rol, 'admin');
   assert.ok(login.body.token);
+  tokenAdmin = login.body.token;
 
   const usuarios = await request('/api/admin/usuarios', {
     headers: { Authorization: `Bearer ${login.body.token}` },
@@ -574,4 +722,32 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
     eliminarIdInvalido.body.mensaje,
     'Identificador de usuario inválido'
   );
+});
+
+test('una cuenta suspendida no puede iniciar sesión ni reutilizar su token', async () => {
+  assert.ok(tokenAdmin);
+  await actualizarEstadoUsuario('suspendido');
+
+  try {
+    const login = await request('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        correo: usuarioPrueba.correo,
+        password: usuarioPrueba.password,
+      }),
+    });
+
+    assert.equal(login.response.status, 401);
+    assert.equal(login.body.mensaje, 'Credenciales incorrectas');
+
+    const usuarios = await request('/api/admin/usuarios', {
+      headers: { Authorization: `Bearer ${tokenAdmin}` },
+    });
+
+    assert.equal(usuarios.response.status, 401);
+    assert.equal(usuarios.body.mensaje, 'Token ausente, inválido o expirado');
+  } finally {
+    await actualizarEstadoUsuario('activo');
+  }
 });

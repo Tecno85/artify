@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const db = require('../config/db');
 const { crearToken } = require('../utils/token');
 const {
+  normalizarCorreo,
   validarCredenciales,
   validarUsuario,
 } = require('../utils/validacion');
@@ -22,7 +23,11 @@ function esErrorDuplicado(error) {
 // ========== LOGIN DE USUARIO ==========
 function login(req, res) {
   const { correo, password } = req.body;
-  const errorValidacion = validarCredenciales({ correo, password });
+  const correoNormalizado = normalizarCorreo(correo);
+  const errorValidacion = validarCredenciales({
+    correo: correoNormalizado,
+    password,
+  });
 
   if (errorValidacion) {
     return res.status(400).json({ mensaje: errorValidacion });
@@ -31,9 +36,9 @@ function login(req, res) {
   console.log('📨 Intento de login recibido');
 
   // Buscar el usuario por correo para validar sus credenciales
-  const query = 'SELECT * FROM USUARIO WHERE usr_correo = ?';
+  const query = 'SELECT * FROM USUARIO WHERE LOWER(usr_correo) = ?';
 
-  db.query(query, [correo], (err, results) => {
+  db.query(query, [correoNormalizado], (err, results) => {
     if (err) {
       console.error('❌ Error en la consulta:', err.message);
       return res.status(500).json({ mensaje: 'Error en el servidor' });
@@ -44,6 +49,10 @@ function login(req, res) {
     }
 
     const usuario = results[0];
+
+    if (usuario.usr_estado_usuario !== 'activo') {
+      return res.status(401).json({ mensaje: MENSAJE_CREDENCIALES_INVALIDAS });
+    }
 
     // Comparar la contraseña ingresada con el hash almacenado
     const passwordValida = bcrypt.compareSync(password, usuario.usr_contrasena);
@@ -97,13 +106,19 @@ function login(req, res) {
 async function registro(req, res) {
   const { nombres, apellidos, cedula, fechaNacimiento, correo, password } =
     req.body;
+  const nombresNormalizados =
+    typeof nombres === 'string' ? nombres.trim() : nombres;
+  const apellidosNormalizados =
+    typeof apellidos === 'string' ? apellidos.trim() : apellidos;
+  const cedulaNormalizada = typeof cedula === 'string' ? cedula.trim() : cedula;
+  const correoNormalizado = normalizarCorreo(correo);
   const dbPromise = db.promise();
   const errorValidacion = validarUsuario({
-    nombres,
-    apellidos,
-    cedula,
+    nombres: nombresNormalizados,
+    apellidos: apellidosNormalizados,
+    cedula: cedulaNormalizada,
     fechaNacimiento,
-    correo,
+    correo: correoNormalizado,
     password,
   });
 
@@ -117,8 +132,8 @@ async function registro(req, res) {
     await dbPromise.beginTransaction();
 
     const [usuariosExistentes] = await dbPromise.query(
-      'SELECT usr_id_usuario FROM USUARIO WHERE usr_correo = ? OR usr_cedula = ?',
-      [correo, cedula]
+      'SELECT usr_id_usuario FROM USUARIO WHERE LOWER(usr_correo) = ? OR usr_cedula = ?',
+      [correoNormalizado, cedulaNormalizada]
     );
 
     if (usuariosExistentes.length > 0) {
@@ -139,7 +154,14 @@ async function registro(req, res) {
         VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
         RETURNING usr_id_usuario
       `,
-      [nombres, apellidos, cedula, fechaNacimiento, correo, hash]
+      [
+        nombresNormalizados,
+        apellidosNormalizados,
+        cedulaNormalizada,
+        fechaNacimiento,
+        correoNormalizado,
+        hash,
+      ]
     );
 
     const idUsuario = resultadoUsuario.insertId;
@@ -158,16 +180,16 @@ async function registro(req, res) {
 
     const usuario = {
       id: idUsuario,
-      nombres,
-      apellidos,
-      correo,
+      nombres: nombresNormalizados,
+      apellidos: apellidosNormalizados,
+      correo: correoNormalizado,
       rol: 'usuario',
     };
 
     // Devolver token desde el registro para mantener el flujo actual del frontend
     const token = crearToken({
       id: idUsuario,
-      correo,
+      correo: correoNormalizado,
       rol: 'usuario',
       tipo: 'usuario',
     });

@@ -66,12 +66,12 @@ function obtenerUsuarioAdminActual() {
 
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
-  const fecha = new Date(fechaStr);
-  return fecha.toLocaleDateString('es-CO', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
+  const coincidencia = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if (!coincidencia) return '—';
+
+  const [, ano, mes, dia] = coincidencia;
+  return `${dia}/${mes}/${ano}`;
 }
 
 function escaparHtml(valor) {
@@ -85,21 +85,6 @@ function escaparHtml(valor) {
 
 // ========== CERRAR SESIÓN ==========
 document.getElementById('btnLogout').addEventListener('click', async () => {
-  const idSesion = sessionStorage.getItem('artifyIdSesion');
-
-  if (idSesion) {
-    try {
-      await fetchAuth(`${API}/api/sesion/cerrar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idSesion: parseInt(idSesion) }),
-      });
-      console.log('✅ Sesión cerrada correctamente');
-    } catch (err) {
-      console.warn('⚠️ No se pudo cerrar la sesión en el servidor');
-    }
-  }
-
   limpiarSesionAuth();
   window.location.href = '../index.html';
 });
@@ -242,10 +227,9 @@ window.abrirEditar = function (id) {
   document.getElementById('modalEstado').value = usuario.usr_estado_usuario;
 
   if (usuario.usr_fecha_nacimiento) {
-    const fecha = new Date(usuario.usr_fecha_nacimiento);
-    document.getElementById('modalFechaNac').value = fecha
-      .toISOString()
-      .split('T')[0];
+    document.getElementById('modalFechaNac').value = String(
+      usuario.usr_fecha_nacimiento
+    ).slice(0, 10);
   }
 
   document.getElementById('passwordGroup').style.display = 'none';
@@ -451,18 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('adminPanel').style.display = 'block';
   document.getElementById('adminName').textContent =
     `${usuario.nombres} ${usuario.apellidos}`.trim() || usuario.correo;
-
-  fetchAuth(`${API}/api/sesion/iniciar`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ idUsuario: usuario.id }),
-  })
-    .then((r) => r.json())
-    .then((data) => {
-      if (data.mensaje === 'Sesión iniciada') {
-        sessionStorage.setItem('artifyIdSesion', data.idSesion);
-      }
-    });
 
   cargarUsuarios();
 });

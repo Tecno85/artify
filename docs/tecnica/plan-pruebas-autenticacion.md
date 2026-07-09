@@ -62,7 +62,8 @@ Funciones evaluadas:
 
 - `registro(req, res)`
 - `login(req, res)`
-- `loginAdmin(req, res)`
+- `autenticarToken(req, res, next)`
+- `requiereAdmin(req, res, next)`
 
 ### 4.2 Tabla de usuarios
 
@@ -342,24 +343,31 @@ Como apoyo al plan de pruebas manual, también agregué una prueba automatizada 
 backend/tests/api.test.js
 ```
 
-Actualmente ejecuto 12 pruebas automatizadas que cubren las siguientes validaciones:
+Actualmente ejecuto 18 pruebas automatizadas que cubren las siguientes validaciones:
 
+- Disponibilidad del proceso Express y de PostgreSQL mediante `/health` y `/ready`.
 - Respuesta del endpoint público de analíticas.
 - Rechazo de login con correo inválido.
 - Rechazo de login con correo no registrado.
+- Rechazo de fechas de nacimiento inexistentes.
 - Registro de usuario temporal.
+- Normalización de nombres y correo.
 - Verificación en PostgreSQL de que la contraseña se guarda como hash bcrypt.
 - Login exitoso.
 - Generación de token.
 - Actualización de `usr_ultimo_acceso` y `usr_sesion_activa` después del login.
+- Validación de preferencias, registro de descarga y analytics resultante.
 - Acceso a rutas protegidas con token.
 - Rechazo de login con contraseña incorrecta.
+- Confirmación de que logins correctos no consumen el límite de fallos.
+- Consistencia del indicador cuando existen sesiones simultáneas.
 - Rechazo de rutas protegidas sin token.
 - Rechazo de rutas protegidas con token inválido.
 - Rechazo de rutas protegidas con token expirado.
 - Rechazo de acceso a recursos de otro usuario.
 - Rechazo de identificadores malformados en rutas protegidas.
 - Autenticación de administrador.
+- Rechazo de login y revocación del token de una cuenta suspendida.
 - Limpieza del usuario temporal en la base de datos.
 
 Comando de ejecución:
@@ -372,8 +380,8 @@ pnpm test
 Resultado obtenido:
 
 ```text
-12 pruebas ejecutadas
-12 pruebas aprobadas
+18 pruebas ejecutadas
+18 pruebas aprobadas
 0 pruebas fallidas
 ```
 

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const db = require('../config/db');
 const {
+  normalizarCorreo,
   normalizarIdEntero,
   validarUsuario,
   validarEdicionUsuario,
@@ -42,13 +43,19 @@ function listarUsuarios(req, res) {
 async function crearUsuario(req, res) {
   const { nombres, apellidos, cedula, fechaNacimiento, correo, password } =
     req.body;
+  const nombresNormalizados =
+    typeof nombres === 'string' ? nombres.trim() : nombres;
+  const apellidosNormalizados =
+    typeof apellidos === 'string' ? apellidos.trim() : apellidos;
+  const cedulaNormalizada = typeof cedula === 'string' ? cedula.trim() : cedula;
+  const correoNormalizado = normalizarCorreo(correo);
   const dbPromise = db.promise();
   const errorValidacion = validarUsuario({
-    nombres,
-    apellidos,
-    cedula,
+    nombres: nombresNormalizados,
+    apellidos: apellidosNormalizados,
+    cedula: cedulaNormalizada,
     fechaNacimiento,
-    correo,
+    correo: correoNormalizado,
     password,
   });
 
@@ -60,8 +67,8 @@ async function crearUsuario(req, res) {
     await dbPromise.beginTransaction();
 
     const [usuariosExistentes] = await dbPromise.query(
-      'SELECT usr_id_usuario FROM USUARIO WHERE usr_correo = ? OR usr_cedula = ?',
-      [correo, cedula]
+      'SELECT usr_id_usuario FROM USUARIO WHERE LOWER(usr_correo) = ? OR usr_cedula = ?',
+      [correoNormalizado, cedulaNormalizada]
     );
 
     if (usuariosExistentes.length > 0) {
@@ -82,7 +89,14 @@ async function crearUsuario(req, res) {
         VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
         RETURNING usr_id_usuario
       `,
-      [nombres, apellidos, cedula, fechaNacimiento, correo, hash]
+      [
+        nombresNormalizados,
+        apellidosNormalizados,
+        cedulaNormalizada,
+        fechaNacimiento,
+        correoNormalizado,
+        hash,
+      ]
     );
 
     // Crear configuración inicial para el usuario generado desde el panel
@@ -114,17 +128,23 @@ function editarUsuario(req, res) {
   const id = normalizarIdEntero(req.params.id);
   const { nombres, apellidos, cedula, fechaNacimiento, correo, estado } =
     req.body;
+  const nombresNormalizados =
+    typeof nombres === 'string' ? nombres.trim() : nombres;
+  const apellidosNormalizados =
+    typeof apellidos === 'string' ? apellidos.trim() : apellidos;
+  const cedulaNormalizada = typeof cedula === 'string' ? cedula.trim() : cedula;
+  const correoNormalizado = normalizarCorreo(correo);
 
   if (id === null) {
     return res.status(400).json({ mensaje: 'Identificador de usuario inválido' });
   }
 
   const errorValidacion = validarEdicionUsuario({
-    nombres,
-    apellidos,
-    cedula,
+    nombres: nombresNormalizados,
+    apellidos: apellidosNormalizados,
+    cedula: cedulaNormalizada,
     fechaNacimiento,
-    correo,
+    correo: correoNormalizado,
     estado,
   });
 
@@ -145,7 +165,15 @@ function editarUsuario(req, res) {
 
   db.query(
     query,
-    [nombres, apellidos, cedula, fechaNacimiento, correo, estado, id],
+    [
+      nombresNormalizados,
+      apellidosNormalizados,
+      cedulaNormalizada,
+      fechaNacimiento,
+      correoNormalizado,
+      estado,
+      id,
+    ],
     (err, result) => {
       if (err) {
         console.error('❌ Error al editar usuario:', err.message);

@@ -9,7 +9,7 @@ Este módulo expone endpoints que ofrecen información agregada sobre el comport
 Esta API permite que un sistema externo obtenga datos agregados sobre cómo los usuarios de Artify editan imágenes. Los endpoints son públicos en la versión actual y devuelven conteos y porcentajes como valores numéricos.
 
 **Ejemplo de uso:**
-- Un e-commerce nota que fotos editadas con filtro "convertir" generan 33% del uso
+- Un e-commerce nota que el filtro "Sepia" concentra una parte importante del uso
 - Instruye a sus vendedores a usar ese filtro
 - Sus productos se venden mejor
 
@@ -21,7 +21,7 @@ Esta API permite que un sistema externo obtenga datos agregados sobre cómo los 
 
 **¿Qué hace?**
 
-Devuelve los tipos de operación más usados por los usuarios de Artify.
+Devuelve exclusivamente los filtros visuales más usados por los usuarios de Artify. No mezcla recortes, rotaciones, conversiones ni descargas.
 
 **URL:** `GET /api/v1/analytics/filtros-populares`
 
@@ -37,19 +37,19 @@ http://localhost:3000/api/v1/analytics/filtros-populares
   "data": {
     "filtros": [
       {
-        "filtro": "convertir",
-        "usos": 4,
-        "porcentaje": 33.33
+        "filtro": "Sepia",
+        "usos": 5,
+        "porcentaje": 50.00
       },
       {
-        "filtro": "recorte",
+        "filtro": "Blanco y Negro",
         "usos": 3,
-        "porcentaje": 25.00
+        "porcentaje": 30.00
       },
       {
-        "filtro": "rotar",
+        "filtro": "Contraste",
         "usos": 2,
-        "porcentaje": 16.67
+        "porcentaje": 20.00
       }
     ]
   },
@@ -61,7 +61,7 @@ http://localhost:3000/api/v1/analytics/filtros-populares
 ```
 
 **¿Qué significan los campos?**
-- `filtro` representa el tipo de operación registrada.
+- `filtro` representa el nombre del filtro visual registrado en los parámetros de la operación.
 - `usos` indica cuántas veces aparece esa operación.
 - `porcentaje` indica qué proporción representa frente al total consultado.
 
@@ -130,7 +130,7 @@ Permite identificar horarios de mayor actividad para planear campañas o soporte
 
 **¿Qué hace?**
 
-Devuelve qué formato de imagen es el más registrado como descarga o salida preferida.
+Devuelve qué formato final se registra con mayor frecuencia al descargar una imagen editada.
 
 **URL:** `GET /api/v1/analytics/formatos-preferidos`
 
@@ -161,7 +161,7 @@ http://localhost:3000/api/v1/analytics/formatos-preferidos
 
 **¿Qué significan los campos?**
 - `formato` representa la extensión del archivo.
-- `descargas` indica cuántas imágenes fueron registradas en ese formato.
+- `descargas` indica cuántas descargas completadas fueron registradas en ese formato.
 - `porcentaje` indica qué proporción del total corresponde a ese formato.
 
 **¿Para qué lo usa el e-commerce?**
@@ -176,6 +176,8 @@ Ayuda a definir recomendaciones sobre formato de salida.
 
 Calcula qué % de usuarios que empezaron a editar terminaron guardando cambios
 
+Una sesión se considera exitosa cuando una descarga registra la imagen final y marca `ses_cambios_guardados = true`.
+
 **URL:** `GET /api/v1/analytics/tasa-conversion`
 
 **¿Cómo lo llamo?**
@@ -189,9 +191,9 @@ http://localhost:3000/api/v1/analytics/tasa-conversion
   "mensaje": "Tasa de conversión de sesiones",
   "data": {
     "conversionData": {
-      "tasa_conversion_porcentaje": 0,
-      "total_sesiones": 246,
-      "sesiones_exitosas": 0
+      "tasa_conversion_porcentaje": 40,
+      "total_sesiones": 5,
+      "sesiones_exitosas": 2
     }
   },
   "meta": {
@@ -225,4 +227,4 @@ Un sistema externo llama a estos endpoints para entender:
 
 **Creado por:** Iván Darío Madrid Daza
 **Programa:** Análisis y Desarrollo de Software - SENA
-**Fecha:** Abril 2026
+**Fecha:** Julio 2026
