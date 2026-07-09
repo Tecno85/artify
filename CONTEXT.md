@@ -253,29 +253,30 @@ Enfoque recomendado:
 
 ### Despliegue público validado
 
-Validación realizada el 4 de julio de 2026:
+Validación realizada el 9 de julio de 2026:
 
 | Servicio | URL |
 | --- | --- |
-| Frontend Netlify | `https://artify.netlify.app` |
-| Backend Render | `https://artify-backend.onrender.com` |
+| Frontend Netlify | `https://artify-sena-postgresql.netlify.app` |
+| Backend Render | `https://artify-sena-postgresql.onrender.com` |
 
 Estado validado:
 
 - Netlify responde HTTP `200`.
-- `frontend/assets/js/config.js` publicado contiene `ARTIFY_API_URL=https://artify-backend.onrender.com`.
+- `frontend/assets/js/config.js` publicado contiene `ARTIFY_API_URL=https://artify-sena-postgresql.onrender.com`.
 - Render responde `GET /health` con `ok: true` y `entorno: production`.
-- Analytics responde `ok: true`; `filtros: []` es válido cuando no hay operaciones registradas.
-- CORS permite el origen `https://artify.netlify.app`.
+- Analytics responde `ok: true`.
+- El CSS publicado conserva el ajuste reciente de fondo principal negro.
+- CORS debe permitir el origen `https://artify-sena-postgresql.netlify.app`.
 
 Variables cruzadas requeridas:
 
 ```env
 # Netlify
-ARTIFY_API_URL=https://artify-backend.onrender.com
+ARTIFY_API_URL=https://artify-sena-postgresql.onrender.com
 
 # Render
-CORS_ORIGIN=https://artify.netlify.app
+CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 ```
 
 ---
@@ -302,6 +303,7 @@ CORS_ORIGIN=https://artify.netlify.app
 - [2026-06-28] Formalización de PostgreSQL como motor oficial de esta versión.
 - [2026-07-04] Validación del despliegue público Netlify + Render + Neon y documentación del proceso replicable para evidencia en video.
 - [2026-07-08] Documentación de plan de migración y respaldo de datos de Artify con referencia en ISO 27001 para evidencia GA10-220501097-AA9.
+- [2026-07-09] Revalidación del despliegue público activo en Netlify + Render y corrección de URLs operativas.
 
 ---
 
