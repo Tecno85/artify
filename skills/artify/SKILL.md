@@ -58,6 +58,30 @@ Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo traba
 - Crear o modificar evidencias en `docs/**/evidencias/` solo cuando el usuario lo pida o la entrega académica lo requiera.
 - Si cambian formatos admitidos por el editor, mantener coherentes `frontend/pages/editor.html`, `frontend/assets/js/editor.js`, `README.md` y documentación relacionada.
 
+### Respuesta Al Instructor Para Evidencias
+
+Cuando una evidencia quede creada como artefacto Markdown del proyecto, preparar un texto breve para enviar al instructor con este estilo:
+
+```text
+Buen día, Instructor Jose.
+
+Hago envío de la evidencia [código y nombre de la evidencia].
+
+El informe lo desarrollé como artefacto Markdown dentro del repositorio del proyecto Artify y se encuentra en la siguiente ubicación:
+
+[ruta del archivo dentro del repositorio]
+
+El link para visualizarlo es: [[código de la evidencia]](https://github.com/Tecno85/artify/blob/main/[ruta-del-archivo])
+
+Quedo atento a sus comentarios.
+
+Muchas gracias.
+
+Bendiciones.
+```
+
+Usar el código real de la evidencia, el nombre exacto, la ruta real del archivo y el enlace correspondiente al repositorio vigente.
+
 ## Validación
 
 Elegir según el cambio:

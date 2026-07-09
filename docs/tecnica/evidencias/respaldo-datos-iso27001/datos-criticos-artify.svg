@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">Datos críticos protegidos en Artify</title>
+  <desc id="desc">Mapa visual de datos críticos de Artify agrupados alrededor de PostgreSQL.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101820"/>
+      <stop offset="1" stop-color="#203a43"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4ae3f4"/>
+      <stop offset="1" stop-color="#28ffce"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+    <style>
+      .title{font:700 44px Arial, sans-serif;fill:#ffffff}
+      .sub{font:400 23px Arial, sans-serif;fill:#c6dbe1}
+      .node{font:700 27px Arial, sans-serif;fill:#102a32}
+      .small{font:400 22px Arial, sans-serif;fill:#2d4d56}
+      .card{filter:url(#shadow)}
+    </style>
+  </defs>
+  <rect width="1200" height="620" rx="34" fill="url(#bg)"/>
+  <path d="M0 470 C190 380, 300 520, 475 432 S820 356, 1200 458 V620 H0z" fill="#28ffce" opacity="0.08"/>
+  <text x="70" y="82" class="title">Datos críticos de Artify</text>
+  <text x="72" y="118" class="sub">Respaldo enfocado en PostgreSQL y secretos de acceso.</text>
+
+  <g transform="translate(495 226)" filter="url(#shadow)">
+    <ellipse cx="105" cy="24" rx="105" ry="24" fill="#8ff8f1"/>
+    <rect x="0" y="24" width="210" height="150" fill="url(#db)"/>
+    <ellipse cx="105" cy="174" rx="105" ry="24" fill="#28ffce"/>
+    <path d="M0 74c0 13 47 24 105 24s105-11 105-24M0 124c0 13 47 24 105 24s105-11 105-24" fill="none" stroke="#127176" stroke-width="5" opacity="0.75"/>
+    <text x="105" y="68" text-anchor="middle" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#102a32">artify_db</text>
+  </g>
+
+  <path d="M495 296 H358M705 296 H842M560 402 L392 492M640 402 L808 492M930 170 C875 205, 765 232, 702 258" stroke="#9be7e5" stroke-width="5" stroke-linecap="round" opacity="0.75"/>
+
+  <g class="card" transform="translate(82 218)">
+    <rect width="270" height="140" rx="28" fill="#ffffff"/>
+    <text x="28" y="50" class="node">USUARIO</text>
+    <text x="28" y="88" class="small">Datos personales</text>
+    <text x="28" y="120" class="small">Hash y roles</text>
+  </g>
+
+  <g class="card" transform="translate(848 218)">
+    <rect width="270" height="140" rx="28" fill="#ffffff"/>
+    <text x="28" y="50" class="node">CONFIGURACIÓN</text>
+    <text x="28" y="88" class="small">Preferencias</text>
+    <text x="28" y="120" class="small">Datos JSONB</text>
+  </g>
+
+  <g class="card" transform="translate(82 456)">
+    <rect width="305" height="128" rx="28" fill="#ffffff"/>
+    <text x="28" y="48" class="node">OPERACIÓN</text>
+    <text x="28" y="87" class="small">Historial del editor</text>
+    <text x="28" y="118" class="small">Base de analíticas</text>
+  </g>
+
+  <g class="card" transform="translate(812 456)">
+    <rect width="305" height="128" rx="28" fill="#ffffff"/>
+    <text x="28" y="48" class="node">SESIÓN / IMAGEN</text>
+    <text x="28" y="87" class="small">Trazabilidad</text>
+    <text x="28" y="118" class="small">Metadatos</text>
+  </g>
+
+  <g class="card" transform="translate(804 48)">
+    <rect width="310" height="122" rx="28" fill="#ffffff"/>
+    <text x="28" y="48" class="node">SECRETOS</text>
+    <text x="28" y="86" class="small">.env protegido</text>
+    <text x="28" y="116" class="small">DATABASE_URL</text>
+  </g>
+</svg>

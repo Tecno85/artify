@@ -301,6 +301,7 @@ CORS_ORIGIN=https://artify.netlify.app
 - [2026-06-27] Verificación completa de la migración con PostgreSQL temporal y pruebas automatizadas.
 - [2026-06-28] Formalización de PostgreSQL como motor oficial de esta versión.
 - [2026-07-04] Validación del despliegue público Netlify + Render + Neon y documentación del proceso replicable para evidencia en video.
+- [2026-07-08] Documentación de plan de migración y respaldo de datos de Artify con referencia en ISO 27001 para evidencia GA10-220501097-AA9.
 
 ---
 

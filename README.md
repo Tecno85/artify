@@ -516,6 +516,7 @@ La documentación del proyecto se encuentra organizada en la carpeta [`docs/`](.
 - [Guía de despliegue full-stack con PostgreSQL](./docs/tecnica/despliegue-fullstack-postgresql.md)
 - [Plan de instalación local de Artify](./docs/tecnica/plan-instalacion-artify.md)
 - [Plan de mantenimiento y soporte de Artify](./docs/tecnica/plan-mantenimiento-soporte-artify.md)
+- [Plan de migración y respaldo de datos con referencia en ISO 27001](./docs/tecnica/plan-respaldo-datos-iso27001-artify.md)
 - [Verificación de hardware para Artify](./docs/tecnica/verificacion-hardware-artify.md)
 - [Alta disponibilidad y clústeres](./docs/tecnica/alta-disponibilidad-clusteres.md)
 - [Plan de pruebas de autenticación](./docs/tecnica/plan-pruebas-autenticacion.md)
