@@ -101,16 +101,32 @@
             </button>
 
             <div class="submenu" id="submenuFiltros" style="display: none">
-              <button class="submenu-btn" data-filter="grayscale">
+              <button
+                class="submenu-btn"
+                data-filter="grayscale"
+                aria-pressed="false"
+              >
                 <span class="bullet">•</span> Blanco y Negro
               </button>
-              <button class="submenu-btn" data-filter="sepia">
+              <button
+                class="submenu-btn"
+                data-filter="sepia"
+                aria-pressed="false"
+              >
                 <span class="bullet">•</span> Sepia
               </button>
-              <button class="submenu-btn" data-filter="brightness">
+              <button
+                class="submenu-btn"
+                data-filter="brightness"
+                aria-pressed="false"
+              >
                 <span class="bullet">•</span> Brillo
               </button>
-              <button class="submenu-btn" data-filter="contrast">
+              <button
+                class="submenu-btn"
+                data-filter="contrast"
+                aria-pressed="false"
+              >
                 <span class="bullet">•</span> Contraste
               </button>
             </div>
@@ -282,11 +298,11 @@
                 class="slider-input"
                 min="0"
                 max="100"
-                value="100"
+                value="0"
               />
-              <span class="slider-value" id="filterIntensityValue">100%</span>
+              <span class="slider-value" id="filterIntensityValue">0%</span>
             </div>
-            <button class="btn-apply" id="btnAplicarFiltro">
+            <button class="btn-apply" id="btnAplicarFiltro" disabled>
               Aplicar Filtro
             </button>
           </div>

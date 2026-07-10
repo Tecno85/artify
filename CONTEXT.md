@@ -315,6 +315,7 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 - [2026-07-09] Corrección de estado de cuentas, sesiones, descargas, analytics, validaciones y cobertura automatizada.
 - [2026-07-09] Ajuste responsive del editor para portátiles de 1366 x 768 y validación por tamaño útil de ventana.
 - [2026-07-09] Ajuste responsive de inicio para portátiles con poca altura útil; login y registro conservan su diseño original.
+- [2026-07-10] Vista previa de filtros al mover su control, escalas neutras específicas y confirmación única en historial y PostgreSQL.
 
 ---
 

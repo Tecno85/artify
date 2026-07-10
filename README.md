@@ -49,7 +49,7 @@ PostgreSQL es el motor oficial de base de datos del proyecto.
 - **Recortar** con proporciones personalizables (libre, 1:1, 16:9, 4:3, 3:2)
 - **Redimensionar** con opción de mantener proporción
 - **Rotar** en ángulos de 90°, 180° y 270°
-- **Filtros artísticos**: Blanco y Negro, Sepia, Brillo, Contraste
+- **Filtros artísticos**: Blanco y Negro, Sepia, Brillo y Contraste, con vista previa al mover el control, escalas neutras por filtro y confirmación explícita
 - **Convertir formato**: PNG, JPEG, WebP con ajuste de calidad
 - **Deshacer/Rehacer** (historial de hasta 20 pasos)
 - **Zoom** in/out (50% - 200%)

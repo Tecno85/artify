@@ -7,6 +7,12 @@ let historyIndex = -1;
 let currentTool = null;
 let zoomLevel = 100;
 let currentFilter = null;
+let filterPreviewBaseImageData = null;
+let filterPreviewImageData = null;
+let filterPreviewFrameId = null;
+let filterPreviewActive = false;
+let filterPreviewIntensity = 0;
+let filterApplyInProgress = false;
 let formatoActual = null; // Formato actual de la imagen después de conversión
 let calidadActual = null; // Calidad actual de la imagen después de conversión
 let archivoActual = null;
@@ -398,6 +404,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // ========== FUNCIÓN CARGAR IMAGEN ==========
   function cargarImagen(file) {
+    cancelarVistaPreviaFiltro();
+
     const tiposValidos = ['image/jpeg', 'image/png', 'image/webp'];
     if (!tiposValidos.includes(file.type)) {
       mostrarNotificacion(
@@ -522,6 +530,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   // ========== DESCARGAR IMAGEN ==========
   btnDescargar.addEventListener('click', async () => {
     if (!currentImage) return;
+
+    if (filterPreviewActive || filterApplyInProgress) {
+      mostrarNotificacion(
+        'warning',
+        'Aplica el filtro antes de descargar la imagen'
+      );
+      return;
+    }
+
     actualizarEstado('Generando descarga...', 'processing');
 
     // Obtener preferencias desde la API
@@ -732,27 +749,207 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   const filtrosButtons = document.querySelectorAll('.submenu-btn');
+  const filterIntensitySlider = document.getElementById('filterIntensity');
+  const filterIntensityValue = document.getElementById('filterIntensityValue');
+  const filterIntensityLabel = document.querySelector(
+    'label[for="filterIntensity"]'
+  );
+  const btnAplicarFiltro = document.getElementById('btnAplicarFiltro');
+  const configuracionFiltros = {
+    grayscale: {
+      min: 0,
+      max: 100,
+      neutral: 0,
+      etiqueta: 'Intensidad:',
+      unidad: 'porcentaje',
+    },
+    sepia: {
+      min: 0,
+      max: 100,
+      neutral: 0,
+      etiqueta: 'Intensidad:',
+      unidad: 'porcentaje',
+    },
+    brightness: {
+      min: -100,
+      max: 100,
+      neutral: 0,
+      etiqueta: 'Ajuste de brillo:',
+      unidad: 'ajuste',
+    },
+    contrast: {
+      min: -100,
+      max: 100,
+      neutral: 0,
+      etiqueta: 'Ajuste de contraste:',
+      unidad: 'ajuste',
+    },
+  };
+
   filtrosButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
+      if (filterApplyInProgress) return;
+
       const filter = btn.dataset.filter;
+      mostrarControlesFiltro();
       currentFilter = filter;
-      mostrarControlesFiltro(filter);
-      filtrosButtons.forEach((b) => b.classList.remove('active'));
-      btn.classList.add('active');
+      configurarControlFiltro(filter);
+      actualizarFiltroActivo(filter);
     });
   });
 
-  // Event listener para actualizar el valor del slider de intensidad
-  const filterIntensitySlider = document.getElementById('filterIntensity');
-  const filterIntensityValue = document.getElementById('filterIntensityValue');
-
-  if (filterIntensitySlider && filterIntensityValue) {
-    filterIntensitySlider.addEventListener('input', (e) => {
-      filterIntensityValue.textContent = e.target.value + '%';
+  function actualizarFiltroActivo(filter = null) {
+    filtrosButtons.forEach((btn) => {
+      const estaActivo = btn.dataset.filter === filter;
+      btn.classList.toggle('active', estaActivo);
+      btn.setAttribute('aria-pressed', String(estaActivo));
     });
   }
 
-  function mostrarControlesFiltro(filter) {
+  // Event listener para actualizar el valor del slider de intensidad
+  if (filterIntensitySlider && filterIntensityValue) {
+    filterIntensitySlider.addEventListener('input', (e) => {
+      if (!currentFilter || filterApplyInProgress) return;
+
+      const valor = Number(e.target.value);
+      const configuracion = configuracionFiltros[currentFilter];
+      filterIntensityValue.textContent = formatearValorFiltro(
+        currentFilter,
+        valor
+      );
+
+      if (valor === configuracion.neutral) {
+        restaurarVistaPreviaFiltro();
+        btnAplicarFiltro.disabled = true;
+        return;
+      }
+
+      if (!filterPreviewActive) {
+        iniciarVistaPreviaFiltro();
+      }
+
+      programarVistaPreviaFiltro(valor);
+      btnAplicarFiltro.disabled = false;
+    });
+  }
+
+  function configurarControlFiltro(filter) {
+    const configuracion = configuracionFiltros[filter];
+    if (!configuracion) return;
+
+    filterIntensitySlider.min = configuracion.min;
+    filterIntensitySlider.max = configuracion.max;
+    filterIntensitySlider.step = 1;
+    filterIntensitySlider.value = configuracion.neutral;
+    filterIntensityValue.textContent = formatearValorFiltro(
+      filter,
+      configuracion.neutral
+    );
+    filterIntensityLabel.textContent = configuracion.etiqueta;
+    btnAplicarFiltro.disabled = true;
+  }
+
+  function formatearValorFiltro(filter, valor) {
+    const configuracion = configuracionFiltros[filter];
+    if (configuracion?.unidad === 'porcentaje') {
+      return `${valor}%`;
+    }
+
+    return valor > 0 ? `+${valor}` : `${valor}`;
+  }
+
+  function limpiarEstadoVistaPreviaFiltro() {
+    if (filterPreviewFrameId !== null) {
+      cancelAnimationFrame(filterPreviewFrameId);
+    }
+
+    filterPreviewBaseImageData = null;
+    filterPreviewImageData = null;
+    filterPreviewFrameId = null;
+    filterPreviewActive = false;
+  }
+
+  function restaurarVistaPreviaFiltro() {
+    if (
+      filterPreviewActive &&
+      filterPreviewBaseImageData &&
+      filterPreviewBaseImageData.width === canvas.width &&
+      filterPreviewBaseImageData.height === canvas.height
+    ) {
+      ctx.putImageData(filterPreviewBaseImageData, 0, 0);
+    }
+
+    limpiarEstadoVistaPreviaFiltro();
+  }
+
+  function cancelarVistaPreviaFiltro() {
+    restaurarVistaPreviaFiltro();
+    currentFilter = null;
+    actualizarFiltroActivo();
+    if (btnAplicarFiltro) btnAplicarFiltro.disabled = true;
+  }
+
+  function aplicarFiltroADatos(data, filter, valor) {
+    switch (filter) {
+      case 'grayscale':
+        aplicarBlancoYNegro(data, valor / 100);
+        break;
+      case 'sepia':
+        aplicarSepia(data, valor / 100);
+        break;
+      case 'brightness':
+        aplicarBrillo(data, valor);
+        break;
+      case 'contrast':
+        aplicarContraste(data, valor);
+        break;
+    }
+  }
+
+  function renderizarVistaPreviaFiltro() {
+    filterPreviewFrameId = null;
+
+    if (
+      !filterPreviewActive ||
+      !filterPreviewBaseImageData ||
+      !filterPreviewImageData ||
+      !currentFilter
+    ) {
+      return;
+    }
+
+    filterPreviewImageData.data.set(filterPreviewBaseImageData.data);
+    aplicarFiltroADatos(
+      filterPreviewImageData.data,
+      currentFilter,
+      filterPreviewIntensity
+    );
+    ctx.putImageData(filterPreviewImageData, 0, 0);
+  }
+
+  function programarVistaPreviaFiltro(valor) {
+    if (!filterPreviewActive || filterApplyInProgress) return;
+
+    filterPreviewIntensity = valor;
+    if (filterPreviewFrameId === null) {
+      filterPreviewFrameId = requestAnimationFrame(renderizarVistaPreviaFiltro);
+    }
+  }
+
+  function iniciarVistaPreviaFiltro() {
+    if (!currentImage || !currentFilter || filterApplyInProgress) return;
+
+    filterPreviewBaseImageData = ctx.getImageData(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+    filterPreviewImageData = ctx.createImageData(canvas.width, canvas.height);
+    filterPreviewActive = true;
+  }
+
+  function mostrarControlesFiltro() {
     ocultarTodosLosControles();
     const filterControls = document.getElementById('filterControls');
     if (filterControls) {
@@ -760,59 +957,66 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  document.getElementById('btnAplicarFiltro').addEventListener('click', () => {
-    if (!currentImage || !currentFilter) {
+  btnAplicarFiltro.addEventListener('click', () => {
+    if (!currentImage || !currentFilter || !filterPreviewActive) {
       mostrarNotificacion('error', 'Debes seleccionar un filtro primero');
       return;
     }
 
-    console.log('🎨 Aplicando filtro:', currentFilter);
+    const filtroAplicado = currentFilter;
+    const valorFiltro = Number(filterIntensitySlider.value);
+    const valorFormateado = formatearValorFiltro(
+      filtroAplicado,
+      valorFiltro
+    );
+    const configuracion = configuracionFiltros[filtroAplicado];
+    const filtrosNombres = {
+      grayscale: 'Blanco y Negro',
+      sepia: 'Sepia',
+      brightness: 'Brillo',
+      contrast: 'Contraste',
+    };
+    const nombreFiltro = filtrosNombres[filtroAplicado] || filtroAplicado;
+
+    console.log(
+      '🎨 Aplicando filtro:',
+      filtroAplicado,
+      valorFormateado
+    );
     actualizarEstado('Aplicando filtro...', 'processing');
 
-    const intensity = document.getElementById('filterIntensity').value / 100;
-
-    // Obtener datos del canvas actual
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-
-    switch (currentFilter) {
-      case 'grayscale':
-        aplicarBlancoYNegro(data, intensity);
-        break;
-      case 'sepia':
-        aplicarSepia(data, intensity);
-        break;
-      case 'brightness':
-        aplicarBrillo(data, intensity);
-        break;
-      case 'contrast':
-        aplicarContraste(data, intensity);
-        break;
+    filterPreviewIntensity = valorFiltro;
+    if (filterPreviewFrameId !== null) {
+      cancelAnimationFrame(filterPreviewFrameId);
+      filterPreviewFrameId = null;
     }
+    renderizarVistaPreviaFiltro();
 
-    ctx.putImageData(imageData, 0, 0);
+    limpiarEstadoVistaPreviaFiltro();
+    filterApplyInProgress = true;
+    filterIntensitySlider.disabled = true;
+    btnAplicarFiltro.disabled = true;
 
     sincronizarImagenYCanvas(() => {
       // Notificación removida
       actualizarEstado('Listo', 'success');
-      guardarEstadoEnHistorial(`Filtro: ${currentFilter}`);
+      guardarEstadoEnHistorial(`Filtro: ${nombreFiltro} (${valorFormateado})`);
       // Registrar filtro en PostgreSQL
-      const filtrosNombres = {
-        grayscale: 'Blanco y Negro',
-        sepia: 'Sepia',
-        brightness: 'Brillo',
-        contrast: 'Contraste',
-      };
       registrarOperacion(
         'filtro',
-        `Filtro aplicado: ${filtrosNombres[currentFilter] || currentFilter}`,
-        { filtro: filtrosNombres[currentFilter] || currentFilter }
+        `Filtro aplicado: ${nombreFiltro} (${valorFormateado})`,
+        {
+          filtro: nombreFiltro,
+          intensidad: valorFiltro,
+          unidad: configuracion.unidad,
+        }
       );
       // Resetear la selección del filtro para poder aplicar múltiples veces
       currentFilter = null;
-      document
-        .querySelectorAll('.submenu-btn')
-        .forEach((b) => b.classList.remove('active'));
+      actualizarFiltroActivo();
+      filterApplyInProgress = false;
+      filterIntensitySlider.disabled = false;
+      btnAplicarFiltro.disabled = true;
     });
   });
 
@@ -839,8 +1043,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function aplicarBrillo(data, intensity) {
-    const adjustment = (intensity - 0.5) * 100;
+  function aplicarBrillo(data, valor) {
+    const adjustment = valor;
     for (let i = 0; i < data.length; i += 4) {
       data[i] = Math.min(255, Math.max(0, data[i] + adjustment));
       data[i + 1] = Math.min(255, Math.max(0, data[i + 1] + adjustment));
@@ -848,9 +1052,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  function aplicarContraste(data, intensity) {
-    const factor =
-      (259 * (intensity * 255 + 255)) / (255 * (259 - intensity * 255));
+  function aplicarContraste(data, valor) {
+    const factor = (259 * (valor + 255)) / (255 * (259 - valor));
     for (let i = 0; i < data.length; i += 4) {
       data[i] = Math.min(255, Math.max(0, factor * (data[i] - 128) + 128));
       data[i + 1] = Math.min(
@@ -1370,6 +1573,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // ========== HISTORIAL (DESHACER/REHACER) ==========
   btnDeshacer.addEventListener('click', () => {
+    cancelarVistaPreviaFiltro();
     if (historyIndex <= 0) return;
 
     historyIndex--;
@@ -1394,6 +1598,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   btnRehacer.addEventListener('click', () => {
+    cancelarVistaPreviaFiltro();
     if (historyIndex >= operationsHistory.length - 1) return;
 
     historyIndex++;
@@ -1435,6 +1640,8 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // ========== UTILIDADES ==========
   function ocultarTodosLosControles() {
+    cancelarVistaPreviaFiltro();
+
     const cropControls = document.getElementById('cropControls');
     const resizeControls = document.getElementById('resizeControls');
     const rotateControls = document.getElementById('rotateControls');
