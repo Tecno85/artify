@@ -47,10 +47,8 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  /* background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 60px; */
+  width: min(calc(100% - clamp(48px, 8vw, 112px)), 1120px);
+  margin-inline: auto;
 }
 
 .header-img {

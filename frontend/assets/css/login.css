@@ -809,8 +809,12 @@ p b {
   }
 
   .login-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
     max-width: 420px;
-    padding: 24px 32px;
+    height: 600px;
+    padding: 44px 32px;
   }
 
   .logo-section {
@@ -818,7 +822,7 @@ p b {
   }
 
   .logo {
-    width: 54px;
+    width: 65px;
     margin-bottom: 4px;
   }
 
@@ -832,11 +836,11 @@ p b {
   }
 
   form {
-    gap: 13px;
+    gap: 20px;
   }
 
   .form-group {
-    gap: 6px;
+    gap: 10px;
   }
 
   .form-group label {
@@ -881,7 +885,7 @@ p b {
     flex-wrap: wrap;
     letter-spacing: 1.2px;
     line-height: 1.35;
-    font-size: clamp(0.9rem, 0.35vw + 0.65rem, 1rem);
+    font-size: clamp(0.95rem, 0.35vw + 0.65rem, 1rem);
     padding: 2.5px;
   }
 }
