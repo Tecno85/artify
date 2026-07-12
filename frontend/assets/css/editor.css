@@ -502,6 +502,17 @@ header {
   transition: all 0.2s ease;
 }
 
+.select-input,
+.config-select {
+  color-scheme: dark;
+}
+
+.select-input option,
+.config-select option {
+  color: var(--text-light);
+  background-color: var(--background-dark);
+}
+
 .select-input:focus,
 .number-input:focus {
   outline: none;
