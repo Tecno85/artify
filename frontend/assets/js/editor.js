@@ -1243,15 +1243,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     canvas.addEventListener('pointerdown', iniciarRecorte);
     canvas.addEventListener('pointermove', dibujarRecorte);
     canvas.addEventListener('pointerup', finalizarRecorte);
+    canvas.addEventListener('pointercancel', finalizarRecorte);
+  }
 
-    // Event listener para cambio de proporción
-    const cropRatioSelect = document.getElementById('cropRatio');
-    if (cropRatioSelect) {
-      cropRatioSelect.addEventListener('change', (e) => {
-        cropRatio = e.target.value;
-        console.log('📐 Proporción seleccionada:', cropRatio);
-      });
-    }
+  const cropRatioSelect = document.getElementById('cropRatio');
+  if (cropRatioSelect) {
+    cropRatioSelect.addEventListener('change', (e) => {
+      cropRatio = e.target.value;
+      console.log('📐 Proporción seleccionada:', cropRatio);
+    });
   }
 
   // ========== FUNCIONES DE RECORTE CORREGIDAS ==========
@@ -1539,11 +1539,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     console.log('✅ Desactivando modo recorte');
     cropMode = false;
+    isDragging = false;
+    cropArea = { x: 0, y: 0, width: 0, height: 0 };
     canvas.style.cursor = 'default';
 
     canvas.removeEventListener('pointerdown', iniciarRecorte);
     canvas.removeEventListener('pointermove', dibujarRecorte);
     canvas.removeEventListener('pointerup', finalizarRecorte);
+    canvas.removeEventListener('pointercancel', finalizarRecorte);
 
     if (currentImage) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1641,6 +1644,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // ========== UTILIDADES ==========
   function ocultarTodosLosControles() {
     cancelarVistaPreviaFiltro();
+    desactivarModoRecorte();
 
     const cropControls = document.getElementById('cropControls');
     const resizeControls = document.getElementById('resizeControls');
