@@ -827,12 +827,13 @@ p b {
   }
 
   .login-card h1 {
-    font-size: 2rem;
+    font-size: 2.1rem;
     margin-bottom: 3px;
+    letter-spacing: 0.1rem;
   }
 
   .subtitle {
-    font-size: 0.88rem;
+    font-size: 1rem;
   }
 
   form {
@@ -844,22 +845,22 @@ p b {
   }
 
   .form-group label {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .form-group input {
     padding: 10px 13px;
-    font-size: 0.92rem;
+    font-size: 1rem;
   }
 
   .form-options {
-    margin-top: -3px;
+    margin-top: 0.5px;
   }
 
   .btn-primary {
     padding: 11px;
     margin-top: 3px;
-    font-size: 0.98rem;
+    font-size: 1rem;
   }
 
   .links-section {
@@ -869,7 +870,7 @@ p b {
 
   .link-secondary,
   .register-link {
-    font-size: 0.84rem;
+    font-size: 0.92rem;
   }
 
   footer {
