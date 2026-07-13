@@ -2,8 +2,6 @@
 
 <div align="center">
 
-<img src="./frontend/assets/images/modx-icon.svg" alt="Logo de Artify" width="96">
-
 ![Estado](https://img.shields.io/badge/estado-activo-28ffce?style=flat-square)
 ![Licencia](https://img.shields.io/badge/licencia-MIT-blue?style=flat-square)
 ![Node.js](https://img.shields.io/badge/Node.js-22.13%2B-339933?style=flat-square&logo=node.js)
@@ -17,13 +15,13 @@ Aplicación web para editar imágenes desde el navegador, administrar usuarios y
 
 ---
 
-![Interfaz de Artify](./docs/tecnica/evidencias/configuracion-servicios/frontend-artify.png)
-
 ## Descripción
 
 Artify permite cargar, transformar y descargar imágenes mediante una interfaz web. El proyecto combina un frontend desarrollado con HTML, CSS y JavaScript Vanilla, una API REST con Node.js y Express, y una base de datos PostgreSQL.
 
 La aplicación incluye autenticación por roles, persistencia de preferencias y operaciones, panel administrativo y un editor basado en Canvas API.
+
+![Interfaz de Artify](./docs/tecnica/evidencias/configuracion-servicios/frontend-artify.png)
 
 ## Características principales
 
