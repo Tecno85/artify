@@ -28,6 +28,8 @@ El sistema se organiza en tres capas:
 | Backend | Node.js, Express y `pg` | Gestionar autenticación, sesiones, operaciones, administración y analíticas. |
 | Base de datos | PostgreSQL | Guardar usuarios, configuraciones, imágenes, sesiones y operaciones. |
 
+En el entorno publicado, estas capas se distribuyen entre GitHub Pages para el frontend, Render para el backend y Neon para PostgreSQL. El mantenimiento debe revisar tanto el código como la configuración cruzada de estos servicios.
+
 Los módulos que debo mantener son:
 
 - **Autenticación:** registro, login, token firmado y control de rol.
@@ -52,8 +54,14 @@ El mantenimiento preventivo lo realizo de forma programada para reducir riesgos 
 | Ejecutar `pnpm test` | Mensual o antes de cambios importantes | Resultado de pruebas automatizadas. |
 | Revisar dependencias Node.js | Mensual | Registro de versiones o alertas. |
 | Verificar login, editor y panel admin | Mensual | Lista de chequeo funcional. |
-| Revisar `schema.sql`, `seed.sql` y respaldos | Trimestral o antes de migrar | Confirmación de estructura y respaldo. |
+| Verificar el workflow de GitHub Pages y la variable `ARTIFY_API_URL` | Después de cambios de despliegue | Ejecución exitosa del workflow y `config.js` publicado. |
+| Consultar `/health`, `/ready` y revisar CORS | Mensual o después de cambios de dominio | Respuesta correcta de Render, conexión con Neon y origen autorizado. |
+| Generar un respaldo de PostgreSQL | Mensual o antes de migrar | Archivo de respaldo identificado con fecha y entorno. |
+| Revisar `schema.sql`, `seed.sql` y la validez de los respaldos | Trimestral o antes de migrar | Confirmación de estructura, datos iniciales y respaldo disponible. |
+| Probar la restauración de un respaldo PostgreSQL | Trimestral, en los meses 3 y 6 del ciclo | Registro de restauración en un entorno controlado. |
 | Actualizar documentación técnica | Cada cambio relevante | Markdown actualizado. |
+
+> **Seguridad de las pruebas:** ejecuto `pnpm test` únicamente contra `artify_db` local o una base PostgreSQL exclusiva de pruebas. La suite crea, modifica y elimina registros temporales, por lo que nunca debe usar `DATABASE_URL` de Neon o de producción.
 
 ### Mantenimiento correctivo
 
@@ -107,9 +115,9 @@ Antes de modificar Artify debo entender qué ocurre y qué tanto afecta al siste
 | Documentación desactualizada | README no refleja una ruta nueva. | Preventivo |
 | Migración | Cambiar proveedor o versión de PostgreSQL. | Planificado |
 
-La prioridad se define así:
+La prioridad se define así. Los tiempos indicados son objetivos internos estimados para organizar mi trabajo; están sujetos a mi disponibilidad académica y no constituyen un acuerdo de nivel de servicio (SLA):
 
-| Prioridad | Criterio | Tiempo objetivo |
+| Prioridad | Criterio | Objetivo interno estimado |
 | --- | --- | --- |
 | Crítica | Impide login, edición o expone datos sensibles. | Mismo día |
 | Alta | Afecta una función principal con alternativa temporal. | 1 a 2 días |
@@ -164,10 +172,10 @@ La migración consiste en mover Artify de una versión, entorno o tecnología ha
 
 Ejemplos posibles:
 
-- Pasar PostgreSQL local a Neon.
+- Migrar la base de datos de Neon a otro proyecto, plan o proveedor.
 - Cambiar el backend a otro proveedor.
 - Actualizar Node.js, Express o PostgreSQL.
-- Cambiar la URL pública del backend en Netlify.
+- Cambiar la URL pública del backend en la variable `ARTIFY_API_URL` de GitHub Actions.
 - Reorganizar documentos o evidencias.
 
 Cuando realice una migración seguiré estos pasos:
@@ -213,18 +221,23 @@ El siguiente cronograma organiza las actividades preventivas durante seis meses.
 
 ![Cronograma de mantenimiento de Artify](./evidencias/mantenimiento-soporte/cronograma-mantenimiento-artify.svg)
 
+Para que la evidencia gráfica sea fácil de leer, agrupo las dependencias con las pruebas automatizadas y la revisión del esquema con la restauración controlada. La tabla siguiente presenta cada actividad por separado.
+
 | Actividad | Mes 1 | Mes 2 | Mes 3 | Mes 4 | Mes 5 | Mes 6 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Revisar dependencias backend | X |  | X |  | X | X |
+| Revisar dependencias backend | X | X | X | X | X | X |
 | Respaldar base de datos | X | X | X | X | X | X |
-| Ejecutar pruebas API | X |  | X |  | X | X |
-| Revisar seguridad y CORS | X |  |  | X |  | X |
-| Actualizar documentación | X |  | X |  | X | X |
+| Ejecutar `pnpm test` | X | X | X | X | X | X |
 | Verificar frontend manualmente | X | X | X | X | X | X |
-| Revisar despliegue y `/health` | X | X | X | X | X | X |
+| Revisar `/health`, `/ready` y CORS | X | X | X | X | X | X |
+| Revisar `schema.sql`, `seed.sql` y respaldos |  |  | X |  |  | X |
+| Probar restauración controlada |  |  | X |  |  | X |
+| Revisar documentación al cierre del mes | X | X | X | X | X | X |
 | Atender correctivos | Según reporte | Según reporte | Según reporte | Según reporte | Según reporte | Según reporte |
 
-Para controlar el seguimiento usaré indicadores sencillos: pruebas exitosas antes de entregar cambios importantes, cero incidentes críticos abiertos, documentación actualizada al cierre de cada ciclo, respaldo mensual como mínimo y cero secretos publicados en el repositorio.
+En el cronograma, la revisión documental mensual sirve como control de cierre. La actualización del contenido se realiza cuando existe un cambio relevante; si no hubo cambios, solo dejo constancia de la revisión. La revisión trimestral de base de datos no reemplaza el respaldo mensual: en los meses 3 y 6 también compruebo que el respaldo pueda restaurarse en un entorno controlado.
+
+Para controlar el seguimiento usaré indicadores sencillos: pruebas exitosas antes de entregar cambios importantes, cero incidentes críticos abiertos, documentación revisada al cierre de cada mes, respaldo mensual como mínimo y cero secretos publicados en el repositorio.
 
 ## Conclusiones
 

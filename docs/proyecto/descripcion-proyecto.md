@@ -4,6 +4,7 @@
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
 > **Fecha:** Mayo 2026
+> **Última actualización:** Julio 2026
 
 ---
 
@@ -51,10 +52,11 @@ El alcance actual de Artify incluye:
 - Persistencia de usuarios, configuraciones, sesiones, operaciones e imágenes en PostgreSQL.
 - Panel de administración protegido por rol.
 - API REST para funcionalidades internas y endpoints de analíticas.
-- Pruebas automatizadas para el módulo de autenticación y rutas protegidas.
+- Dieciocho pruebas automatizadas de integración para autenticación, sesiones, configuración, imágenes, analíticas y administración.
 - Documentación del proyecto y documentación técnica separadas en la carpeta `docs/`.
+- Despliegue del frontend en GitHub Pages, del backend en Render y de PostgreSQL en Neon.
 
-No hacen parte del alcance actual funciones avanzadas como edición colaborativa en tiempo real, almacenamiento de archivos en la nube, inteligencia artificial para imágenes, pagos, integración con redes sociales o despliegue productivo en infraestructura externa.
+No hacen parte del alcance actual funciones avanzadas como edición colaborativa en tiempo real, almacenamiento externo de archivos de imagen, inteligencia artificial para imágenes, pagos, integración con redes sociales o una arquitectura de alta disponibilidad con redundancia y conmutación por error.
 
 ---
 
@@ -108,6 +110,7 @@ Expone endpoints REST para consultar información agregada sobre filtros, horari
 | Gestor de paquetes | pnpm |
 | Pruebas | Node Test Runner |
 | Control de versiones | Git y GitHub |
+| Despliegue | GitHub Pages, Render y Neon |
 
 ---
 
@@ -121,9 +124,9 @@ Desde el punto de vista académico, el proyecto permite evidenciar el proceso de
 
 ## 10. Estado Actual
 
-El proyecto se encuentra en estado activo. Actualmente cuenta con frontend funcional, backend modularizado, base de datos PostgreSQL, autenticación real, panel administrativo, pruebas automatizadas de autenticación y documentación organizada en:
+El proyecto se encuentra en estado activo y desplegado. Actualmente cuenta con frontend funcional en GitHub Pages, backend modularizado en Render, base de datos PostgreSQL en Neon, autenticación real, panel administrativo, dieciocho pruebas automatizadas de integración y documentación organizada en:
 
 - `docs/proyecto/`: documentación funcional y académica.
 - `docs/tecnica/`: documentación técnica y manual técnico.
 
-El desarrollo continúa con mejoras orientadas a ampliar pruebas, fortalecer documentación técnica, mejorar despliegue y mantener el proyecto listo para entrega académica y portafolio.
+El desarrollo continúa con mejoras orientadas a ampliar la cobertura de pruebas, fortalecer la documentación técnica, supervisar el despliegue y mantener el proyecto listo para entrega académica y portafolio.

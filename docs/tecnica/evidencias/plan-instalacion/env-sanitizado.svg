@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-labelledby="title desc">
-  <title id="title">Archivo .env configurado sin datos sensibles</title>
-  <desc id="desc">Evidencia visual sanitizada del archivo de variables de entorno requerido por Artify.</desc>
+  <title id="title">Representación sanitizada del archivo .env local</title>
+  <desc id="desc">Representación didáctica, no captura literal, de las variables locales requeridas por Artify.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -22,16 +22,16 @@
   <circle class="dot-red" cx="102" cy="79" r="7" />
   <circle class="dot-yellow" cx="126" cy="79" r="7" />
   <circle class="dot-green" cx="150" cy="79" r="7" />
-  <text class="title" x="490" y="86" text-anchor="middle">backend/.env - valores sanitizados</text>
+  <text class="title" x="490" y="86" text-anchor="middle">backend/.env - representación sanitizada</text>
   <text x="112" y="142"><tspan class="key">DB_HOST</tspan><tspan class="value">=localhost</tspan></text>
   <text x="112" y="174"><tspan class="key">DB_PORT</tspan><tspan class="value">=5432</tspan></text>
   <text x="112" y="206"><tspan class="key">DB_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="238"><tspan class="key">DB_NAME</tspan><tspan class="value">=artify_db</tspan></text>
   <text x="112" y="270"><tspan class="key">DB_USER</tspan><tspan class="value">=********</tspan></text>
-  <text x="112" y="302"><tspan class="key">DATABASE_URL</tspan><tspan class="secret">=postgresql://********</tspan></text>
+  <text x="112" y="302"><tspan class="value"># </tspan><tspan class="key">DATABASE_URL</tspan><tspan class="secret">=postgresql://********</tspan></text>
   <text x="112" y="334"><tspan class="key">TOKEN_SECRET</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="366"><tspan class="key">PORT</tspan><tspan class="value">=3000</tspan></text>
   <text x="112" y="398"><tspan class="key">NODE_ENV</tspan><tspan class="value">=development</tspan></text>
   <text x="112" y="430"><tspan class="key">CORS_ORIGIN</tspan><tspan class="value">=http://localhost:8080</tspan></text>
-  <text class="note" x="112" y="456">Los valores sensibles se ocultan para proteger credenciales y secretos del entorno local.</text>
+  <text class="note" x="112" y="456">Representación didáctica: DATABASE_URL queda comentada en local y no contiene secretos reales.</text>
 </svg>

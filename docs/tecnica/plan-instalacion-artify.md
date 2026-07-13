@@ -5,109 +5,118 @@
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
 > **Fecha:** Mayo 2026
+> **Última actualización:** Julio 2026
 
 ---
 
 ## 1. Introducción
 
-En este informe elaboro el plan de instalación local de Artify como aplicación web. Para esta evidencia selecciono Node.js como plataforma principal de desarrollo e implantación, porque corresponde directamente con la arquitectura actual del proyecto y permite ejecutar el backend construido con Express.
-
-Realizo el proceso de instalación local teniendo en cuenta el backend, la base de datos y el frontend del proyecto. También incluyo los pasos necesarios para preparar herramientas, configurar variables de entorno, cargar la base de datos, iniciar los servicios y verificar que el sistema funcione correctamente.
+En este plan documento cómo instalo y ejecuto Artify en un equipo local. El procedimiento está dirigido a estudiantes de desarrollo de software y separa la preparación de Windows y macOS. Después de preparar las herramientas, ambos sistemas siguen el mismo flujo para configurar PostgreSQL, iniciar el backend y servir el frontend.
 
 ### 1.1 Cobertura de la evidencia
 
-| Requisito solicitado | Ubicación en el documento |
+| Requisito solicitado | Ubicación |
 | --- | --- |
-| Selección de plataforma de desarrollo e implantación | Secciones 3 y 4 |
-| Montaje de servidor de aplicaciones local | Secciones 8 y 9 |
-| Identificación de componentes de arquitectura | Sección 6 |
-| Requisitos previos de instalación | Sección 5 |
-| Paso a paso para instalar y montar el producto | Sección 8 |
-| Comandos sugeridos para instalación local | Sección 9 |
-| Imágenes descriptivas o capturas de pantalla | Sección 8 |
-| Verificación del despliegue local | Sección 10 |
-| Requisitos no funcionales relacionados | Sección 11 |
-| Consideración sobre máquinas virtuales y contenedores | Sección 12 |
+| Selección de la plataforma | Sección 10 |
+| Preparación del entorno | Secciones 4 y 5 |
+| Montaje del servidor de aplicaciones | Sección 6 |
+| Configuración de PostgreSQL | Sección 6 |
+| Ejecución del frontend | Sección 6 |
+| Verificación del producto | Sección 7 |
+| Evidencias visuales | Sección 11 |
+| Requisitos no funcionales | Sección 10 |
+| Máquinas virtuales y contenedores | Sección 10 |
 
 ---
 
-## 2. Objetivo
+## 2. Resultado Esperado
 
-Elaborar el paso a paso para instalar y preparar el entorno local necesario para desplegar Artify, incluyendo la instalación de herramientas, configuración del backend, preparación de la base de datos, ejecución del frontend y verificación del funcionamiento del sistema.
+Al finalizar tendré estos componentes activos:
 
----
-
-## 3. Plataforma Seleccionada
-
-Para esta evidencia selecciono Node.js como plataforma principal de desarrollo e implantación local. Esta decisión se toma porque Artify utiliza JavaScript en el backend mediante Node.js y Express, lo que permite ejecutar una API local conectada a una base de datos PostgreSQL.
-
-La plataforma seleccionada se complementa con los siguientes componentes:
-
-| Componente | Función dentro del plan |
+| Componente | Dirección o recurso esperado |
 | --- | --- |
-| Node.js | Ejecutar el backend de Artify. |
-| Express | Construir y exponer la API del sistema. |
-| PostgreSQL | Almacenar usuarios, sesiones, configuraciones y operaciones. |
-| pnpm | Instalar dependencias y ejecutar scripts del backend. |
-| Git | Clonar y versionar el proyecto. |
-| Navegador web | Acceder al frontend y validar el sistema. |
-| Servidor HTTP local | Servir los archivos estáticos del frontend durante la prueba local. |
+| Frontend | `http://127.0.0.1:8080` |
+| Backend | `http://127.0.0.1:3000` |
+| Estado del backend | `http://127.0.0.1:3000/health` |
+| Conexión con PostgreSQL | `http://127.0.0.1:3000/ready` |
+| Base de datos | `artify_db` |
 
-Aunque existen otras alternativas para montar entornos locales, como paquetes integrados, máquinas virtuales o contenedores, para esta evidencia selecciono Node.js porque corresponde directamente con la arquitectura real de Artify.
+Durante la ejecución mantengo abiertas dos terminales: una para el backend y otra para el frontend.
 
 ---
 
-## 4. Justificación de la Plataforma
+## 3. Requisitos
 
-Node.js es una plataforma adecuada para Artify porque permite ejecutar JavaScript fuera del navegador y construir servicios backend para aplicaciones web. En este proyecto se integra con Express para crear rutas, procesar solicitudes HTTP, validar usuarios y comunicarse con PostgreSQL.
-
-Selecciono Node.js por las siguientes razones:
-
-- Permite usar JavaScript en el backend del proyecto.
-- Se integra directamente con Express.
-- Facilita la creación de APIs para el frontend.
-- Permite trabajar en un entorno local de desarrollo e implantación.
-- Es compatible con la conexión a PostgreSQL mediante paquetes de Node.js.
-- Se ajusta a la arquitectura actual de Artify sin requerir cambiar de tecnología.
-
----
-
-## 5. Requisitos Previos
-
-Antes de instalar Artify en un entorno local, debo verificar que el equipo tenga las herramientas necesarias para ejecutar el backend, administrar la base de datos y abrir la aplicación desde un navegador.
-
-| Requisito | Versión o condición recomendada | Uso en la instalación |
-| --- | --- | --- |
-| Sistema operativo | Windows, macOS o Linux | Ejecutar herramientas de desarrollo local. |
-| Node.js | 22.13 o superior | Ejecutar el backend de Artify. |
-| pnpm | 11.1.1 | Instalar dependencias y ejecutar scripts del backend. |
-| PostgreSQL | 15 o superior | Crear y consultar la base de datos `artify_db`. |
-| Git | Versión estable | Clonar el repositorio del proyecto. |
-| Navegador web | Chrome, Edge, Firefox, Safari u otro moderno | Abrir y probar el frontend. |
-| Editor de código | Visual Studio Code u otro editor | Revisar archivos y configuración. |
-| Terminal | Terminal del sistema operativo | Ejecutar comandos de instalación y arranque. |
-
----
-
-## 6. Componentes de Arquitectura Usados en Artify
-
-Artify se organiza como una aplicación web con separación entre frontend, backend y base de datos. Esta separación permite instalar y verificar cada componente de forma ordenada.
-
-| Componente | Descripción |
+| Herramienta | Versión o condición |
 | --- | --- |
-| Frontend | Interfaz construida con HTML, CSS y JavaScript Vanilla. |
-| Backend | Servidor Node.js + Express encargado de la API y la lógica de negocio. |
-| Base de datos | PostgreSQL, donde se almacena la información persistente del sistema. |
-| API | Conjunto de rutas que comunican el frontend con el backend. |
-| Variables de entorno | Configuración de credenciales, puerto, secreto de token y conexión a PostgreSQL. |
-| Navegador cliente | Medio desde el cual el usuario accede a la aplicación. |
-| Servidor local | Entorno donde se ejecutan backend, frontend y base de datos durante la instalación. |
+| Node.js | 22.13 o superior |
+| pnpm | 11.1.1 |
+| PostgreSQL | 15 o superior |
+| Git | Versión estable |
+| Navegador | Chrome, Edge, Firefox o Safari actual |
+| Conexión a Internet | Necesaria para clonar e instalar dependencias |
+
+El backend declara las versiones de Node.js y pnpm en `backend/package.json`. No continúo hasta que `node -v`, `pnpm -v`, `git --version` y `psql --version` respondan correctamente.
 
 ---
 
-## 7. Preparación del Entorno Local
+## 4. Preparación en Windows
 
-Antes de ejecutar Artify, debo confirmar que las herramientas instaladas respondan correctamente desde la terminal. Esta revisión inicial reduce errores durante el montaje del producto.
+Uso PowerShell para ejecutar los comandos.
+
+### 4.1 Instalar las herramientas
+
+1. Instalo Node.js desde `https://nodejs.org/en/download` y confirmo que la versión sea 22.13 o superior.
+2. Instalo Git desde `https://git-scm.com/download/win`.
+3. Instalo PostgreSQL desde `https://www.postgresql.org/download/windows/`.
+4. Durante la instalación de PostgreSQL conservo el puerto `5432`, anoto la contraseña del usuario `postgres` e incluyo las herramientas de línea de comandos.
+5. Cierro y vuelvo a abrir PowerShell para actualizar el `PATH`.
+
+Instalo la versión de pnpm definida por Artify:
+
+```powershell
+npm install --global pnpm@11.1.1
+```
+
+### 4.2 Verificar Windows
+
+```powershell
+node -v
+pnpm -v
+git --version
+psql --version
+```
+
+Resultados mínimos:
+
+```text
+Node.js: v22.13.0 o superior
+pnpm: 11.1.1
+PostgreSQL: 15 o superior
+```
+
+Si PowerShell bloquea `npm.ps1` o `pnpm.ps1`, puedo usar `npm.cmd` y `pnpm.cmd` sin cambiar la política de ejecución. Si no reconoce `psql`, agrego al `PATH` la carpeta `bin` de la instalación de PostgreSQL y abro una nueva terminal.
+
+---
+
+## 5. Preparación en macOS
+
+Uso Terminal con `zsh`, `bash` o `fish`. Debo confirmar cuál shell está activo antes de modificar el `PATH`.
+
+### 5.1 Instalar las herramientas
+
+1. Instalo Node.js desde `https://nodejs.org/en/download` y confirmo que la versión sea 22.13 o superior.
+2. Verifico Git con `git --version`. Si macOS solicita las Command Line Tools, completo esa instalación.
+3. Instalo PostgreSQL usando una de las opciones oficiales publicadas en `https://www.postgresql.org/download/macosx/`.
+4. Inicio PostgreSQL con la herramienta elegida y confirmo que `psql` esté disponible en el `PATH`.
+
+Instalo la versión de pnpm definida por Artify:
+
+```bash
+npm install --global pnpm@11.1.1
+```
+
+### 5.2 Verificar macOS
 
 ```bash
 node -v
@@ -116,245 +125,400 @@ git --version
 psql --version
 ```
 
-Si alguna herramienta no responde, debo instalarla o corregir su configuración antes de continuar con el despliegue local.
+Si la terminal sigue mostrando una versión anterior de Node.js, reviso qué ejecutable está usando:
+
+```bash
+which node
+node -v
+```
+
+En `fish` no uso instrucciones escritas exclusivamente para `nvm` de Bash o Zsh. Primero debo instalar un gestor compatible o utilizar el instalador oficial de Node.js.
 
 ---
 
-## 8. Paso a Paso de Instalación Local
+## 6. Instalación Común de Artify
 
-### 8.1 Clonar el repositorio
+Desde este punto los pasos son iguales en Windows y macOS. Cuando un comando cambie, incluyo ambos bloques.
 
-El primer paso consiste en obtener el código fuente del proyecto desde el repositorio.
+### 6.1 Clonar el repositorio
+
+**Ubicación:** carpeta donde guardaré el proyecto.
 
 ```bash
 git clone https://github.com/Tecno85/artify.git
 cd artify
 ```
 
-### 8.2 Revisar la estructura del proyecto
+Confirmo que existen `frontend/`, `backend/`, `database/`, `docs/` y `scripts/`.
 
-Después de entrar a la carpeta del proyecto, reviso que existan las carpetas principales: `frontend/`, `backend/`, `database/`, `docs/` y `scripts/`.
+### 6.2 Instalar las dependencias
 
-#### Imagen 1. Estructura general del proyecto Artify
-
-![Estructura general del proyecto Artify](./evidencias/plan-instalacion/estructura-proyecto.svg)
-
-*Descripción:* En esta captura muestro la estructura general del proyecto, donde se identifican los componentes principales usados para la instalación local.
-
-### 8.3 Instalar dependencias del backend
-
-Las dependencias del backend se instalan dentro de la carpeta `backend/` usando `pnpm`, que es el gestor definido para este proyecto.
+**Ubicación:** raíz `artify/`.
 
 ```bash
 cd backend
-pnpm install
 ```
 
-#### Imagen 2. Instalación de dependencias con pnpm
+Una vez dentro de `backend/`, vuelvo a comprobar la versión y la ruta de los ejecutables. Esta revisión es importante porque una terminal puede resolver una instalación de Node.js diferente después de cambiar de carpeta.
 
-![Instalación de dependencias con pnpm](./evidencias/plan-instalacion/dependencias-pnpm.svg)
+**Windows - PowerShell:**
 
-*Descripción:* En esta captura evidencio la instalación de dependencias necesarias para ejecutar el backend de Artify.
+```powershell
+node -v
+pnpm -v
+(Get-Command node).Source
+(Get-Command pnpm).Source
+```
 
-### 8.4 Configurar variables de entorno
-
-El backend necesita un archivo `.env` dentro de `backend/`. Este archivo contiene la configuración de conexión a PostgreSQL, puerto del servidor y secreto usado para firmar tokens.
+**macOS - Terminal:**
 
 ```bash
-cp ../.env.example .env
+node -v
+pnpm -v
+command -v node
+command -v pnpm
 ```
 
-Ejemplo de configuración sin datos sensibles reales:
+Debo seguir viendo Node.js `22.13.0` o superior y pnpm `11.1.1`. Si la versión cambia o aparece Node.js `22.12.0`, corrijo el `PATH`, abro una terminal nueva y repito la comprobación antes de instalar.
+
+Instalo exactamente las dependencias registradas en el lockfile y regreso a la raíz:
+
+```bash
+pnpm install --frozen-lockfile
+cd ..
+```
+
+No ejecuto `npm install` dentro de `backend/` porque el proyecto usa pnpm y `backend/pnpm-lock.yaml`.
+
+### 6.3 Crear `backend/.env`
+
+**Windows - PowerShell:**
+
+```powershell
+Copy-Item .env.example backend/.env
+```
+
+**macOS - Terminal:**
+
+```bash
+cp .env.example backend/.env
+```
+
+Para la instalación local dejo `DATABASE_URL` comentada y uso las variables `DB_*`. En `backend/.env` configuro:
 
 ```env
-DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
+# DATABASE_URL se reserva para despliegues como Neon
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=contraseña_postgresql
+DB_PASSWORD=REEMPLAZAR_CON_LA_CONTRASENA_LOCAL
 DB_NAME=artify_db
-TOKEN_SECRET=secreto_largo_y_aleatorio
+
+TOKEN_SECRET=REEMPLAZAR_CON_UN_SECRETO_LARGO_Y_ALEATORIO
 PORT=3000
 NODE_ENV=development
 CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
 
-`DATABASE_URL` es la variable principal para despliegues y servicios administrados. Las variables separadas se mantienen como soporte de configuración local. `CORS_ORIGIN` define desde qué origen del frontend se permite consumir la API.
+Reemplazo obligatoriamente los dos valores que comienzan con `REEMPLAZAR_`. Los ejemplos siguientes usan el usuario PostgreSQL `postgres`. Si mi instalación creó otro usuario, utilizo ese mismo nombre en los comandos y en `DB_USER`.
 
-El usuario administrador no se configura en `.env`. Se registra como usuario normal y luego se promueve en PostgreSQL con `database/postgresql/promote-admin.sql`.
+Si una contraseña o cualquier otro valor contiene espacios o el carácter `#`, lo encierro entre comillas dobles para evitar que `dotenv` lo interprete de forma incompleta:
 
-#### Imagen 3. Archivo `.env` configurado
+```env
+DB_PASSWORD="mi clave local#segura"
+TOKEN_SECRET="un secreto local con espacios"
+```
 
-![Archivo .env configurado sin datos sensibles](./evidencias/plan-instalacion/env-sanitizado.svg)
+### 6.4 Comprobar las credenciales PostgreSQL
 
-*Descripción:* En esta captura muestro la configuración necesaria para conectar el backend con PostgreSQL y definir variables requeridas por Artify, protegiendo los datos sensibles.
-
-### 8.5 Crear o seleccionar la base de datos PostgreSQL
-
-Artify requiere una base de datos llamada `artify_db`. En PostgreSQL primero creo la base y después cargo el esquema del proyecto conectado a esa base.
+Antes de crear la base verifico que las mismas credenciales del `.env` permitan una conexión TCP local:
 
 ```bash
-createdb artify_db
+psql -h localhost -U postgres -d postgres
 ```
 
-### 8.6 Ejecutar el script SQL del proyecto
-
-El script principal se encuentra en:
-
-```text
-database/postgresql/schema.sql
-```
-
-Desde la raíz del proyecto puedo importarlo con:
-
-```bash
-psql -d artify_db -f database/postgresql/schema.sql
-psql -d artify_db -f database/postgresql/seed.sql
-```
-
-Este procedimiento está pensado para una base nueva o una reinstalación controlada. Si `artify_db` ya contiene información que debo conservar, primero realizo una copia de seguridad porque `schema.sql` elimina y recrea los objetos del proyecto.
-
-Luego verifico la conexión y las tablas desde `psql`:
+Escribo la contraseña cuando PostgreSQL la solicite. Si la conexión funciona, salgo con:
 
 ```sql
-\l
-\c artify_db
-\dt
-\dv
+\q
 ```
 
-#### Imagen 4. Base de datos `artify_db` y tablas creadas
+### 6.5 Crear y cargar `artify_db`
 
-![Base de datos artify_db y tablas creadas](./evidencias/plan-instalacion/postgresql-artify.svg)
-
-*Descripción:* En esta captura evidencio que la base de datos fue creada y que las tablas necesarias para Artify están disponibles.
-
-### 8.7 Iniciar el backend
-
-Después de instalar dependencias y configurar la base de datos, inicio el backend desde la carpeta `backend/`.
+**Ubicación:** raíz `artify/`.
 
 ```bash
+createdb -h localhost -U postgres artify_db
+psql -h localhost -U postgres -d artify_db -f database/postgresql/schema.sql
+psql -h localhost -U postgres -d artify_db -f database/postgresql/seed.sql
+```
+
+Si `artify_db` ya existe, no vuelvo a crearla. `schema.sql` elimina y reconstruye los objetos de Artify; antes de ejecutarlo sobre una base con datos útiles realizo un respaldo.
+
+Verifico las tablas y la vista:
+
+```bash
+psql -h localhost -U postgres -d artify_db -c "\dt"
+psql -h localhost -U postgres -d artify_db -c "\dv"
+```
+
+Debo encontrar cinco tablas principales y la vista `v_usuarios_activos`.
+
+### 6.6 Iniciar el backend
+
+**Terminal 1 - ubicación inicial:** raíz `artify/`.
+
+```bash
+cd backend
 pnpm start
 ```
 
-La salida esperada debe indicar que el servidor está activo y que la conexión a PostgreSQL fue correcta.
+Resultado esperado:
 
 ```text
 Conectado a PostgreSQL correctamente
 Servidor corriendo en http://localhost:3000
 ```
 
-#### Imagen 5. Backend ejecutándose correctamente
+Mantengo esta terminal abierta. Detengo el backend con `Ctrl + C` cuando termine.
 
-![Backend ejecutándose correctamente](./evidencias/plan-instalacion/backend-ejecutandose.svg)
+### 6.7 Iniciar el frontend
 
-*Descripción:* En esta captura muestro que el servidor backend de Artify se encuentra ejecutándose localmente y listo para recibir solicitudes.
-
-### 8.8 Ejecutar el frontend
-
-El frontend de Artify es estático. Para probarlo de forma local, puedo servir la carpeta `frontend/` mediante un servidor HTTP.
-
-Desde la raíz del proyecto:
+**Terminal 2 - ubicación:** raíz `artify/`.
 
 ```bash
-npx http-server frontend -p 8080
+npx --yes http-server@14.1.1 frontend -p 8080
 ```
 
-Luego abro en el navegador:
+Uso `http-server@14.1.1` para que todos los compañeros ejecuten la misma versión. La primera vez, `npx` puede descargarla temporalmente. Mantengo esta terminal abierta y abro:
 
 ```text
 http://127.0.0.1:8080
 ```
 
-### 8.9 Probar una función básica
-
-Con backend, base de datos y frontend activos, realizo una prueba funcional básica. Esta prueba puede ser abrir la pantalla inicial, registrar un usuario, iniciar sesión o validar que el frontend se comunique con el backend.
-
-#### Imagen 6. Frontend abierto o prueba funcional
-
-![Frontend de Artify abierto en el navegador](./evidencias/plan-instalacion/frontend-artify.png)
-
-*Descripción:* En esta captura evidencio que Artify se abre correctamente desde el navegador y que el despliegue local permite probar una funcionalidad básica del sistema.
+En local, `frontend/assets/js/config.js` conserva `ARTIFY_API_URL` vacío. `auth.js` usa el mismo protocolo y hostname del frontend en el puerto `3000`; al seguir esta guía desde `http://127.0.0.1:8080`, la API será `http://127.0.0.1:3000`.
 
 ---
 
-## 9. Comandos Sugeridos
+## 7. Verificación
 
-Los siguientes comandos resumen las acciones principales para instalar y ejecutar Artify localmente.
+### 7.1 Servicios
 
-| Acción | Comando |
+En una tercera terminal ejecuto:
+
+**Windows - PowerShell:**
+
+```powershell
+curl.exe http://127.0.0.1:3000/health
+curl.exe http://127.0.0.1:3000/ready
+```
+
+**macOS - Terminal:**
+
+```bash
+curl http://127.0.0.1:3000/health
+curl http://127.0.0.1:3000/ready
+```
+
+Ambas respuestas deben incluir `"ok": true`.
+
+### 7.2 Sintaxis y pruebas automatizadas
+
+**Ubicación inicial:** raíz `artify/`.
+
+```bash
+cd backend
+pnpm run check
+pnpm test
+```
+
+La suite esperada contiene 18 pruebas. Si falla antes de iniciar, reviso `backend/.env`, PostgreSQL y la carga de `schema.sql` y `seed.sql`.
+
+> **Advertencia:** `pnpm test` crea, modifica y elimina datos temporales. Solo lo ejecuto contra la base local `artify_db` o contra una base exclusiva de pruebas. Nunca configuro `DATABASE_URL` con Neon o producción para ejecutar esta suite.
+
+### 7.3 Flujo funcional
+
+1. Abro `http://127.0.0.1:8080`.
+2. Registro un usuario.
+3. Inicio sesión.
+4. Cargo una imagen.
+5. Aplico un filtro.
+6. Descargo la imagen.
+7. Cierro sesión.
+
+### 7.4 Lista de comprobación
+
+- [ ] Node.js, pnpm, Git y PostgreSQL responden desde la terminal.
+- [ ] `backend/.env` contiene credenciales locales válidas.
+- [ ] `artify_db` contiene las tablas y la vista.
+- [ ] `/health` responde correctamente.
+- [ ] `/ready` confirma PostgreSQL.
+- [ ] El frontend abre en el puerto `8080`.
+- [ ] Registro, login, editor y descarga funcionan.
+- [ ] `pnpm run check` y `pnpm test` finalizan correctamente.
+
+---
+
+## 8. Configuración Opcional de Administrador
+
+Primero registro el usuario desde Artify. Después, desde la raíz del proyecto, promuevo su rol:
+
+**Windows - PowerShell:**
+
+```powershell
+psql -h localhost -U postgres -d artify_db -v "correo=admin@artify.com" -f database/postgresql/promote-admin.sql
+```
+
+**macOS - Terminal:**
+
+```bash
+psql -h localhost -U postgres -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+```
+
+Reemplazo `admin@artify.com` por el correo registrado. Al iniciar sesión, Artify dirige al usuario con rol `admin` al panel administrativo.
+
+---
+
+## 9. Problemas Frecuentes
+
+### 9.1 Problemas comunes
+
+| Problema | Revisión concreta |
 | --- | --- |
-| Clonar repositorio | `git clone https://github.com/Tecno85/artify.git` |
-| Entrar al proyecto | `cd artify` |
-| Entrar al backend | `cd backend` |
-| Instalar dependencias | `pnpm install` |
-| Iniciar backend | `pnpm start` |
-| Validar sintaxis del backend | `pnpm run check` |
-| Ejecutar pruebas automatizadas | `pnpm test` |
-| Crear base de datos PostgreSQL | `createdb artify_db` |
-| Importar base de datos | `psql -d artify_db -f database/postgresql/schema.sql` |
-| Cargar datos de referencia | `psql -d artify_db -f database/postgresql/seed.sql` |
-| Listar bases disponibles | `\l` |
-| Seleccionar base de datos | `\c artify_db` |
-| Listar tablas | `\dt` |
-| Listar vistas | `\dv` |
-| Servir frontend | `npx http-server frontend -p 8080` |
+| pnpm exige Node.js 22.13 o superior | Ejecuto `node -v` y reviso qué Node usa la terminal. |
+| `database "artify_db" does not exist` | Creo la base antes de cargar `schema.sql`. |
+| `password authentication failed` | Uso en `.env` el mismo usuario y contraseña probados con `psql -h localhost`. |
+| `/health` funciona y `/ready` falla | Reviso PostgreSQL, `DB_*`, el esquema y los logs del backend. |
+| `Failed to fetch` en el frontend | Confirmo backend activo, puerto `3000` y `CORS_ORIGIN`. |
+| Puerto `3000` o `8080` ocupado | Cierro el proceso anterior o sigo la configuración completa de puertos alternativos. |
+| Las pruebas fallan por conexión | Confirmo PostgreSQL activo y variables cargadas en `backend/.env`. |
 
----
+### 9.2 Usar puertos alternativos
 
-## 10. Verificación del Despliegue Local
+No basta con cambiar un solo comando: el backend, CORS y el frontend deben conservar direcciones coherentes.
 
-Después de realizar la instalación, verifico que los componentes principales estén funcionando.
+Si el backend debe usar el puerto `3001`, modifico `backend/.env`:
 
-| Elemento verificado | Resultado esperado | Evidencia | Estado |
-| --- | --- | --- | --- |
-| Estructura del proyecto | Carpetas `frontend/`, `backend/`, `database/` y `docs/` disponibles. | Imagen 1 | Verificado |
-| Dependencias backend | Instalación finalizada con `pnpm install`. | Imagen 2 | Verificado |
-| Variables de entorno | Archivo `.env` configurado sin exponer datos sensibles. | Imagen 3 | Verificado |
-| Base de datos | Base `artify_db` creada y tablas disponibles. | Imagen 4 | Verificado |
-| Backend | Servidor activo en `http://localhost:3000`. | Imagen 5 | Verificado |
-| Frontend | Aplicación disponible en `http://127.0.0.1:8080`. | Imagen 6 | Verificado |
-| Prueba funcional | Carga inicial del frontend funcionando. | Imagen 6 | Verificado |
+```env
+PORT=3001
+CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
+```
 
----
+Después configuro el frontend local para apuntar al nuevo puerto. Edito temporalmente `frontend/assets/js/config.js`:
 
-## 11. Requisitos no Funcionales Relacionados
+```javascript
+window.ARTIFY_API_URL = "http://localhost:3001";
+```
 
-El plan de instalación también debe considerar requisitos no funcionales que ayudan a mantener el sistema estable, seguro y fácil de mantener.
+Reinicio el backend y recargo el navegador. Antes de crear un commit, restauro `window.ARTIFY_API_URL = "";` para conservar el fallback local oficial.
 
-| Requisito no funcional | Relación con la instalación local |
+Si el frontend debe usar el puerto `8081`, actualizo `backend/.env`:
+
+```env
+CORS_ORIGIN=http://localhost:8081,http://127.0.0.1:8081
+```
+
+Reinicio el backend para volver a cargar CORS y ejecuto:
+
+```bash
+npx --yes http-server@14.1.1 frontend -p 8081
+```
+
+Abro `http://127.0.0.1:8081`. Si cambio ambos puertos, aplico los dos grupos de ajustes.
+
+### 9.3 Windows
+
+| Problema | Solución |
 | --- | --- |
-| Rendimiento | El equipo local debe contar con recursos suficientes para ejecutar backend, PostgreSQL y navegador. |
-| Seguridad | El archivo `.env` debe proteger credenciales y no debe subirse al repositorio. |
-| Disponibilidad local | Backend, frontend y PostgreSQL deben estar activos durante la prueba. |
-| Mantenibilidad | El uso de `pnpm`, scripts y documentación facilita repetir la instalación. |
-| Escalabilidad básica | La separación entre frontend, backend y base de datos permite crecer en etapas posteriores. |
-| Compatibilidad | El proyecto debe ejecutarse en sistemas compatibles con Node.js, PostgreSQL y navegadores modernos. |
+| `psql` no se reconoce | Agrego la carpeta `bin` de PostgreSQL al `PATH` y reinicio PowerShell. |
+| PowerShell bloquea `npm.ps1` o `pnpm.ps1` | Uso `npm.cmd` o `pnpm.cmd` para ejecutar los comandos. |
+| PostgreSQL no inicia | Reviso el servicio PostgreSQL desde Servicios de Windows. |
+
+### 9.4 macOS
+
+| Problema | Solución |
+| --- | --- |
+| `psql` no se reconoce | Agrego al `PATH` la carpeta de herramientas de la distribución instalada. |
+| La terminal usa Node.js 22.12 u otra versión | Reviso `which node`, actualizo el `PATH` y abro una terminal nueva. |
+| PostgreSQL rechaza el usuario `postgres` | Uso el rol creado por mi distribución y actualizo `DB_USER`. |
+| `nvm` no existe en `fish` | Uso el instalador oficial o un gestor compatible con `fish`. |
 
 ---
 
-## 12. Consideración Sobre Máquinas Virtuales y Contenedores
+## 10. Fundamentación Académica
 
-En esta evidencia realizo el despliegue local directo usando Node.js, PostgreSQL y un servidor HTTP para el frontend. Esta opción es coherente con la arquitectura actual de Artify y permite montar el producto sin agregar capas adicionales.
+### 10.1 Plataforma seleccionada
 
-En una etapa futura también sería posible usar una máquina virtual o contenedores para aislar el entorno, controlar versiones de servicios y reproducir la instalación con mayor precisión. Sin embargo, para este plan selecciono una instalación local directa porque permite verificar de forma clara los componentes principales del proyecto.
+Selecciono Node.js como plataforma principal porque ejecuta el backend JavaScript de Artify y se integra con Express y PostgreSQL. El entorno se completa con pnpm para dependencias, Git para control de versiones y un navegador para el frontend.
+
+| Componente | Responsabilidad |
+| --- | --- |
+| Frontend | Presentar la interfaz y editar imágenes con Canvas API. |
+| Backend | Gestionar API, autenticación, sesiones, administración y analíticas. |
+| PostgreSQL | Persistir usuarios, configuraciones, sesiones, operaciones e imágenes. |
+| Variables de entorno | Separar credenciales y configuración del código. |
+
+### 10.2 Requisitos no funcionales
+
+| Requisito | Aplicación local |
+| --- | --- |
+| Seguridad | Mantengo `.env` fuera de Git y no comparto credenciales. |
+| Disponibilidad | PostgreSQL, backend y frontend permanecen activos durante la prueba. |
+| Mantenibilidad | Uso las versiones y comandos oficiales del repositorio. |
+| Compatibilidad | Documento por separado las diferencias de Windows y macOS. |
+| Rendimiento | El equipo debe soportar PostgreSQL, Node.js y el navegador al mismo tiempo. |
+
+### 10.3 Máquinas virtuales y contenedores
+
+Para esta evidencia realizo una instalación directa. Una máquina virtual o un contenedor podrían mejorar el aislamiento y la reproducibilidad, pero agregarían una capa que no forma parte de la arquitectura actual ni es necesaria para validar el montaje local.
 
 ---
 
-## 13. Conclusión
+## 11. Evidencias Visuales
 
-Después de elaborar este plan de instalación, concluyo que Artify puede desplegarse localmente de forma ordenada si se preparan correctamente Node.js, pnpm, PostgreSQL, Git, el backend, la base de datos y el frontend. La selección de Node.js como plataforma principal es adecuada porque coincide con la arquitectura real del proyecto y permite ejecutar el backend desarrollado con Express.
+Las siguientes evidencias conservan la trazabilidad académica del proceso:
 
-Este informe me permite organizar el proceso de instalación paso a paso, identificar los componentes técnicos necesarios y definir evidencias visuales para demostrar el montaje local del producto. Con estas actividades puedo validar que Artify funciona como aplicación web y que sus componentes principales se comunican correctamente en un entorno local.
+Los archivos SVG son representaciones visuales sanitizadas y reconstruidas a partir de las verificaciones descritas; no son capturas literales de terminal ni sustituyen la ejecución de los comandos. `frontend-artify.png` sí corresponde a una captura del navegador. Para sustentar la instalación, acompaño estas imágenes con la ejecución local de `/health`, `/ready`, `pnpm run check` y `pnpm test` sobre una base exclusiva de pruebas.
+
+1. Estructura del proyecto.
+
+   ![Estructura general del proyecto Artify](./evidencias/plan-instalacion/estructura-proyecto.svg)
+
+2. Dependencias instaladas con pnpm.
+
+   ![Instalación de dependencias con pnpm](./evidencias/plan-instalacion/dependencias-pnpm.svg)
+
+3. Representación didáctica de las variables de entorno, sanitizada y sin secretos reales.
+
+   ![Representación sanitizada del archivo .env](./evidencias/plan-instalacion/env-sanitizado.svg)
+
+4. PostgreSQL y tablas de Artify.
+
+   ![Base de datos artify_db](./evidencias/plan-instalacion/postgresql-artify.svg)
+
+5. Backend ejecutándose.
+
+   ![Backend de Artify](./evidencias/plan-instalacion/backend-ejecutandose.svg)
+
+6. Frontend abierto en el navegador.
+
+   ![Frontend de Artify](./evidencias/plan-instalacion/frontend-artify.png)
 
 ---
 
-## 14. Referencias Básicas
+## 12. Conclusión
 
-- Node.js Documentation. Documentación oficial del entorno de ejecución Node.js.
-- Express Documentation. Documentación oficial del framework Express.
-- PostgreSQL Documentation. Documentación oficial de PostgreSQL y sus herramientas.
-- pnpm Documentation. Documentación oficial del gestor de paquetes pnpm.
-- Git Documentation. Documentación oficial del sistema de control de versiones Git.
-- Mozilla Developer Network. Referencias sobre aplicaciones web, JavaScript y navegadores.
-- SENA. Material de formación relacionado con instalación de software, servidores de aplicaciones, plataformas de desarrollo e implantación.
+Este plan me permite instalar Artify de manera reproducible en Windows o macOS. La separación por sistema operativo reduce errores de herramientas y `PATH`, mientras que el procedimiento común mantiene una sola fuente para configurar PostgreSQL, backend, frontend y pruebas.
+
+La instalación queda aceptada cuando `/health` y `/ready` responden correctamente, la suite automatizada finaliza sin fallos y el flujo de registro, login, edición y descarga funciona desde el navegador.
+
+---
+
+## 13. Referencias Oficiales
+
+- Node.js. Descarga oficial: https://nodejs.org/en/download
+- pnpm. Instalación: https://pnpm.io/installation
+- PostgreSQL. Descarga para Windows: https://www.postgresql.org/download/windows/
+- PostgreSQL. Descarga para macOS: https://www.postgresql.org/download/macosx/
+- Git. Descargas: https://git-scm.com/downloads
+- Express. Documentación: https://expressjs.com/

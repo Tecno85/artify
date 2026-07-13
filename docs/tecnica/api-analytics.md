@@ -2,20 +2,25 @@
 
 Este módulo expone endpoints que ofrecen información agregada sobre el comportamiento de los usuarios. En esta variante los datos se consultan desde PostgreSQL mediante el backend Node.js + Express.
 
+**Última actualización:** Julio 2026
+
 ---
 
 ## ¿Qué es esta API?
 
 Esta API permite que un sistema externo obtenga datos agregados sobre cómo los usuarios de Artify editan imágenes. Los endpoints son públicos en la versión actual y devuelven conteos y porcentajes como valores numéricos.
 
-**Ejemplo de uso:**
-- Un e-commerce nota que el filtro "Sepia" concentra una parte importante del uso
-- Instruye a sus vendedores a usar ese filtro
-- Sus productos se venden mejor
+**Escenario hipotético de uso:**
+
+- Un e-commerce podría consultar qué filtros concentran una parte importante del uso.
+- Con esos datos podría orientar recomendaciones internas de edición.
+- Artify no incluye actualmente una integración con un e-commerce ni permite afirmar un impacto sobre ventas.
 
 ---
 
 ## Endpoints de Analytics
+
+Los bloques JSON de esta sección son ejemplos ilustrativos del contrato de cada endpoint. Los valores, cantidades y marcas de tiempo no constituyen evidencia de una ejecución real y cambian según los datos almacenados en PostgreSQL.
 
 ### 1. Filtros Más Usados
 
@@ -29,7 +34,7 @@ Devuelve exclusivamente los filtros visuales más usados por los usuarios de Art
 
 http://localhost:3000/api/v1/analytics/filtros-populares
 
-**Respuesta:**
+**Ejemplo ilustrativo de respuesta:**
 ```json
 {
   "ok": true,
@@ -61,13 +66,14 @@ http://localhost:3000/api/v1/analytics/filtros-populares
 ```
 
 **¿Qué significan los campos?**
+
 - `filtro` representa el nombre del filtro visual registrado en los parámetros de la operación.
 - `usos` indica cuántas veces aparece esa operación.
 - `porcentaje` indica qué proporción representa frente al total consultado.
 
-**¿Para qué lo usa el e-commerce?**
+**¿Cómo podría usarlo un sistema externo?**
 
-Identifica qué operaciones son más frecuentes y puede orientar recomendaciones de edición.
+Podría identificar qué operaciones son más frecuentes y orientar recomendaciones de edición.
 
 ---
 
@@ -76,7 +82,7 @@ Identifica qué operaciones son más frecuentes y puede orientar recomendaciones
 
 **¿Qué hace?**
 
-Devuelve a qué horas del día los usuarios editan más imágenes
+Devuelve a qué horas del día se registran más operaciones de edición completadas.
 
 **URL:** `GET /api/v1/analytics/horarios-edicion`
 
@@ -84,7 +90,7 @@ Devuelve a qué horas del día los usuarios editan más imágenes
 
 http://localhost:3000/api/v1/analytics/horarios-edicion
 
-**Respuesta:**
+**Ejemplo ilustrativo de respuesta:**
 ```json
 {
   "ok": true,
@@ -116,13 +122,14 @@ http://localhost:3000/api/v1/analytics/horarios-edicion
 ```
 
 **¿Qué significan los campos?**
+
 - `hora` representa la hora del día en formato de 24 horas.
 - `cantidad_ediciones` indica cuántas operaciones se registraron en esa hora.
 - `porcentaje` indica qué proporción del total ocurrió en esa hora.
 
-**¿Para qué lo usa el e-commerce?**
+**¿Cómo podría usarlo un sistema externo?**
 
-Permite identificar horarios de mayor actividad para planear campañas o soporte.
+Podría identificar horarios de mayor actividad para planear soporte o acciones internas.
 
 ---
 
@@ -138,7 +145,7 @@ Devuelve qué formato final se registra con mayor frecuencia al descargar una im
 
 http://localhost:3000/api/v1/analytics/formatos-preferidos
 
-**Respuesta:**
+**Ejemplo ilustrativo de respuesta:**
 ```json
 {
   "ok": true,
@@ -160,13 +167,14 @@ http://localhost:3000/api/v1/analytics/formatos-preferidos
 ```
 
 **¿Qué significan los campos?**
+
 - `formato` representa la extensión del archivo.
 - `descargas` indica cuántas descargas completadas fueron registradas en ese formato.
 - `porcentaje` indica qué proporción del total corresponde a ese formato.
 
-**¿Para qué lo usa el e-commerce?**
+**¿Cómo podría usarlo un sistema externo?**
 
-Ayuda a definir recomendaciones sobre formato de salida.
+Podría usar esta información para definir recomendaciones sobre el formato de salida.
 
 ---
 
@@ -174,9 +182,9 @@ Ayuda a definir recomendaciones sobre formato de salida.
 
 **¿Qué hace?**
 
-Calcula qué % de usuarios que empezaron a editar terminaron guardando cambios
+Calcula qué porcentaje de las sesiones finalizadas tiene cambios guardados. El denominador incluye únicamente los registros donde `ses_estado_sesion = 'finalizada'`; no representa el número de usuarios ni el total de sesiones abiertas, pausadas o canceladas.
 
-Una sesión se considera exitosa cuando una descarga registra la imagen final y marca `ses_cambios_guardados = true`.
+Para este indicador, una sesión se considera exitosa cuando está finalizada y `ses_cambios_guardados = true`. La descarga de la imagen marca los cambios como guardados y el cierre de la sesión establece su estado como `finalizada`.
 
 **URL:** `GET /api/v1/analytics/tasa-conversion`
 
@@ -184,7 +192,7 @@ Una sesión se considera exitosa cuando una descarga registra la imagen final y 
 
 http://localhost:3000/api/v1/analytics/tasa-conversion
 
-**Respuesta:**
+**Ejemplo ilustrativo de respuesta:**
 ```json
 {
   "ok": true,
@@ -203,25 +211,27 @@ http://localhost:3000/api/v1/analytics/tasa-conversion
 ```
 
 **¿Qué significan los campos?**
-- `tasa_conversion_porcentaje` indica el porcentaje de sesiones donde se guardaron cambios.
-- `total_sesiones` indica el total de sesiones registradas.
-- `sesiones_exitosas` indica cuántas sesiones llegaron a guardar cambios.
 
-**¿Para qué lo usa el e-commerce?**
+- `tasa_conversion_porcentaje` indica el porcentaje de sesiones finalizadas que tienen `ses_cambios_guardados = true`.
+- `total_sesiones` indica el total de sesiones con `ses_estado_sesion = 'finalizada'`.
+- `sesiones_exitosas` indica cuántas de esas sesiones finalizadas tienen cambios guardados.
 
-Una tasa baja ayuda a identificar posibles problemas de experiencia o abandono en el flujo de edición.
+**¿Cómo podría usarlo un sistema externo?**
+
+Podría usar una tasa baja como señal inicial para investigar posibles problemas de experiencia o abandono en el flujo de edición.
 
 ---
 
-## Resumen: ¿Quién consume estos datos?
+## Resumen: ¿Quién podría consumir estos datos?
 
-Un sistema externo llama a estos endpoints para entender:
+Un sistema externo podría llamar a estos endpoints para entender:
+
 - Qué ediciones usan los usuarios
 - Cuándo editan
 - Qué formatos prefieren
 - Si realmente completan la tarea
 
-**Resultado:** el sistema consumidor puede optimizar recomendaciones o decisiones con base en datos reales.
+**Resultado potencial:** un consumidor podría orientar recomendaciones o decisiones con base en los datos agregados devueltos por Artify. Los endpoints existen y son públicos en la versión actual, pero el repositorio no incluye un consumidor externo ni valida resultados comerciales.
 
 ---
 

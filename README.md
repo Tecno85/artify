@@ -2,7 +2,6 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/versión-2.0.0-4ae3f4?style=for-the-badge)
 ![Status](https://img.shields.io/badge/estado-activo-28ffce?style=for-the-badge)
 ![License](https://img.shields.io/badge/licencia-MIT-blue?style=for-the-badge)
 ![Node](https://img.shields.io/badge/Node.js-22.13+-339933?style=for-the-badge&logo=node.js)
@@ -34,7 +33,7 @@ PostgreSQL es el motor oficial de base de datos del proyecto.
 - [Funcionalidades Principales](#funcionalidades-principales)
 - [Panel de Administración](#panel-de-administración)
 - [Base de Datos](#base-de-datos)
-- [Navegadores Soportados](#navegadores-soportados)
+- [Navegadores Objetivo](#navegadores-objetivo)
 - [Documentación](#documentación)
 - [Estándares de Codificación](#estándares-de-codificación)
 - [Notas Importantes](#notas-importantes)
@@ -61,7 +60,7 @@ PostgreSQL es el motor oficial de base de datos del proyecto.
 - **Sistema de roles**: administrador y usuario
 - **Redirección automática** según el rol al iniciar sesión
 - **Registro de operaciones** en base de datos
-- **Control de sesiones** con cierre automático por inactividad
+- **Control de sesiones** con cierre explícito y limpieza automática de sesiones activas con más de ocho horas desde su inicio
 - **Configuración personalizada** persistida en PostgreSQL
 
 ### Panel de Administración
@@ -81,18 +80,18 @@ PostgreSQL es el motor oficial de base de datos del proyecto.
 | CSS3 | Diseño con variables CSS, Grid y Flexbox |
 | JavaScript Vanilla | Lógica del editor con Canvas API |
 | Canvas API | Manipulación de imágenes |
-| SessionStorage | Gestión de sesión de usuario |
+| `sessionStorage` | Gestión de sesión de usuario |
 
 ### Backend
 | Tecnología | Versión | Uso |
 |------------|---------|-----|
 | Node.js | 22.13+ | Entorno de ejecución |
-| Express | 5.2+ | Framework del servidor |
-| PostgreSQL | 15+ recomendado | Base de datos relacional |
+| Express | 5.2.1 | Framework del servidor |
+| PostgreSQL | 15 o superior | Base de datos relacional |
 | pg | 8.16.3 | Conector PostgreSQL para Node.js |
-| bcryptjs | Latest | Encriptación de contraseñas |
-| dotenv | Latest | Variables de entorno |
-| cors | Latest | Control de acceso entre orígenes |
+| bcryptjs | 3.0.3 | Hash de contraseñas |
+| dotenv | 17.3.1 | Variables de entorno |
+| cors | 2.8.6 | Control de acceso entre orígenes |
 | pnpm | 11.1.1 | Gestor de paquetes del backend |
 
 ---
@@ -132,6 +131,10 @@ Artify/
 ├── LICENSE                     # Licencia del proyecto
 ├── .env.example                # Plantilla de variables de entorno
 ├── .gitignore                  # Archivos ignorados por Git
+├── .github/
+│   └── workflows/
+│       ├── backend-tests.yml # Integración continua del backend
+│       └── deploy-pages.yml  # Despliegue del frontend
 │
 ├── frontend/                   # Aplicación frontend organizada
 │   ├── index.html              # Página principal
@@ -183,7 +186,7 @@ Artify/
 │
 ├── scripts/                    # Automatización
 │   ├── setup.sh                # Configuración inicial heredada
-│   └── write-frontend-config.js # Configuración de API para Netlify
+│   └── write-frontend-config.js # Configuración de API para despliegue
 │
 ├── docs/                       # Documentación del proyecto
 │   ├── proyecto/
@@ -198,7 +201,6 @@ Artify/
 │   │   ├── coding-standards.md
 │   │   ├── configuracion-servicios-artify.md
 │   │   ├── despliegue.md
-│   │   ├── despliegue-fullstack-postgresql.md
 │   │   ├── plan-instalacion-artify.md
 │   │   ├── plan-pruebas-autenticacion.md
 │   │   ├── verificacion-hardware-artify.md
@@ -214,98 +216,28 @@ Artify/
 
 ## Requisitos Previos
 
-Antes de instalar el proyecto asegúrate de tener:
+Para ejecutar Artify localmente se requiere:
 
 - [Node.js](https://nodejs.org/) v22.13 o superior
 - [pnpm](https://pnpm.io/) v11.1.1
-- [PostgreSQL](https://www.postgresql.org/) versión estable
+- [PostgreSQL](https://www.postgresql.org/) 15 o superior
 - [Git](https://git-scm.com/)
-- Un servidor HTTP local (como `npx http-server`)
+- Un navegador moderno
 
 ---
 
 ## Instalación y Configuración
 
-### 1. Clonar el repositorio
+El procedimiento completo y verificable para Windows y macOS se encuentra en el [Plan de instalación local de Artify](./docs/tecnica/plan-instalacion-artify.md).
 
-```bash
-git clone https://github.com/Tecno85/artify.git
-cd artify
-```
+La guía incluye:
 
-### 2. Instalar dependencias del backend
-
-```bash
-cd backend
-pnpm install
-```
-
-### 3. Configurar variables de entorno
-
-Crea un archivo `.env` dentro de la carpeta `backend/` con este contenido:
-
-```env
-DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=tu_contraseña_postgresql
-DB_NAME=artify_db
-TOKEN_SECRET=un_secreto_largo_y_aleatorio
-PORT=3000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
-```
-
-### 4. Crear la base de datos en PostgreSQL
-
-PostgreSQL no crea la base automáticamente al ejecutar `schema.sql`. Primero debo crear `artify_db` y después cargar el esquema conectado a esa base:
-
-```bash
-createdb artify_db
-psql -d artify_db -f database/postgresql/schema.sql
-psql -d artify_db -f database/postgresql/seed.sql
-```
-
-El esquema PostgreSQL activo se encuentra en `database/postgresql/schema.sql` y los datos mínimos de referencia se encuentran en `database/postgresql/seed.sql`. El archivo `database/artify_db.sql` se conserva solo como referencia del modelo anterior.
-
-Verificación rápida desde `psql`:
-
-```sql
-\l
-\c artify_db
-\dt
-\dv
-```
-
-### 5. Iniciar el backend
-
-```bash
-cd backend
-pnpm start
-```
-
-Debes ver:
-```
-Conectado a PostgreSQL correctamente
-🚀 Servidor corriendo en http://localhost:3000
-```
-
-### 6. Iniciar el frontend
-
-En una terminal separada desde la raíz del proyecto:
-
-```bash
-npx http-server frontend -p 8080
-```
-
-### 7. Abrir en el navegador
-
-```
-http://127.0.0.1:8080
-```
-
-Si prefieres abrir archivos manualmente, usa `frontend/index.html`, pero para probar rutas y navegación es mejor servir la carpeta `frontend/` por HTTP.
+- preparación de Node.js, pnpm, Git y PostgreSQL por sistema operativo;
+- configuración local de `backend/.env`;
+- creación y carga de `artify_db`;
+- inicio del backend y del frontend;
+- validación de `/health`, `/ready`, pruebas y flujo funcional;
+- solución de problemas frecuentes.
 
 ---
 
@@ -313,8 +245,8 @@ Si prefieres abrir archivos manualmente, usa `frontend/index.html`, pero para pr
 
 ### Usuario normal
 1. Abre `http://127.0.0.1:8080`
-2. Regístrate en `frontend/pages/registro.html`
-3. Inicia sesión en `frontend/pages/login.html`
+2. Selecciona **Registrarse** o abre `http://127.0.0.1:8080/pages/registro.html`
+3. Después abre **Iniciar sesión** o `http://127.0.0.1:8080/pages/login.html`
 4. El sistema te redirige automáticamente al editor
 5. Edita tus imágenes y descárgalas
 
@@ -334,6 +266,8 @@ cd backend
 pnpm test
 ```
 
+> **Importante:** la suite crea, actualiza y elimina datos temporales. Debe ejecutarse únicamente contra `artify_db` local o una base exclusiva de pruebas. Nunca se debe usar `pnpm test` con `DATABASE_URL` apuntando a Neon o a producción.
+
 También puedes validar sintaxis del servidor con:
 
 ```bash
@@ -349,15 +283,23 @@ GitHub Actions ejecuta automáticamente PostgreSQL, la validación de sintaxis y
 
 Esta variante está preparada para separar frontend y backend:
 
-- El frontend puede publicarse como sitio estático en Netlify.
-- El backend puede publicarse como servicio Node.js en una plataforma compatible con PostgreSQL.
-- La base de datos debe estar disponible mediante una URL PostgreSQL segura.
+- El frontend se publica como sitio estático en GitHub Pages.
+- El backend se publica como servicio Node.js en Render.
+- La base de datos se aloja en Neon mediante una URL PostgreSQL segura.
+
+Despliegue público vigente:
+
+```text
+https://tecno85.github.io/artify/
+```
+
+Cada `push` a `main` ejecuta `.github/workflows/deploy-pages.yml` y publica la carpeta `frontend/`.
 
 ### Variable para conectar frontend y backend
 
-El frontend carga `frontend/assets/js/config.js` antes de `auth.js`. En local este archivo deja la API vacía para que el sistema use el fallback `http://localhost:3000`.
+El frontend carga `frontend/assets/js/config.js` antes de `auth.js`. En local este archivo deja la API vacía para que el sistema use el mismo protocolo y hostname del frontend en el puerto `3000`; por ejemplo, al abrir `http://127.0.0.1:8080`, la API local será `http://127.0.0.1:3000`.
 
-En Netlify, el archivo se genera durante el build mediante `scripts/write-frontend-config.js`. Para apuntar el frontend al backend desplegado, define esta variable de entorno en Netlify:
+GitHub Actions genera el archivo durante el despliegue mediante `scripts/write-frontend-config.js`. Para apuntar el frontend al backend desplegado, se define `ARTIFY_API_URL` como variable del repositorio en **Settings > Secrets and variables > Actions > Variables**:
 
 ```env
 ARTIFY_API_URL=https://url-del-backend
@@ -366,7 +308,7 @@ ARTIFY_API_URL=https://url-del-backend
 Ejemplo:
 
 ```env
-ARTIFY_API_URL=https://artify-api.onrender.com
+ARTIFY_API_URL=https://artify-sena-postgresql.onrender.com
 ```
 
 No se deben incluir barras finales en la URL. El frontend construye las rutas agregando `/api/...`.
@@ -380,7 +322,7 @@ DATABASE_URL=postgresql://usuario:contrasena@host/dbname?sslmode=require
 TOKEN_SECRET=secreto_largo_y_seguro
 NODE_VERSION=22.13.0
 NODE_ENV=production
-CORS_ORIGIN=https://url-del-frontend.netlify.app
+CORS_ORIGIN=https://tecno85.github.io
 ```
 
 Para despliegues, `DATABASE_URL` es la variable principal. Las variables separadas `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` se mantienen como soporte local o para configuraciones donde no se use una cadena completa.
@@ -427,7 +369,7 @@ La carga de `database/postgresql/schema.sql` es para aprovisionamiento inicial o
 - **Sepia** — Efecto vintage
 - **Brillo** — Ajusta luminosidad
 - **Contraste** — Intensifica diferencias tonales
-- Todos con intensidad ajustable (0-100%)
+- Blanco y Negro y Sepia usan una intensidad de 0 a 100%; Brillo y Contraste usan una escala de -100 a 100 con valor neutro en 0
 
 #### Convertir Formato
 - Convierte entre PNG, JPEG y WebP
@@ -450,11 +392,29 @@ El panel de administración implementa un **CRUD completo** sobre la tabla USUAR
 
 El acceso administrativo usa el mismo login principal de la aplicación. Para habilitar un administrador, primero registro el usuario desde la interfaz y luego promuevo su rol en PostgreSQL:
 
-```bash
-psql -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+**Windows - PowerShell, desde la raíz del proyecto:**
+
+```powershell
+psql -h localhost -U postgres -d artify_db -v "correo=admin@artify.com" -f database/postgresql/promote-admin.sql
 ```
 
-En un despliegue con Neon uso la misma instrucción cambiando `-d artify_db` por la cadena `DATABASE_URL`:
+**macOS - Terminal, desde la raíz del proyecto:**
+
+```bash
+psql -h localhost -U postgres -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
+```
+
+Reemplazo `postgres` si mi instalación local usa otro rol PostgreSQL.
+
+En un despliegue con Neon uso la cadena `DATABASE_URL` solo para esta promoción controlada:
+
+**Windows - PowerShell:**
+
+```powershell
+psql "$env:DATABASE_URL" -v "correo=admin@artify.com" -f database/postgresql/promote-admin.sql
+```
+
+**macOS - Terminal:**
 
 ```bash
 psql "$DATABASE_URL" -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
@@ -487,17 +447,16 @@ SELECT * FROM "v_usuarios_activos";
 ---
 
 
-## Navegadores Soportados
+## Navegadores Objetivo
 
-| Navegador | Versión Mínima |
-|-----------|----------------|
-| Chrome | 90+ |
-| Firefox | 88+ |
-| Edge | 90+ |
-| Safari | 14+ |
-| Opera | 76+ |
+| Navegador | Cobertura objetivo |
+|-----------|--------------------|
+| Chrome | Versión estable actual |
+| Firefox | Versión estable actual |
+| Edge | Versión estable actual |
+| Safari | Versión estable actual |
 
-> Requiere soporte para Canvas API y FileReader API.
+> Artify requiere Canvas API y FileReader API. Los flujos principales deben validarse manualmente en versiones actuales; el proyecto no declara todavía versiones mínimas certificadas por una matriz formal de compatibilidad.
 
 ---
 
@@ -516,8 +475,8 @@ La documentación del proyecto se encuentra organizada en la carpeta [`docs/`](.
 - [Arquitectura técnica](./docs/tecnica/arquitectura.md)
 - [Base de datos](./docs/tecnica/base-datos.md)
 - [Configuración de servicios, base de datos y software para Artify](./docs/tecnica/configuracion-servicios-artify.md)
-- [Guía de despliegue y ejecución local](./docs/tecnica/despliegue.md)
-- [Guía de despliegue full-stack con PostgreSQL](./docs/tecnica/despliegue-fullstack-postgresql.md)
+- [Guía de despliegue público](./docs/tecnica/despliegue.md)
+- [Plan de migración a PostgreSQL](./docs/tecnica/plan-migracion-postgresql.md)
 - [Plan de instalación local de Artify](./docs/tecnica/plan-instalacion-artify.md)
 - [Plan de mantenimiento y soporte de Artify](./docs/tecnica/plan-mantenimiento-soporte-artify.md)
 - [Plan de migración y respaldo de datos con referencia en ISO 27001](./docs/tecnica/plan-respaldo-datos-iso27001-artify.md)
@@ -550,11 +509,11 @@ Este proyecto sigue estándares de codificación documentados. Consulta el archi
 - **Óptima:** 1920 x 1080 px o superior
 
 ### Consideraciones de Rendimiento
-- Imágenes mayores a 8000x8000 px pueden causar lentitud
-- Se recomienda usar imágenes de resolución razonable
+- El editor limita cada archivo cargado a 10 MB
+- El rendimiento también depende de las dimensiones en píxeles, la memoria disponible y la capacidad del dispositivo; no existe un límite fijo de dimensiones implementado
 
 ### Seguridad
-- Las contraseñas se encriptan con bcrypt antes de almacenarse
+- Las contraseñas se almacenan como hash bcrypt y nunca en texto plano
 - Las credenciales de la base de datos se manejan con variables de entorno
 - El login usa un mensaje genérico para credenciales inválidas y limita intentos repetidos
 - Las cuentas inactivas, suspendidas o eliminadas no pueden usar tokens anteriores
@@ -599,7 +558,7 @@ Las contribuciones son bienvenidas. Por favor:
 - [ ] Exportación a PDF
 - [ ] Procesamiento por lotes
 - [x] Despliegue full-stack con frontend estático, backend Node.js y PostgreSQL
-- [ ] Integración con servicios en la nube
+- [x] Integración con GitHub Pages, Render y Neon
 
 ---
 

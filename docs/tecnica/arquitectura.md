@@ -4,6 +4,7 @@
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
 > **Fecha:** Junio 2026
+> **Última actualización:** Julio 2026
 
 ---
 
@@ -37,6 +38,18 @@ Artify utiliza una arquitectura web full stack organizada en tres capas principa
 │  CONFIGURACION, IMAGEN                          │
 └─────────────────────────────────────────────────┘
 ```
+
+---
+
+### Arquitectura desplegada
+
+| Capa | Servicio actual | Comunicación |
+| --- | --- | --- |
+| Frontend | GitHub Pages | Publica los archivos estáticos de `frontend/` por HTTPS. |
+| Backend | Render | Expone la API Node.js por HTTPS y restringe orígenes mediante `CORS_ORIGIN`. |
+| Base de datos | Neon | Recibe conexiones PostgreSQL exclusivamente desde el backend mediante `DATABASE_URL`. |
+
+La URL del backend no queda fija en el código fuente: el workflow de GitHub Pages genera `frontend/assets/js/config.js` con la variable de repositorio `ARTIFY_API_URL`. Esta distribución separa responsabilidades, pero no implementa por sí sola redundancia, clústeres ni conmutación por error.
 
 ---
 
@@ -173,7 +186,7 @@ El frontend no accede directamente a la base de datos. Todas las operaciones per
 
 Cuando un usuario autenticado utiliza el editor, el sistema puede registrar sesiones de edición y operaciones realizadas. Esto permite conservar trazabilidad básica del uso del sistema.
 
-Además, el backend incluye una tarea periódica que finaliza sesiones activas abandonadas con más de ocho horas de antigüedad. Esta tarea ayuda a mantener consistencia en la base de datos.
+Además, el backend incluye una tarea periódica que finaliza las sesiones que continúan activas cuando han transcurrido más de ocho horas desde `ses_fecha_inicio`. La regla se basa en la antigüedad de la sesión, no en la medición de eventos de actividad del usuario, y ayuda a mantener consistencia en la base de datos.
 
 ---
 

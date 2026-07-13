@@ -13,5 +13,5 @@
   <text x="142" y="374" font-family="Menlo, Consolas, monospace" font-size="16" fill="#93c5fd">usr_contrasena: $2b$10$/1bzyZzuNBc/iRHSq3CZBeX...</text>
   <text x="142" y="410" font-family="Menlo, Consolas, monospace" font-size="16" fill="#86efac">Validación: inicia con $2b$10$ y no contiene la contraseña original.</text>
   <rect x="110" y="490" width="880" height="58" rx="8" fill="#f4f7fb" stroke="#d8dee8"/>
-  <text x="142" y="526" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#4a5568">Caso relacionado: CP-002 - Validar que la contraseña se almacena encriptada.</text>
+  <text x="142" y="526" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#4a5568">Caso relacionado: CP-002 - Validar que la contraseña se almacena como hash.</text>
 </svg>

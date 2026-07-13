@@ -5,6 +5,7 @@
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
 > **Fecha:** Mayo 2026
+> **Última actualización:** Julio 2026
 
 ---
 
@@ -43,14 +44,14 @@ Artify es una aplicación web orientada a la edición básica de imágenes desde
 
 La arquitectura actual del proyecto se organiza de la siguiente forma:
 
-| Componente | Tecnología o recurso |
+| Componente | Tecnología o recurso | Entorno desplegado |
 | --- | --- |
-| Frontend | HTML, CSS y JavaScript Vanilla |
-| Backend | Node.js + Express |
-| Base de datos | PostgreSQL |
-| Autenticación | bcryptjs y token firmado propio |
-| Gestor de paquetes backend | pnpm |
-| Tabla principal de login | `USUARIO` |
+| Frontend | HTML, CSS y JavaScript Vanilla | GitHub Pages |
+| Backend | Node.js + Express | Render |
+| Base de datos | PostgreSQL | Neon |
+| Autenticación | bcryptjs y token firmado propio | Backend en Render |
+| Gestor de paquetes backend | pnpm | Construcción y pruebas |
+| Tabla principal de login | `USUARIO` | PostgreSQL en Neon |
 
 ![Arquitectura de despliegue de Artify](./evidencias/verificacion-hardware/arquitectura-despliegue-artify.svg)
 
@@ -90,7 +91,7 @@ Para verificar si se poseen las características mínimas de hardware para Artif
 
 ## 6. Requisitos Mínimos de Hardware para el Servidor
 
-Para un despliegue inicial de Artify, tomo como referencia un servidor tipo VPS moderado. Este servidor debe soportar el backend, la base de datos y los servicios necesarios para atender usuarios activos no concurrentes.
+Como escenario académico de infraestructura autogestionada, tomo como referencia un servidor tipo VPS moderado. Este dimensionamiento serviría si el backend y PostgreSQL se instalaran en un servidor propio; no describe los recursos internos asignados por los proveedores del despliegue actual, donde GitHub Pages, Render y Neon administran cada capa por separado.
 
 | Elemento | Requisito mínimo | Justificación |
 | --- | --- | --- |
@@ -107,7 +108,7 @@ Para un despliegue inicial de Artify, tomo como referencia un servidor tipo VPS 
 
 ## 7. Requisitos Recomendados de Hardware para el Servidor
 
-Aunque los requisitos mínimos pueden ser suficientes para una primera instalación, considero recomendable contar con recursos adicionales para mejorar la estabilidad, facilitar mantenimiento y permitir crecimiento gradual del proyecto.
+En un escenario VPS autogestionado, considero recomendable contar con recursos adicionales para mejorar la estabilidad, facilitar mantenimiento y permitir crecimiento gradual del proyecto. En la arquitectura administrada actual, estos valores funcionan como referencia de capacidad y deben contrastarse con los límites y planes vigentes de cada proveedor.
 
 | Elemento | Requisito recomendado | Justificación |
 | --- | --- | --- |
@@ -167,7 +168,7 @@ Artify necesita comunicación entre el navegador, el frontend, el backend y la b
 | Producción | Uso recomendado de HTTPS para proteger el intercambio de datos. |
 | Red local o Internet | Conexión estable para login, registro, consultas y operaciones. |
 
-En desarrollo, Artify puede ejecutarse con el backend en el puerto `3000` y el frontend servido por HTTP local. Para producción, considero más adecuado publicar la aplicación mediante HTTPS y proteger el acceso a la base de datos para que no quede expuesta directamente al usuario final.
+En desarrollo, Artify puede ejecutarse con el backend en el puerto `3000` y el frontend servido por HTTP local. En el despliegue actual, el frontend y la API se publican mediante HTTPS, y Neon solo es consultado por el backend mediante una cadena de conexión protegida como variable de entorno; la base de datos no se expone directamente al navegador.
 
 ![Flujo de verificación de hardware](./evidencias/verificacion-hardware/flujo-verificacion-hardware.svg)
 
@@ -186,7 +187,7 @@ Por esta razón, no dimensiono la infraestructura como si tuviera 250 usuarios s
 - Crecimiento moderado de información persistente.
 - Respaldos básicos de la base de datos.
 
-Con esta interpretación, Artify puede desplegarse inicialmente en una infraestructura moderada, siempre que el servidor tenga recursos suficientes y una configuración estable.
+Con esta interpretación, el despliegue administrado actual puede ser adecuado para demostración académica y uso moderado. Sin embargo, no se ha ejecutado una prueba de carga que demuestre capacidad para 250 usuarios, concurrentes o no, ni se han verificado los límites internos de CPU, memoria, almacenamiento o conexiones de los planes utilizados.
 
 ---
 
@@ -198,7 +199,7 @@ Para el despliegue de Artify también debo considerar el licenciamiento del soft
 | --- | --- |
 | Node.js | Entorno de ejecución open source utilizado para el backend. |
 | Express | Framework open source para construir la API web. |
-| PostgreSQL | Base de datos con opciones de licencia; se debe revisar la edición usada. |
+| PostgreSQL | Base de datos open source distribuida bajo la PostgreSQL License; el servicio administrado de Neon tiene condiciones de uso independientes. |
 | Git | Herramienta de control de versiones de uso abierto. |
 | Navegadores web | Software cliente usado para acceder a la aplicación. |
 | Sistema operativo servidor | Puede ser open source o comercial, según la plataforma seleccionada. |
@@ -209,38 +210,36 @@ Considero importante revisar la licencia de cada herramienta, especialmente si e
 
 ## 13. Tabla de Verificación de Cumplimiento
 
-La siguiente tabla funciona como lista de chequeo para verificar si la infraestructura disponible cumple con lo necesario para desplegar Artify. En esta primera versión dejo el cumplimiento como `Por verificar`, porque todavía no estoy evaluando un servidor real específico.
+La siguiente tabla diferencia las comprobaciones funcionales realizadas sobre el despliegue real de los datos de capacidad que todavía deben consultarse o medirse. Una respuesta HTTP correcta confirma disponibilidad funcional en el momento de la prueba, pero no demuestra capacidad sostenida ni alta disponibilidad.
 
 | Elemento a verificar | Requisito mínimo | Requisito recomendado | Cumple / No cumple | Evidencia o método de verificación | Observación |
 | --- | --- | --- | --- | --- | --- |
-| Procesador del servidor | 2 vCPU | 2 a 4 vCPU | Por verificar | Revisar ficha técnica del VPS o panel del proveedor. | Validar según proveedor o equipo disponible. |
-| Memoria RAM del servidor | 2 GB | 4 GB | Por verificar | Revisar panel del servidor o comando de recursos del sistema. | Debe cubrir backend, PostgreSQL y sistema operativo. |
-| Almacenamiento | 40 GB SSD | 80 GB SSD | Por verificar | Revisar capacidad del disco y espacio libre disponible. | Considerar base de datos, logs y respaldos. |
-| Sistema operativo | Compatible con Node.js y PostgreSQL | Linux servidor actualizado | Por verificar | Revisar versión del sistema operativo y soporte de paquetes. | Revisar soporte y actualizaciones. |
-| Base de datos | PostgreSQL instalado y configurado | PostgreSQL con respaldos periódicos | Por verificar | Comprobar acceso a PostgreSQL y existencia de la base `artify_db`. | Debe contener la estructura de Artify. |
-| Backend | Node.js y pnpm disponibles | Servicio configurado de forma estable | Por verificar | Ejecutar `node -v`, `pnpm -v` y prueba de arranque del backend. | Validar instalación de dependencias. |
-| Frontend | Servidor web o carpeta publicada | Publicación por HTTPS | Por verificar | Abrir la URL publicada desde un navegador moderno. | Debe permitir acceso desde navegador. |
-| Red | Conexión estable | HTTPS y puertos controlados | Por verificar | Probar acceso HTTP/HTTPS y comunicación con la API. | Verificar comunicación entre componentes. |
-| Cliente | Navegador moderno | Equipo con recursos suficientes | Por verificar | Probar carga de imagen, edición básica y descarga desde el navegador. | Debe permitir edición de imágenes. |
-| Licenciamiento | Herramientas permitidas para uso | Licencias revisadas antes de producción | Por verificar | Revisar documentación oficial de licencias de cada herramienta. | Revisar Node.js, Express, PostgreSQL y sistema operativo. |
+| Procesador del servidor | 2 vCPU | 2 a 4 vCPU | Por verificar | Consultar los recursos y límites del plan de Render. | La disponibilidad funcional no demuestra capacidad de CPU. |
+| Memoria RAM del servidor | 2 GB | 4 GB | Por verificar | Consultar los recursos y límites del plan de Render y Neon. | Los servicios se ejecutan por separado. |
+| Almacenamiento | 40 GB SSD | 80 GB SSD | Por verificar | Revisar almacenamiento, retención y límites del plan de Neon. | Considerar crecimiento, logs y respaldos. |
+| Sistema operativo | Compatible con Node.js y PostgreSQL | Plataforma mantenida y actualizada | Gestionado por proveedor | Revisar documentación y estado de Render y Neon. | No se administra un VPS propio. |
+| Base de datos | PostgreSQL accesible y configurado | PostgreSQL con respaldos verificados | Cumple funcionalmente | Consultar `/ready` y ejecutar los flujos que requieren persistencia. | Capacidad, retención y restauración siguen por verificar. |
+| Backend | Servicio Node.js activo | Servicio estable y supervisado | Cumple funcionalmente | Consultar `/health`, `/ready` y ejecutar pruebas de integración. | Falta prueba de carga y verificación de límites del plan. |
+| Frontend | Carpeta publicada | Publicación por HTTPS | Cumple | Abrir la URL de GitHub Pages desde un navegador moderno. | El workflow de Pages publica la carpeta `frontend/`. |
+| Red | Conexión entre componentes | HTTPS y CORS restringido | Cumple funcionalmente | Probar frontend, API y encabezados CORS desde el origen publicado. | Debe repetirse después de cambios de dominio o API. |
+| Cliente | Navegador moderno | Equipo con recursos suficientes | Cumple funcionalmente | Probar carga, edición y descarga desde navegadores objetivo. | El rendimiento depende del equipo y del tamaño de la imagen. |
+| Licenciamiento | Herramientas permitidas para uso | Licencias y condiciones revisadas | Cumple parcialmente | Revisar licencias open source y términos de GitHub, Render y Neon. | Los planes de los proveedores pueden imponer límites adicionales. |
 
 ---
 
 ## 14. Resultado de la Verificación
 
-Con base en los criterios revisados, considero que Artify puede desplegarse inicialmente en un VPS moderado, siempre que se verifiquen los recursos mínimos definidos en la tabla de cumplimiento. La arquitectura del proyecto no exige una infraestructura de alta concurrencia en esta etapa, pero sí requiere que el servidor tenga capacidad suficiente para ejecutar el backend, operar PostgreSQL, atender solicitudes de autenticación y mantener una conexión estable con los usuarios.
+Artify ya cuenta con una infraestructura real distribuida entre GitHub Pages, Render y Neon. Se ha verificado funcionalmente el acceso HTTPS al frontend, la disponibilidad de la API, la conexión con PostgreSQL y la comunicación CORS entre las capas. Esto permite considerar el entorno apto para demostración académica y validación funcional.
 
-El resultado de esta verificación queda como `Por verificar` porque todavía no estoy evaluando una infraestructura real específica. Sin embargo, el informe deja definidos los elementos que debo comprobar antes de realizar un despliegue formal.
+El resultado de capacidad continúa como `Por verificar`: faltan pruebas de carga, consulta de límites efectivos de los planes y una prueba documentada de respaldo y restauración. Los valores de VPS definidos en este informe permanecen como referencia si en el futuro se adopta infraestructura autogestionada.
 
 ---
 
 ## 15. Conclusión
 
-Después de revisar los elementos mínimos de hardware, software, sistema operativo, red y licenciamiento, concluyo que Artify puede desplegarse inicialmente en una infraestructura moderada. Esto se debe a que es una aplicación web desarrollada con JavaScript, con backend Node.js, base de datos PostgreSQL y una proyección de 250 usuarios activos no concurrentes.
+Después de revisar los elementos mínimos de hardware, software, sistema operativo, red y licenciamiento, concluyo que Artify dispone de un despliegue administrado funcional para fines académicos, con frontend en GitHub Pages, backend Node.js en Render y PostgreSQL en Neon.
 
-Aunque no requiere una infraestructura de alta concurrencia en esta etapa, sí necesita un servidor estable, almacenamiento suficiente, base de datos correctamente configurada, red confiable y software compatible. También identifico que el equipo cliente debe contar con un navegador moderno y recursos adecuados para cargar y editar imágenes desde la interfaz web.
-
-Esta verificación me permite reconocer que el despliegue de una aplicación web no depende únicamente del código fuente, sino también de la preparación correcta del entorno donde se ejecuta. Por eso, antes de publicar Artify en un ambiente real, debo confirmar que la infraestructura cumple con los requisitos definidos en este informe.
+Esta verificación no permite afirmar que la plataforma soporte 250 usuarios con un nivel de servicio determinado. Para sustentar esa capacidad se deben medir tiempos de respuesta y errores bajo carga, revisar los límites de cada plan y comprobar los procedimientos de respaldo y restauración. El equipo cliente también debe contar con un navegador moderno y recursos adecuados, porque la edición de imágenes se procesa principalmente en el navegador.
 
 ---
 

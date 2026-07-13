@@ -5,6 +5,7 @@
 > **Programa:** Análisis y Desarrollo de Software - SENA  
 > **Autor:** Iván Darío Madrid Daza  
 > **Fecha:** Junio de 2026
+> **Última actualización:** Julio de 2026
 
 ---
 
@@ -13,6 +14,10 @@
 En este informe documento el proceso de configuración de los servicios necesarios para ejecutar Artify en un equipo cliente o entorno local. Para esta evidencia tomo como referencia una instalación tradicional, sin contenedores, porque este enfoque permite identificar de forma directa la función de PostgreSQL, Node.js, Express, pnpm y el servidor HTTP usado por el frontend.
 
 Configuro la base de datos, el servidor de aplicaciones y las variables de entorno. Después verifico la comunicación entre los componentes mediante consultas SQL, respuestas HTTP, pruebas automatizadas y la carga real de la interfaz en el navegador.
+
+Este informe conserva la evidencia de una configuración realizada. Para repetir la instalación en otro equipo utilizo como procedimiento canónico el [`Plan de Instalación Local de Artify`](./plan-instalacion-artify.md), donde los comandos están separados para Windows y macOS y se mantienen actualizados.
+
+Los SVG incluidos en esta evidencia son representaciones visuales sanitizadas y reconstruidas a partir de las verificaciones descritas; no son capturas literales de terminal. La imagen `frontend-artify.png` sí corresponde a una captura del navegador. La evidencia reproducible se obtiene ejecutando los comandos indicados y, para las pruebas automatizadas, consultando también el workflow `.github/workflows/backend-tests.yml`.
 
 ### 1.1 Cobertura de la evidencia
 
@@ -58,7 +63,7 @@ Esta evidencia continúa el trabajo técnico realizado previamente:
 | [AA3 - Plan de instalación](./plan-instalacion-artify.md) | Organicé herramientas y pasos de instalación. | Ejecuto y verifico la configuración de los servicios instalados. |
 | [AA4 - Alta disponibilidad y clústeres](./alta-disponibilidad-clusteres.md) | Analicé conceptos de disponibilidad y distribución. | Mantengo AA5 en un entorno local tradicional y de una sola instancia. |
 
-Por esta razón, no repito todo el proceso de instalación. Me concentro en demostrar que los servicios quedan configurados, conectados y disponibles para ejecutar Artify.
+Por esta razón, no repito todo el proceso de instalación. Me concentro en demostrar que los servicios quedan configurados, conectados y disponibles para ejecutar Artify. Si algún comando de este informe difiere del plan de instalación, sigo el plan porque es la guía operativa vigente.
 
 ---
 
@@ -242,7 +247,9 @@ cp .env.example backend/.env
 
 Si ejecuto el comando desde la carpeta `backend/`, uso `cp ../.env.example .env`.
 
-Luego reemplazo los valores de ejemplo por la configuración del equipo, sin publicar credenciales reales.
+Luego reemplazo los valores de ejemplo por la configuración del equipo, sin publicar credenciales reales. En local mantengo `DATABASE_URL` comentada y configuro `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`; en servicios administrados puedo usar `DATABASE_URL`.
+
+Cuando un valor contiene espacios o el carácter `#`, lo escribo entre comillas dobles. Por ejemplo: `DB_PASSWORD="mi clave local#segura"`.
 
 | Variable | Descripción | Ejemplo sanitizado | Observación |
 | --- | --- | --- | --- |
@@ -258,9 +265,9 @@ Luego reemplazo los valores de ejemplo por la configuración del equipo, sin pub
 
 #### Imagen 4. Variables de entorno
 
-![Variables de entorno configuradas y sanitizadas](./evidencias/configuracion-servicios/env-configurado.svg)
+![Representación sanitizada de las variables de entorno](./evidencias/configuracion-servicios/env-configurado.svg)
 
-*Descripción:* En esta evidencia represento la estructura del archivo `backend/.env`. Las credenciales y secretos se ocultan completamente.
+*Descripción:* Esta imagen es una representación didáctica y sanitizada de la estructura de `backend/.env`; no es una captura literal ni contiene credenciales reales. En la instalación local, `DATABASE_URL` permanece comentada.
 
 ### 9.3 Instalar o comprobar dependencias
 
@@ -300,7 +307,7 @@ Esta salida confirma que Express está escuchando en el puerto configurado y que
 
 ![Dependencias y pruebas del backend verificadas](./evidencias/configuracion-servicios/dependencias-pruebas.svg)
 
-*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día, la sintaxis es válida y las trece pruebas automatizadas finalizaron correctamente.
+*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día, la sintaxis es válida y las dieciocho pruebas automatizadas finalizaron correctamente.
 
 #### Imagen 6. Backend conectado y API disponible
 
@@ -315,8 +322,10 @@ Esta salida confirma que Express está escuchando en el puerto configurado y que
 El frontend está construido con HTML, CSS y JavaScript Vanilla. Para probar rutas y solicitudes desde un origen HTTP, lo sirvo desde la raíz del proyecto:
 
 ```bash
-npx http-server frontend -p 8080
+npx --yes http-server@14.1.1 frontend -p 8080
 ```
+
+Fijo `http-server@14.1.1` en el comando para repetir la evidencia con la misma versión.
 
 Después abro:
 
@@ -368,12 +377,14 @@ La prueba devolvió estado HTTP `200` y una respuesta JSON con `ok: true`. Esto 
 
 ### 11.2 Prueba automatizada del backend
 
-Ejecuto:
+Desde la raíz del proyecto ejecuto:
 
 ```bash
 cd backend
 pnpm test
 ```
+
+> **Advertencia:** la suite crea, actualiza y elimina registros temporales. La ejecuto únicamente contra `artify_db` local o una base exclusiva de pruebas. Nunca uso `DATABASE_URL` de Neon o producción para ejecutar `pnpm test`.
 
 El resultado obtenido fue:
 
@@ -456,9 +467,10 @@ Durante la configuración aplico las siguientes medidas:
 - Oculto `DB_USER`, `DB_PASSWORD`, `DATABASE_URL` y `TOKEN_SECRET` en las evidencias.
 - Uso un `TOKEN_SECRET` largo, aleatorio y diferente para cada entorno.
 - Verifico que las contraseñas de usuarios se almacenen mediante hash de bcryptjs.
-- Limito las credenciales de PostgreSQL a los permisos necesarios para la aplicación.
 - Mantengo Node.js, pnpm, PostgreSQL y dependencias en versiones compatibles y actualizadas.
 - No publico puertos de desarrollo directamente en Internet.
+
+Como mejora pendiente de endurecimiento, debo crear un rol PostgreSQL exclusivo para Artify y concederle únicamente los permisos necesarios. El repositorio aún no incluye un script reproducible de `CREATE ROLE`, `GRANT` y `REVOKE`, por lo que no presento este control como verificado.
 
 ---
 
@@ -473,12 +485,13 @@ Durante la configuración aplico las siguientes medidas:
 | No aparecen tablas | No se cargó el esquema o se conectó a otra base. | Ejecutar `\c artify_db` y `\dt`. |
 | `pnpm: command not found` | pnpm no está instalado o no está en el `PATH`. | Instalar la versión indicada y abrir una terminal nueva. |
 | Dependencias faltantes | No se ejecutó `pnpm install`. | Ejecutar el comando dentro de `backend/`. |
-| El puerto `3000` está ocupado | Otro proceso usa el puerto del backend. | Detener el proceso o definir otro `PORT` y actualizar la configuración del frontend. |
+| El puerto `3000` está ocupado | Otro proceso usa el puerto del backend. | Seguir la sección de puertos alternativos del plan de instalación: cambiar `PORT`, configurar `frontend/assets/js/config.js` y reiniciar el backend. |
+| El puerto `8080` está ocupado | Otro proceso sirve el frontend. | Cambiar el puerto del servidor HTTP, actualizar `CORS_ORIGIN` y reiniciar el backend antes de abrir la nueva URL. |
 | `/health` no responde | Backend detenido o puerto incorrecto. | Ejecutar `pnpm start` dentro de `backend/` y revisar logs. |
 | `/health` responde pero analytics falla | PostgreSQL detenido, variables incompletas o esquema sin cargar. | Revisar `backend/.env`, conexión PostgreSQL y objetos de `artify_db`. |
 | El frontend no consume la API | Backend detenido, dirección incorrecta o CORS mal configurado. | Confirmar la API en `http://localhost:3000` y revisar `CORS_ORIGIN`. |
 | Login o registro falla | Error de conexión, datos inválidos o esquema incompleto. | Revisar terminal del backend, tabla `USUARIO` y respuesta de la API. |
-| Las pruebas fallan | Servicio PostgreSQL detenido o variables incompletas. | Iniciar PostgreSQL, revisar `backend/.env` y ejecutar nuevamente `pnpm test`. |
+| Las pruebas fallan | Servicio PostgreSQL detenido, variables incompletas o base incorrecta. | Iniciar PostgreSQL, revisar `backend/.env` y usar solamente una base local o exclusiva de pruebas; nunca Neon o producción. |
 
 ---
 

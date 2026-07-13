@@ -10,4 +10,4 @@ Esta carpeta contiene las evidencias visuales de la actividad `GA10-220501097-AA
 - `backend-api.svg`: backend conectado a PostgreSQL y respuesta HTTP `200`.
 - `frontend-artify.png`: frontend real abierto mediante el servidor HTTP local.
 
-Los SVG reproducen de forma sanitizada las salidas obtenidas durante la verificación. No contienen contraseñas, secretos ni credenciales reales.
+Los SVG son representaciones visuales reconstruidas y sanitizadas a partir de las verificaciones descritas; no son capturas literales de terminal ni sustituyen la ejecución de los comandos. No contienen contraseñas, secretos ni credenciales reales. `frontend-artify.png` sí corresponde a una captura del navegador.

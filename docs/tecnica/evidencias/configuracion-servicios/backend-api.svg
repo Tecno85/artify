@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="460" viewBox="0 0 980 460" role="img" aria-labelledby="title desc">
   <title id="title">Backend y API de Artify funcionando</title>
-  <desc id="desc">Salida real sanitizada del backend conectado a PostgreSQL y de una consulta HTTP con respuesta 200.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, del backend conectado a PostgreSQL y de una consulta HTTP con respuesta 200.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

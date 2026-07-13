@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Servicio PostgreSQL activo</title>
-  <desc id="desc">Evidencia visual sanitizada del proceso PostgreSQL activo y de una conexión correcta al servidor local.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, del proceso PostgreSQL activo y de una conexión correcta al servidor local.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

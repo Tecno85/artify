@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Versiones de herramientas verificadas para Artify</title>
-  <desc id="desc">Salida sanitizada de la verificación de Node.js, pnpm, PostgreSQL y Git realizada en el equipo local.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, de la verificación de Node.js, pnpm, PostgreSQL y Git realizada en el equipo local.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

@@ -5,6 +5,7 @@
 > **Motor:** PostgreSQL
 > **Script principal:** `database/postgresql/schema.sql`
 > **Fecha:** Junio 2026
+> **Última actualización:** Julio 2026
 
 ---
 
@@ -237,7 +238,10 @@ El comando `createdb` crea la base vacía. Después `schema.sql` crea los objeto
 Variables principales:
 
 ```env
-DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
+# Para despliegues administrados:
+# DATABASE_URL=postgresql://usuario:contrasena@host:5432/artify_db?sslmode=require
+
+# Para instalación local:
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
@@ -246,7 +250,7 @@ DB_NAME=artify_db
 CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
 
-`DATABASE_URL` es la variable prioritaria en despliegues y conexiones administradas. Las variables separadas se conservan como soporte para ejecución local y diagnóstico.
+`DATABASE_URL` es la variable prioritaria en despliegues y conexiones administradas. En local permanece comentada para que el backend utilice las variables `DB_*`.
 
 Verificación con `psql`:
 

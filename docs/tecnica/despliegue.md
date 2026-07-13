@@ -1,289 +1,394 @@
-# Guía de Despliegue y Ejecución Local
+# Despliegue de Artify
 
-> **Proyecto:** Artify
-> **Entorno principal:** Local / desarrollo
-> **Backend:** Node.js + Express
-> **Frontend:** HTML, CSS y JavaScript Vanilla
-> **Base de datos:** PostgreSQL
-> **Fecha:** Junio 2026
+> **Estado:** procedimiento oficial vigente
+> **Frontend:** GitHub Pages
+> **Backend:** Render
+> **Base de datos:** Neon PostgreSQL
+> **Última validación:** 13 de julio de 2026
 
----
+En esta guía documento cómo aprovisiono por primera vez y cómo vuelvo a desplegar la versión pública de Artify. La instalación en un equipo personal se explica por separado en [`plan-instalacion-artify.md`](./plan-instalacion-artify.md).
 
-## 1. Objetivo del Documento
+## 1. Arquitectura desplegada
 
-En este documento explico los pasos técnicos necesarios para preparar, ejecutar y verificar Artify en un entorno local. Esta guía complementa el `README.md` y se enfoca en la ejecución del backend, el frontend y la base de datos PostgreSQL.
+Distribuyo los componentes de Artify en tres servicios:
 
----
+```mermaid
+flowchart LR
+    A["GitHub: rama main"] --> B["GitHub Actions"]
+    B --> C["GitHub Pages: frontend"]
+    C -->|"ARTIFY_API_URL"| D["Render: API Node.js"]
+    D -->|"DATABASE_URL"| E["Neon: PostgreSQL"]
+```
 
-## 2. Requisitos Previos
-
-Antes de ejecutar el proyecto confirmo que estén disponibles estas herramientas:
-
-| Herramienta | Versión recomendada | Uso |
+| Componente | Servicio | URL o recurso |
 | --- | --- | --- |
-| Node.js | 22.13 o superior | Ejecutar el backend. |
-| pnpm | 11.1.1 | Instalar dependencias y ejecutar scripts del backend. |
-| PostgreSQL | 15 o superior | Base de datos relacional. |
-| Git | Versión estable | Clonar y versionar el proyecto. |
-| Navegador moderno | Chrome, Edge, Firefox, Safari u Opera | Usar el frontend. |
+| Frontend | GitHub Pages | `https://tecno85.github.io/artify/` |
+| Backend | Render | `https://artify-sena-postgresql.onrender.com` |
+| Base de datos | Neon PostgreSQL | Cadena privada `DATABASE_URL` |
+| Código fuente | GitHub | `https://github.com/Tecno85/artify` |
 
----
+GitHub Pages publica solamente archivos estáticos. El backend Express y PostgreSQL permanecen fuera de Pages y se consumen mediante HTTPS.
 
-## 3. Clonar el Proyecto
+GitHub Pages no permite definir encabezados HTTP personalizados desde el repositorio. Las cabeceras de seguridad de la API continúan configuradas en Express; cualquier política adicional para el frontend debe implementarse en el HTML cuando sea compatible o requeriría otro proveedor o CDN.
 
-```bash
-git clone https://github.com/Tecno85/artify.git
-cd artify
-```
+## 2. Elegir el procedimiento
 
----
+Uso el procedimiento que corresponda:
 
-## 4. Instalar Dependencias del Backend
+| Situación | Secciones |
+| --- | --- |
+| Es la primera publicación de Artify | 3, 4, 5 y 6 |
+| Neon, Render y Pages ya existen y solo publicaré cambios | 7 |
+| Quiero comprobar la versión pública | 8 |
 
-Las dependencias se instalan dentro de la carpeta `backend/`.
+Antes de cualquier despliegue verifico la sintaxis:
 
-```bash
-cd backend
-pnpm install
-```
-
-El proyecto usa `pnpm` como gestor oficial. No se debe mezclar con `npm install` ni generar `package-lock.json`.
-
----
-
-## 5. Configurar Variables de Entorno
-
-El backend necesita variables de entorno para conectarse a PostgreSQL y firmar tokens.
-
-Puedo crear `backend/.env` a partir de `.env.example`:
-
-```bash
-cp ../.env.example .env
-```
-
-Variables principales:
-
-```env
-DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=tu_contrasena_postgresql
-DB_NAME=artify_db
-TOKEN_SECRET=un_secreto_largo_y_aleatorio
-PORT=3000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
-```
-
-### Consideraciones
-
-- `backend/.env` no debe subirse al repositorio.
-- `TOKEN_SECRET` debe ser largo y difícil de adivinar.
-- `CORS_ORIGIN` debe incluir el origen desde el que se sirve el frontend.
-
----
-
-## 6. Crear la Base de Datos
-
-Primero creo la base de datos:
-
-```bash
-createdb artify_db
-```
-
-Si `createdb` no está disponible, puedo crearla desde `psql` usando la base administrativa local:
-
-```bash
-psql -d postgres -c 'CREATE DATABASE artify_db;'
-```
-
-Luego cargo el esquema y los datos mínimos de referencia:
-
-```bash
-psql -d artify_db -f database/postgresql/schema.sql
-psql -d artify_db -f database/postgresql/seed.sql
-```
-
-Al finalizar, verifico la base, las tablas y la vista:
-
-```sql
-\l
-\c artify_db
-\dt
-\dv
-```
-
-Si prefiero validar en un solo comando desde la terminal, puedo usar `psql -d artify_db -c "\\dt"` para tablas y `psql -d artify_db -c "\\dv"` para vistas.
-
-### Preparación para pruebas automatizadas
-
-Antes de ejecutar `pnpm test`, confirmo dos condiciones:
-
-1. Existe `backend/.env` con `DATABASE_URL` o las variables `DB_*`, además de `TOKEN_SECRET`.
-2. La base `artify_db` existe y ya recibió `schema.sql` y `seed.sql`.
-
-Si falta `backend/.env`, la suite puede fallar con secretos indefinidos, por ejemplo `TOKEN_SECRET`. Si falta la base o el esquema, `/health` puede responder, pero los endpoints que consultan PostgreSQL devuelven errores porque no encuentran la conexión, las tablas o la vista esperada.
-
-### Habilitar un Usuario Administrador
-
-El panel administrativo se abre desde el login principal. Para habilitar un administrador:
-
-1. Registro el usuario desde `registro.html`.
-2. Promuevo ese usuario en PostgreSQL:
-
-```bash
-psql -d artify_db -v correo='admin@artify.com' -f database/postgresql/promote-admin.sql
-```
-
-3. Inicio sesión desde `login.html` con ese correo y contraseña. Si el rol es `admin`, el frontend redirige al CRUD; si el rol es `usuario`, redirige al editor.
-
----
-
-## 7. Ejecutar el Backend
-
-Desde la carpeta `backend/`:
-
-```bash
-pnpm start
-```
-
-Salida esperada:
-
-```text
-Conectado a PostgreSQL correctamente
-Servidor corriendo en http://localhost:3000
-```
-
-Para desarrollo con recarga automática:
-
-```bash
-pnpm run dev
-```
-
----
-
-## 8. Ejecutar el Frontend
-
-El frontend es estático. Para probar rutas y navegación de forma estable, sirvo la carpeta `frontend/` por HTTP.
-
-Desde la raíz del proyecto:
-
-```bash
-npx http-server frontend -p 8080
-```
-
-Luego abro:
-
-```text
-http://127.0.0.1:8080
-```
-
----
-
-## 9. Verificar el Funcionamiento
-
-### Verificación del backend
-
-```bash
-curl http://127.0.0.1:3000/health
-```
-
-Resultado esperado:
-
-```json
-{
-  "ok": true,
-  "servicio": "artify-api"
-}
-```
+**Ubicación inicial:** raíz `artify/`.
 
 ```bash
 cd backend
 pnpm run check
 ```
 
-### Pruebas automatizadas
+### Advertencia sobre las pruebas
 
-```bash
-cd backend
-pnpm test
-```
+`pnpm test` no es una comprobación de solo lectura. La suite crea, actualiza y elimina usuarios, sesiones, imágenes, configuraciones y operaciones temporales.
 
-La suite actual valida autenticación, rutas protegidas, tokens, configuración básica, conexión con PostgreSQL y limpieza de usuarios temporales.
+> **Nunca ejecuto `pnpm test` con `DATABASE_URL` apuntando a Neon o a una base de producción.** Solo la ejecuto contra `artify_db` local o contra una base PostgreSQL exclusiva y desechable para pruebas.
 
-Si `pnpm` informa que requiere Node.js `22.13` o superior, reviso primero qué binario está tomando la terminal:
+## 3. Aprovisionamiento inicial de Neon
 
-```bash
-node -v
-which node
-```
+Esta sección se realiza una sola vez, cuando todavía no existe la base PostgreSQL pública.
 
-En macOS con Homebrew puedo priorizar Node 22 para la sesión actual:
+### 3.1 Crear el proyecto
 
-```bash
-PATH=/opt/homebrew/opt/node@22/bin:$PATH pnpm test
-```
+1. Inicio sesión en Neon.
+2. Creo un proyecto PostgreSQL para Artify.
+3. Selecciono una región cercana a los usuarios o al servicio de Render.
+4. Abro el panel de conexión y copio la cadena PostgreSQL.
+5. Confirmo que la cadena use SSL, normalmente mediante `sslmode=require`.
 
-En entornos restringidos, como validaciones ejecutadas desde herramientas con sandbox, Node puede no tener permiso para abrir sockets locales hacia PostgreSQL aunque `psql` sí funcione. En ese caso, la verificación válida es ejecutar la suite en una terminal normal del sistema con PostgreSQL activo y las variables de `backend/.env` configuradas.
-
-### Verificación manual básica
-
-1. Abro `http://127.0.0.1:8080`.
-2. Registro un usuario de prueba.
-3. Inicio sesión.
-4. Confirmo redirección al editor.
-5. Cargo una imagen.
-6. Pruebo una operación de edición.
-7. Descargo la imagen resultante.
-
----
-
-## 10. Puertos Utilizados
-
-| Servicio | Puerto | Descripción |
-| --- | --- | --- |
-| Backend Express | `3000` | API principal del sistema. |
-| Frontend local | `8080` | Servidor estático recomendado para pruebas. |
-| PostgreSQL | `5432` | Puerto habitual de PostgreSQL. |
-| Backend de pruebas | `3100` | Puerto usado por la suite automatizada cuando aplica. |
-
----
-
-## 11. Script de Configuración Frontend
-
-El proyecto incluye el script:
+La cadena tiene una estructura similar a:
 
 ```text
-scripts/write-frontend-config.js
+postgresql://usuario:contrasena@host/base?sslmode=require
 ```
 
-Este script genera `frontend/assets/js/config.js` durante el despliegue en Netlify usando la variable `ARTIFY_API_URL`.
+La guardo temporalmente como `DATABASE_URL` en mi terminal y después en Render. No la escribo en archivos versionados, capturas ni documentación.
 
-Para ejecución local, `config.js` puede permanecer vacío para que el frontend use `http://localhost:3000` como backend por defecto.
+**Windows - PowerShell:**
 
----
+```powershell
+$env:DATABASE_URL = "PEGAR_AQUI_LA_URL_PRIVADA_DE_NEON"
+```
 
-## 12. Problemas Comunes
+**macOS o Linux - Terminal:**
 
-| Problema | Posible causa | Solución |
+```bash
+export DATABASE_URL='PEGAR_AQUI_LA_URL_PRIVADA_DE_NEON'
+```
+
+### 3.2 Cargar el esquema
+
+**Ubicación inicial:** raíz `artify/`.
+
+> **Advertencia destructiva:** `database/postgresql/schema.sql` contiene instrucciones `DROP`. Solo lo ejecuto sobre una base nueva o durante un reinicio controlado. Si la base ya contiene información útil, primero genero y verifico un respaldo.
+
+**Windows - PowerShell:**
+
+```powershell
+psql "$env:DATABASE_URL" -f database/postgresql/schema.sql
+psql "$env:DATABASE_URL" -f database/postgresql/seed.sql
+psql "$env:DATABASE_URL" -c "\dt"
+psql "$env:DATABASE_URL" -c "\dv"
+```
+
+**macOS o Linux - Terminal:**
+
+```bash
+psql "$DATABASE_URL" -f database/postgresql/schema.sql
+psql "$DATABASE_URL" -f database/postgresql/seed.sql
+psql "$DATABASE_URL" -c "\dt"
+psql "$DATABASE_URL" -c "\dv"
+```
+
+Debo encontrar cinco tablas y la vista `v_usuarios_activos`. `seed.sql` agrega únicamente un registro de referencia y no crea credenciales válidas para iniciar sesión.
+
+Cuando termino, retiro la variable de la terminal si el equipo es compartido:
+
+**Windows - PowerShell:**
+
+```powershell
+Remove-Item Env:DATABASE_URL
+```
+
+**macOS o Linux - Terminal:**
+
+```bash
+unset DATABASE_URL
+```
+
+## 4. Aprovisionamiento inicial de Render
+
+Esta sección se realiza una sola vez, cuando todavía no existe el servicio backend.
+
+### 4.1 Crear el servicio web
+
+1. Inicio sesión en Render y selecciono **New > Web Service**.
+2. Conecto mi cuenta de GitHub.
+3. Selecciono el repositorio `Tecno85/artify`.
+4. Configuro la rama `main`.
+5. Defino la carpeta raíz como `backend`.
+6. Selecciono el entorno de ejecución Node.
+7. Uso estos comandos:
+
+| Campo de Render | Valor |
+| --- | --- |
+| Root Directory | `backend` |
+| Build Command | `pnpm install --frozen-lockfile` |
+| Start Command | `pnpm start` |
+| Health Check Path | `/health` |
+| Auto-Deploy | Activado para la rama `main` |
+
+`backend/package.json` fija pnpm `11.1.1`, requiere Node.js `22.13.0` o superior y contiene el comando de inicio.
+
+### 4.2 Configurar las variables
+
+En **Environment** configuro como mínimo:
+
+```env
+DATABASE_URL=postgresql://usuario:contrasena@host/base?sslmode=require
+TOKEN_SECRET=secreto_largo_aleatorio_y_privado
+NODE_VERSION=22.13.0
+NODE_ENV=production
+CORS_ORIGIN=https://tecno85.github.io
+```
+
+Reglas importantes:
+
+- `DATABASE_URL` y `TOKEN_SECRET` nunca se guardan en Git.
+- `CORS_ORIGIN` contiene el origen de Pages, sin `/artify/` y sin barra final.
+- Render asigna `PORT`; normalmente no lo configuro manualmente.
+- Si necesito varios orígenes autorizados, los separo con comas.
+
+Ejemplo que también permite las pruebas manuales desde el frontend local:
+
+```env
+CORS_ORIGIN=https://tecno85.github.io,http://localhost:8080,http://127.0.0.1:8080
+```
+
+Guardo las variables y ejecuto el primer despliegue. En los registros debo encontrar el inicio de Express y la conexión correcta con PostgreSQL.
+
+### 4.3 Comprobar Render
+
+Reemplazo el dominio del ejemplo si Render asignó otro:
+
+```text
+https://artify-sena-postgresql.onrender.com/health
+https://artify-sena-postgresql.onrender.com/ready
+```
+
+`/health` confirma que Express está activo. `/ready` confirma además que el backend puede consultar Neon. No continúo con Pages mientras `/ready` responda que la base no está disponible.
+
+## 5. Aprovisionamiento inicial de GitHub Pages
+
+### 5.1 Configurar la URL del backend
+
+El frontend necesita conocer la URL pública de Render. En GitHub abro:
+
+```text
+Settings
+→ Secrets and variables
+→ Actions
+→ Variables
+→ New repository variable
+```
+
+Creo esta variable:
+
+| Campo | Valor |
+| --- | --- |
+| Name | `ARTIFY_API_URL` |
+| Value | `https://artify-sena-postgresql.onrender.com` |
+
+La URL del backend es pública y puede almacenarse como variable del repositorio. No agrego `/api` ni una barra al final.
+
+### 5.2 Activar GitHub Pages
+
+1. Abro **Settings > Pages**.
+2. En **Build and deployment**, selecciono **Source: GitHub Actions**.
+3. Confirmo que exista `.github/workflows/deploy-pages.yml`.
+4. Abro **Actions > Desplegar frontend en GitHub Pages**.
+5. Ejecuto **Run workflow** o realizo un `push` a `main`.
+
+El workflow:
+
+1. Descarga el repositorio.
+2. Configura Node.js `22.13.0`.
+3. Verifica que `ARTIFY_API_URL` exista.
+4. Ejecuta `node scripts/write-frontend-config.js`.
+5. Publica exclusivamente la carpeta `frontend/`.
+6. Despliega el artefacto en GitHub Pages.
+
+El archivo generado debe contener:
+
+```javascript
+window.ARTIFY_API_URL = "https://artify-sena-postgresql.onrender.com";
+```
+
+Puedo comprobarlo en:
+
+```text
+https://tecno85.github.io/artify/assets/js/config.js
+```
+
+No muevo `frontend/index.html` a la raíz. El workflow convierte `frontend/` en la raíz del sitio publicado.
+
+## 6. Primera publicación completa
+
+Después de aprovisionar Neon, Render y Pages, publico el estado confirmado del repositorio:
+
+```bash
+git status
+git add archivo-modificado
+git commit -m "tipo(scope): descripción"
+git push origin main
+```
+
+El `push` produce dos acciones independientes:
+
+- Render vuelve a desplegar el backend si detecta cambios en la rama configurada.
+- GitHub Actions publica el frontend en Pages.
+
+Superviso ambos procesos y después completo la verificación de la sección 8.
+
+## 7. Redespliegue de una instalación existente
+
+No vuelvo a crear Neon, Render ni Pages para publicar cambios normales.
+
+### 7.1 Solo cambió el frontend
+
+1. Confirmo que `ARTIFY_API_URL` siga definida en GitHub.
+2. Subo el cambio a `main`.
+3. Reviso **Actions > Desplegar frontend en GitHub Pages**.
+4. Recargo el sitio cuando el workflow finalice.
+
+### 7.2 Cambió el backend
+
+1. Ejecuto `pnpm run check` localmente.
+2. Ejecuto `pnpm test` únicamente contra una base local o exclusiva de pruebas.
+3. Subo el cambio a `main`.
+4. Reviso los registros del despliegue automático en Render.
+5. Compruebo `/health` y `/ready`.
+
+### 7.3 Cambió la base de datos
+
+No ejecuto automáticamente `schema.sql` sobre Neon porque elimina y reconstruye los objetos.
+
+1. Reviso el SQL exacto del cambio.
+2. Creo y verifico un respaldo de Neon.
+3. Preparo una migración incremental que conserve los datos.
+4. Pruebo la migración en otra base PostgreSQL.
+5. Solo después la ejecuto en producción.
+
+`schema.sql` completo se reserva para aprovisionamiento inicial o reinicios controlados con autorización.
+
+### 7.4 Cambió la URL de algún servicio
+
+- Si cambia Render, actualizo `ARTIFY_API_URL` en GitHub y vuelvo a ejecutar el workflow de Pages.
+- Si cambia Pages o su dominio, actualizo `CORS_ORIGIN` en Render y reinicio o redespliego el backend.
+- Si cambia Neon, actualizo `DATABASE_URL` en Render y compruebo `/ready`.
+
+## 8. Verificación posterior
+
+### 8.1 Servicios
+
+| Verificación | Resultado esperado |
+| --- | --- |
+| `https://tecno85.github.io/artify/` | Página principal con HTTP `200` |
+| `/artify/assets/js/config.js` | URL de Render en `ARTIFY_API_URL` |
+| `https://artify-sena-postgresql.onrender.com/health` | JSON con `ok: true` |
+| `https://artify-sena-postgresql.onrender.com/ready` | JSON con `ok: true` y PostgreSQL disponible |
+
+### 8.2 Flujo funcional
+
+1. Abro la página de inicio y verifico los recursos visuales.
+2. Registro un usuario.
+3. Inicio sesión.
+4. Cargo una imagen en el editor.
+5. Aplico filtros, recorte y conversión.
+6. Descargo la imagen.
+7. Cierro sesión.
+8. Valido el panel con un usuario administrador.
+
+En las herramientas del navegador, las solicitudes deben apuntar a Render y no deben mostrar errores CORS ni `Failed to fetch`.
+
+## 9. Rutas bajo `/artify/`
+
+El sitio es un proyecto de GitHub Pages y utiliza el prefijo:
+
+```text
+/artify/
+```
+
+Mantengo relativas las rutas de HTML, CSS, JavaScript e imágenes. Evito rutas como:
+
+```text
+/pages/login.html
+/assets/css/index.css
+```
+
+Estas rutas buscarían recursos en la raíz de `tecno85.github.io`. Las formas correctas dependen de la ubicación del archivo, por ejemplo:
+
+```text
+./pages/login.html
+../assets/css/login.css
+```
+
+## 10. Problemas comunes
+
+| Problema | Causa probable | Solución |
 | --- | --- | --- |
-| `Error al conectar a PostgreSQL` | Variables incorrectas o servicio detenido. | Revisar `backend/.env` e iniciar PostgreSQL. |
-| `database "artify_db" does not exist` | La base local no fue creada. | Ejecutar `createdb artify_db` o `psql -d postgres -c 'CREATE DATABASE artify_db;'`. |
-| `TOKEN_SECRET` indefinido en pruebas | Falta `backend/.env` o la variable no fue cargada. | Crear `backend/.env` desde `.env.example` y ajustar los valores locales. |
-| `Unknown command: pnpm` | pnpm no está instalado o no está en el PATH. | Instalar pnpm y abrir una nueva terminal. |
-| `This version of pnpm requires at least Node.js v22.13` | La terminal está usando un Node anterior al requerido por pnpm. | Priorizar Node 22 en el `PATH` o actualizar Node. |
-| `/health` no responde | Backend no iniciado o puerto incorrecto. | Ejecutar `pnpm start` en `backend/`. |
-| `/health` responde pero la API falla | PostgreSQL no está disponible, variables incompletas o esquema no cargado. | Revisar `backend/.env`, cargar `schema.sql` y consultar logs del backend. |
-| Login falla aunque el usuario existe | Contraseña incorrecta, hash inválido o límite de intentos alcanzado. | Verificar registro, datos en `USUARIO` y esperar si hubo demasiados intentos. |
-| Frontend no consume API | Backend apagado, URL incorrecta o `CORS_ORIGIN` no incluye el origen del frontend. | Confirmar la API en `http://localhost:3000` y revisar `CORS_ORIGIN`. |
+| Pages muestra 404 | Se publicó la raíz del repositorio | Confirmar **Source: GitHub Actions** y `path: frontend` |
+| Workflow falla al validar URL | Falta `ARTIFY_API_URL` | Crear la variable del repositorio |
+| Frontend intenta usar el puerto `3000` | `config.js` se generó vacío | Corregir la variable y volver a ejecutar el workflow |
+| Registro o login muestra `Failed to fetch` | URL incorrecta o CORS | Revisar `ARTIFY_API_URL` y `CORS_ORIGIN` |
+| Error CORS | Render no permite GitHub Pages | Usar `CORS_ORIGIN=https://tecno85.github.io` y redesplegar |
+| Backend tarda en responder | Servicio gratuito suspendido por inactividad | Esperar el arranque y reintentar |
+| `/health` funciona pero `/ready` falla | Neon o `DATABASE_URL` no están disponibles | Revisar Neon, la variable y los registros de Render |
+| El build de Render no encuentra el proyecto | Carpeta raíz incorrecta | Configurar **Root Directory: `backend`** |
+| Render no encuentra pnpm | Versión de Node o gestor no preparados | Confirmar `NODE_VERSION=22.13.0` y `packageManager` en `backend/package.json` |
+| CSS, JavaScript o imágenes devuelven 404 | Ruta absoluta incompatible | Usar rutas relativas al documento |
 
----
+## 11. Estado validado
 
-## 13. Criterios de Mantenimiento
+El 13 de julio de 2026 comprobé:
 
-- Mantener `.env.example` actualizado cuando cambien variables requeridas.
-- Mantener `backend/package.json` como referencia de scripts oficiales.
-- Usar `pnpm-lock.yaml` para reproducibilidad de dependencias.
-- Actualizar esta guía cuando cambien puertos, comandos, gestor de paquetes o pasos de instalación.
-- No documentar credenciales reales en archivos versionados.
+- Workflow de Pages finalizado con `success`.
+- Frontend público con HTTP `200`.
+- Login publicado con HTTP `200`.
+- `config.js` apuntando al backend de Render.
+- Respuesta CORS de Render para `https://tecno85.github.io`.
+- Repositorio local y remoto sincronizados después del despliegue.
+
+## 12. Evidencia académica sin exponer secretos
+
+Para presentar la evidencia del despliegue, muestro:
+
+1. Repositorio y workflow sin abrir secretos.
+2. Ejecución verde en GitHub Actions.
+3. URL pública de GitHub Pages.
+4. `config.js` con la URL pública de Render.
+5. `/health` y `/ready`.
+6. Registro, login, editor y panel administrativo.
+7. Tablas de Neon sin mostrar la cadena `DATABASE_URL`.
+
+No muestro contraseñas, tokens de acceso, `TOKEN_SECRET` ni credenciales PostgreSQL.
+
+## 13. Referencias oficiales
+
+- GitHub Docs. GitHub Pages: https://docs.github.com/pages
+- GitHub Docs. Custom workflows for GitHub Pages: https://docs.github.com/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
+- Render Docs. Web services: https://render.com/docs/web-services
+- Neon Docs. Conectar con PostgreSQL: https://neon.com/docs/connect/connect-from-any-app
+- PostgreSQL. Herramienta `psql`: https://www.postgresql.org/docs/current/app-psql.html

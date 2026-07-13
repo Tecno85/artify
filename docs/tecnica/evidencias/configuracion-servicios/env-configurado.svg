@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="540" viewBox="0 0 980 540" role="img" aria-labelledby="title desc">
-  <title id="title">Variables de entorno configuradas para Artify</title>
-  <desc id="desc">Representación sanitizada del archivo backend .env; las contraseñas y secretos se encuentran ocultos.</desc>
+  <title id="title">Representación sanitizada de las variables locales de Artify</title>
+  <desc id="desc">Representación didáctica, no captura literal, del archivo backend .env sin credenciales reales.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
@@ -22,16 +22,16 @@
   <circle class="dot-red" cx="102" cy="69" r="7" />
   <circle class="dot-yellow" cx="126" cy="69" r="7" />
   <circle class="dot-green" cx="150" cy="69" r="7" />
-  <text class="title" x="490" y="76" text-anchor="middle">backend/.env - configuración sanitizada</text>
+  <text class="title" x="490" y="76" text-anchor="middle">backend/.env - representación sanitizada</text>
   <text x="112" y="132"><tspan class="key">DB_HOST</tspan><tspan class="value">=localhost</tspan></text>
   <text x="112" y="164"><tspan class="key">DB_USER</tspan><tspan class="value">=********</tspan></text>
   <text x="112" y="196"><tspan class="key">DB_PASSWORD</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="228"><tspan class="key">DB_NAME</tspan><tspan class="value">=artify_db</tspan></text>
   <text x="112" y="260"><tspan class="key">DB_PORT</tspan><tspan class="value">=5432</tspan></text>
-  <text x="112" y="292"><tspan class="key">DATABASE_URL</tspan><tspan class="secret">=postgresql://********</tspan></text>
+  <text x="112" y="292"><tspan class="value"># </tspan><tspan class="key">DATABASE_URL</tspan><tspan class="secret">=postgresql://********</tspan></text>
   <text x="112" y="324"><tspan class="key">TOKEN_SECRET</tspan><tspan class="secret">=********</tspan></text>
   <text x="112" y="356"><tspan class="key">PORT</tspan><tspan class="value">=3000</tspan></text>
   <text x="112" y="388"><tspan class="key">NODE_ENV</tspan><tspan class="value">=development</tspan></text>
   <text x="112" y="420"><tspan class="key">CORS_ORIGIN</tspan><tspan class="value">=http://localhost:8080</tspan></text>
-  <text class="note" x="112" y="464">Las credenciales y secretos reales no se incluyen en la evidencia ni en el repositorio.</text>
+  <text class="note" x="112" y="464">Representación didáctica: DATABASE_URL queda comentada en local y los secretos no son reales.</text>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Base de datos PostgreSQL verificada</title>
-  <desc id="desc">Evidencia visual de la base artify_db y sus tablas principales verificadas en PostgreSQL.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, de la base artify_db y sus tablas principales verificadas en PostgreSQL.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Instalación de dependencias con pnpm</title>
-  <desc id="desc">Evidencia visual de la ejecución de pnpm install offline con dependencias ya actualizadas.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, de pnpm install offline con dependencias ya actualizadas.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

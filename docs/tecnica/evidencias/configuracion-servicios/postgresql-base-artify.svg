@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="480" viewBox="0 0 980 480" role="img" aria-labelledby="title desc">
   <title id="title">Base de datos artify_db verificada</title>
-  <desc id="desc">Resultado real sanitizado de comandos psql para seleccionar la base y listar objetos.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, de comandos psql para seleccionar la base y listar objetos.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

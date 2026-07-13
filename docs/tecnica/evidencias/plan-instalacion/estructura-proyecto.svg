@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-labelledby="title desc">
   <title id="title">Estructura general del proyecto Artify</title>
-  <desc id="desc">Evidencia visual de las carpetas principales del proyecto Artify para el plan de instalación local.</desc>
+  <desc id="desc">Representación visual, no captura literal, de las carpetas principales del proyecto Artify para el plan de instalación local.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

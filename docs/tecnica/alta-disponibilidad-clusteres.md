@@ -5,6 +5,7 @@
 > **Programa:** Análisis y Desarrollo de Software - SENA
 > **Autor:** Iván Darío Madrid Daza
 > **Fecha:** Junio 2026
+> **Última actualización:** Julio 2026
 
 ---
 
@@ -26,7 +27,7 @@ Explicar los conceptos principales de clústeres, redundancia, alta disponibilid
 
 Artify es una aplicación web organizada en componentes principales: un frontend construido con HTML, CSS y JavaScript, un backend desarrollado con Node.js y Express, y una base de datos PostgreSQL para almacenar la información del sistema.
 
-En su estado actual, Artify se trabaja como un proyecto académico y no utiliza clústeres. Sin embargo, considero importante analizar estos conceptos porque podrían aplicarse en un escenario futuro si el sistema crece, recibe más usuarios o requiere mayor disponibilidad. Por ejemplo, se podría separar el frontend, el backend y la base de datos en servicios diferentes, usar un balanceador de carga o implementar copias de seguridad automatizadas.
+En su estado actual, Artify se encuentra distribuido en tres servicios: el frontend se publica en GitHub Pages, el backend se ejecuta en Render y la base de datos PostgreSQL se aloja en Neon. Esta separación mejora el aislamiento de responsabilidades, pero no constituye un clúster ni garantiza alta disponibilidad: no existen varias instancias coordinadas del backend, balanceo de carga propio ni conmutación por error verificada. Por ello, considero importante analizar estos conceptos para una evolución futura si el sistema crece, recibe más usuarios o requiere mayor continuidad.
 
 ---
 
@@ -94,6 +95,7 @@ En infraestructura tecnológica, los clústeres sirven para mejorar la disponibi
 | Pérdida de datos | Se podrían perder usuarios, configuraciones, sesiones u operaciones registradas. | Alta | Programar backups periódicos y conservar copias en ubicaciones seguras. |
 | Falla de red | El frontend no podría comunicarse correctamente con el backend o la base de datos. | Media | Verificar conectividad, puertos, variables de entorno y configuración de red. |
 | Error de configuración | El sistema podría fallar por credenciales, rutas o variables incorrectas. | Media | Documentar variables de entorno, revisar archivos de configuración y probar el despliegue después de cada ajuste. |
+| Falla de un proveedor administrado | La indisponibilidad de GitHub Pages, Render o Neon puede afectar una capa completa. | Alta | Monitorear los tres servicios, conservar procedimientos de recuperación y evitar asumir que la separación equivale a redundancia. |
 
 ---
 
@@ -152,12 +154,11 @@ Para fortalecer la continuidad de Artify, propongo aplicar acciones básicas que
 
 Si Artify crece y requiere mayor estabilidad, podría beneficiarse de una arquitectura más preparada para alta disponibilidad. En ese escenario, considero que se podrían aplicar las siguientes mejoras:
 
-- Separar el frontend, el backend y la base de datos en servicios independientes.
-- Usar un balanceador de carga como Nginx o HAProxy para distribuir solicitudes hacia el backend.
+- Ejecutar varias instancias del backend y distribuir solicitudes mediante las capacidades de la plataforma o un balanceador como Nginx o HAProxy.
 - Replicar la base de datos PostgreSQL para mejorar la disponibilidad de la información.
-- Automatizar copias de seguridad de la base de datos y de archivos importantes.
+- Automatizar copias de seguridad y verificar periódicamente la restauración de PostgreSQL.
 - Monitorear servicios, consumo de recursos, disponibilidad de la API y estado de PostgreSQL.
-- Documentar procedimientos de recuperación para que el sistema pueda restaurarse con mayor rapidez.
+- Documentar la migración entre proveedores y los procedimientos de recuperación para que el sistema pueda restaurarse con mayor rapidez.
 
 Estas acciones no son obligatorias en la etapa actual del proyecto, pero sirven como referencia para una posible evolución técnica de Artify.
 
@@ -187,7 +188,7 @@ Estas pruebas permiten detectar fallos de configuración antes de considerar que
 
 ## 15. Conclusión
 
-En este informe analicé los conceptos de clústeres, redundancia, alta disponibilidad, recuperación de desastres, RPO, RTO y continuidad del negocio aplicados como referencia técnica para Artify. Aunque el proyecto actualmente no usa clústeres, estos conceptos permiten comprender cómo podría evolucionar hacia una infraestructura más estable, confiable y preparada ante fallos.
+En este informe analicé los conceptos de clústeres, redundancia, alta disponibilidad, recuperación de desastres, RPO, RTO y continuidad del negocio aplicados como referencia técnica para Artify. Aunque el proyecto distribuye sus capas entre GitHub Pages, Render y Neon, actualmente no usa clústeres ni redundancia propia. Estos conceptos permiten comprender cómo podría evolucionar hacia una infraestructura más estable, confiable y preparada ante fallos.
 
 Considero que la aplicación futura de balanceadores de carga, respaldos, monitoreo y replicación de base de datos podría fortalecer la operación de Artify si el sistema crece o requiere mayor disponibilidad.
 

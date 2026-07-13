@@ -22,7 +22,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 
 - HTML5, CSS3, JavaScript Vanilla.
 - Canvas API para manipulación de imágenes.
-- SessionStorage para manejo de sesión.
+- `sessionStorage` para manejo de sesión.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
 - Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva scroll vertical por la extensión del formulario.
 
@@ -40,7 +40,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 
 - Git + GitHub.
 - Commits convencionales (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
-- Repositorio separado de `artify` para no afectar la versión histórica del proyecto base.
+- Este repositorio `artify` es la referencia oficial; la versión histórica del proyecto base se conserva fuera de este repositorio.
 
 ---
 
@@ -51,7 +51,10 @@ artify/
 ├── README.md
 ├── CONTEXT.md
 ├── .env.example
-├── netlify.toml
+├── .github/
+│   └── workflows/
+│       ├── backend-tests.yml
+│       └── deploy-pages.yml
 │
 ├── frontend/
 │   ├── index.html
@@ -99,7 +102,8 @@ artify/
 │
 └── docs/
     └── tecnica/
-        ├── despliegue-fullstack-postgresql.md
+        ├── despliegue.md
+        ├── plan-instalacion-artify.md
         ├── plan-mantenimiento-soporte-artify.md
         ├── plan-migracion-postgresql.md
         └── otros documentos heredados del proyecto base
@@ -166,6 +170,13 @@ El panel administrativo no tiene login independiente. El usuario entra por `/api
 
 El login rechaza cuentas inactivas o suspendidas. En las rutas privadas, el backend vuelve a consultar el estado y el rol actuales del usuario para invalidar tokens de cuentas suspendidas, eliminadas o cuyo rol haya cambiado.
 
+### Configuración de Usuario
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| GET | `/api/configuracion/:id` | Consulta las preferencias del usuario autenticado. |
+| POST | `/api/configuracion` | Guarda las preferencias del usuario autenticado. |
+
 ### Sesiones, Operaciones e Imágenes
 
 | Método | Ruta | Descripción |
@@ -173,6 +184,7 @@ El login rechaza cuentas inactivas o suspendidas. En las rutas privadas, el back
 | POST | `/api/sesion/iniciar` | Inicia sesión de edición. |
 | POST | `/api/sesion/cerrar` | Cierra sesión de edición. |
 | POST | `/api/operacion` | Registra operación de edición. |
+| GET | `/api/operacion/total/:id` | Consulta el total de operaciones del usuario. |
 | POST | `/api/imagen` | Registra imagen procesada. |
 | GET | `/api/estadisticas/:id` | Estadísticas del usuario. |
 
@@ -194,7 +206,10 @@ Los filtros se agrupan por el nombre real guardado en los parámetros de la oper
 ### Backend Node.js
 
 ```env
-DATABASE_URL=postgresql://usuario:contrasena@localhost:5432/artify_db
+# Para despliegues administrados:
+# DATABASE_URL=postgresql://usuario:contrasena@host:5432/artify_db?sslmode=require
+
+# Para instalación local:
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
@@ -206,7 +221,7 @@ NODE_ENV=development
 CORS_ORIGIN=http://localhost:8080,http://127.0.0.1:8080
 ```
 
-`DATABASE_URL` es la variable principal para despliegues como Render o Neon. Las variables separadas `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` quedan como soporte para entornos locales o configuraciones donde se prefiera declarar cada dato por separado.
+`DATABASE_URL` es la variable principal para despliegues como Render o Neon y permanece comentada en la configuración local. Para ejecutar Artify localmente uso `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`.
 
 `CORS_ORIGIN` controla los orígenes autorizados para consumir el backend. En desarrollo puede contener varios orígenes separados por coma; en producción debe apuntar al frontend publicado.
 
@@ -220,7 +235,7 @@ Notas:
 
 - El archivo `.env` real no se sube a GitHub.
 - `.env.example` está en la raíz del proyecto como plantilla.
-- Para despliegue, Render/Netlify deben recibir variables desde sus paneles de configuración.
+- Para despliegue, GitHub Actions y Render reciben variables desde sus paneles de configuración.
 
 ---
 
@@ -244,15 +259,17 @@ La versión PostgreSQL fue validada con:
 
 ## 8. Despliegue
 
-La guía de despliegue full-stack se encuentra en:
+La guía del despliegue público se encuentra en:
 
 ```text
-docs/tecnica/despliegue-fullstack-postgresql.md
+docs/tecnica/despliegue.md
 ```
+
+La instalación y ejecución local se documentan en `docs/tecnica/plan-instalacion-artify.md`.
 
 Enfoque recomendado:
 
-- Netlify para frontend estático.
+- GitHub Pages para frontend estático.
 - Render para backend Node.js.
 - Neon PostgreSQL para base de datos.
 - Health check público: `GET /health`.
@@ -261,30 +278,31 @@ Enfoque recomendado:
 
 ### Despliegue público validado
 
-Validación realizada el 9 de julio de 2026:
+Validación técnica realizada el 13 de julio de 2026:
 
 | Servicio | URL |
 | --- | --- |
-| Frontend Netlify | `https://artify-sena-postgresql.netlify.app` |
+| Frontend GitHub Pages | `https://tecno85.github.io/artify/` |
 | Backend Render | `https://artify-sena-postgresql.onrender.com` |
 
 Estado validado:
 
-- Netlify responde HTTP `200`.
+- GitHub Pages responde HTTP `200`.
 - `frontend/assets/js/config.js` publicado contiene `ARTIFY_API_URL=https://artify-sena-postgresql.onrender.com`.
 - Render responde `GET /health` con `ok: true` y `entorno: production`.
 - Analytics responde `ok: true`.
 - El CSS publicado conserva el ajuste reciente de fondo principal negro.
-- CORS debe permitir el origen `https://artify-sena-postgresql.netlify.app`.
+- CORS permite el origen `https://tecno85.github.io`.
+- Cada `push` a `main` publica `frontend/` mediante `.github/workflows/deploy-pages.yml`.
 
 Variables cruzadas requeridas:
 
 ```env
-# Netlify
+# GitHub Actions: variable del repositorio
 ARTIFY_API_URL=https://artify-sena-postgresql.onrender.com
 
 # Render
-CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
+CORS_ORIGIN=https://tecno85.github.io
 ```
 
 ---
@@ -302,21 +320,25 @@ CORS_ORIGIN=https://artify-sena-postgresql.netlify.app
 
 ## 10. Historial Reciente
 
-- [2026-06-24] Creación del proyecto separado con PostgreSQL.
-- [2026-07-07] Renombrado del repositorio y carpeta local a `artify`.
+- [2026-06-24] Inicio de la consolidación del proyecto con PostgreSQL.
 - [2026-06-24] Creación del esquema inicial PostgreSQL.
 - [2026-06-24] Migración del backend hacia PostgreSQL mediante `pg`.
 - [2026-06-24] Preparación de configuración frontend para despliegue con `ARTIFY_API_URL`.
 - [2026-06-27] Verificación completa de la migración con PostgreSQL temporal y pruebas automatizadas.
 - [2026-06-28] Formalización de PostgreSQL como motor oficial de esta versión.
-- [2026-07-04] Validación del despliegue público Netlify + Render + Neon y documentación del proceso replicable para evidencia en video.
+- [2026-07-04] Validación inicial del despliegue público full-stack y documentación del proceso replicable para evidencia en video.
+- [2026-07-07] Renombrado del repositorio y carpeta local a `artify`.
 - [2026-07-08] Documentación de plan de migración y respaldo de datos de Artify con referencia en ISO 27001 para evidencia GA10-220501097-AA9.
-- [2026-07-09] Revalidación del despliegue público activo en Netlify + Render y corrección de URLs operativas.
+- [2026-07-09] Revalidación del despliegue público y corrección de URLs operativas.
 - [2026-07-09] Corrección de estado de cuentas, sesiones, descargas, analytics, validaciones y cobertura automatizada.
 - [2026-07-09] Ajuste responsive del editor para portátiles de 1366 x 768 y validación por tamaño útil de ventana.
 - [2026-07-09] Ajuste responsive de inicio para portátiles con poca altura útil; login y registro conservan su diseño original.
 - [2026-07-10] Vista previa de filtros al mover su control, escalas neutras específicas y confirmación única en historial y PostgreSQL.
 - [2026-07-11] Responsive por altura del login sin scroll en condiciones normales y header alineado con inicio; registro conserva desplazamiento vertical.
+- [2026-07-12] Migración del frontend a GitHub Pages mediante GitHub Actions, con Render y Neon como servicios de backend y datos.
+- [2026-07-13] Revisión integral y alineación de la documentación con el despliegue, las pruebas y el comportamiento actuales.
+- [2026-07-13] Consolidación de la instalación local en `plan-instalacion-artify.md` y del despliegue público en `despliegue.md`.
+- [2026-07-13] Reestructuración del plan local con preparación separada para Windows y macOS, flujo común y configuración `DB_*` sin `DATABASE_URL` activa.
 
 ---
 

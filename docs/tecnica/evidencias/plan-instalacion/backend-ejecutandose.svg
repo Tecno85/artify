@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="420" viewBox="0 0 980 420" role="img" aria-labelledby="title desc">
   <title id="title">Backend de Artify ejecutándose correctamente</title>
-  <desc id="desc">Evidencia visual del backend iniciado con pnpm start, conexión exitosa a PostgreSQL y verificación HTTP 200.</desc>
+  <desc id="desc">Representación visual sanitizada, no captura literal, del backend iniciado con pnpm start, la conexión a PostgreSQL y la verificación HTTP 200.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }

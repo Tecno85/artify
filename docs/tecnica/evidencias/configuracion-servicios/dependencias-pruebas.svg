@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="480" viewBox="0 0 980 480" role="img" aria-labelledby="title desc">
   <title id="title">Dependencias y pruebas del backend verificadas</title>
-  <desc id="desc">Resultados de pnpm install, pnpm run check y pnpm test ejecutados sobre el backend de Artify.</desc>
+  <desc id="desc">Representación visual resumida, no captura literal, de los resultados de pnpm install, pnpm run check y pnpm test sobre el backend de Artify.</desc>
   <defs>
     <style>
       .bg { fill: #eef3f8; }
