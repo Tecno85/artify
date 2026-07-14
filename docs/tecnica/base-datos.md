@@ -38,7 +38,8 @@ USUARIO
 | `database/postgresql/schema.sql` | Crea tablas, índices, relaciones y vista principal. |
 | `database/postgresql/seed.sql` | Inserta un registro de referencia para verificar la carga inicial. |
 | `database/postgresql/queries.md` | Registra ajustes de consultas realizados durante la migración. |
-| `database/artify_db.sql` | Se conserva solo como referencia histórica del modelo anterior. |
+
+Los dumps del motor anterior no se versionan. La estructura oficial y los datos controlados de referencia se mantienen exclusivamente dentro de `database/postgresql/`.
 
 ---
 

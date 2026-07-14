@@ -431,14 +431,43 @@ Actualmente ejecuto 18 pruebas automatizadas que cubren las siguientes validacio
 - Rechazo de login y revocación del token de una cuenta suspendida.
 - Limpieza del usuario temporal en la base de datos.
 
-Comando de ejecución:
+Antes de ejecutar la suite creo una base local exclusiva cuyo nombre termine en
+`_test` y cargo allí el esquema y los datos iniciales:
+
+```bash
+createdb -h localhost -U postgres artify_test
+psql -h localhost -U postgres -d artify_test -f database/postgresql/schema.sql
+psql -h localhost -U postgres -d artify_test -f database/postgresql/seed.sql
+```
+
+Si la base ya existe, no repito `createdb`. Ejecuto las pruebas con una
+confirmación explícita de las mutaciones temporales.
+
+**Windows - PowerShell:**
+
+```powershell
+cd backend
+$env:NODE_ENV = 'test'
+$env:DB_NAME = 'artify_test'
+$env:ALLOW_TEST_DB_MUTATIONS = 'true'
+pnpm test
+Remove-Item Env:NODE_ENV
+Remove-Item Env:DB_NAME
+Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
+```
+
+**macOS o Linux:**
 
 ```bash
 cd backend
-pnpm test
+NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 ```
 
-> **Advertencia:** esta suite crea, actualiza y elimina registros temporales. La ejecuto únicamente contra `artify_db` local o una base PostgreSQL exclusiva de pruebas. Nunca ejecuto `pnpm test` con `DATABASE_URL` apuntando a Neon o a producción.
+> **Protección activa:** la suite se detiene antes de conectarse si `NODE_ENV`
+> no es `test`, falta la confirmación, el nombre de la base no termina en
+> `_test` o el host es remoto. Una base remota exclusiva exige además
+> `ALLOW_REMOTE_TEST_DATABASE=true`; nunca uso esta excepción con Neon o
+> producción.
 
 Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 

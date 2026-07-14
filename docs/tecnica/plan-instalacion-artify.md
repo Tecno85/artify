@@ -327,14 +327,49 @@ Ambas respuestas deben incluir `"ok": true`.
 **Ubicación inicial:** raíz `artify/`.
 
 ```bash
-cd backend
-pnpm run check
-pnpm test
+createdb -h localhost -U postgres artify_test
+psql -h localhost -U postgres -d artify_test -f database/postgresql/schema.sql
+psql -h localhost -U postgres -d artify_test -f database/postgresql/seed.sql
 ```
 
-La suite esperada contiene 18 pruebas. Si falla antes de iniciar, reviso `backend/.env`, PostgreSQL y la carga de `schema.sql` y `seed.sql`.
+Si `artify_test` ya existe, no repito `createdb`. Primero valido la sintaxis:
 
-> **Advertencia:** `pnpm test` crea, modifica y elimina datos temporales. Solo lo ejecuto contra la base local `artify_db` o contra una base exclusiva de pruebas. Nunca configuro `DATABASE_URL` con Neon o producción para ejecutar esta suite.
+```bash
+cd backend
+pnpm run check
+```
+
+Ejecuto la suite con una confirmación explícita y sobrescribo únicamente el
+nombre de la base para esta orden.
+
+**Windows - PowerShell:**
+
+```powershell
+$env:NODE_ENV = 'test'
+$env:DB_NAME = 'artify_test'
+$env:ALLOW_TEST_DB_MUTATIONS = 'true'
+pnpm test
+Remove-Item Env:NODE_ENV
+Remove-Item Env:DB_NAME
+Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
+```
+
+**macOS - Terminal:**
+
+```bash
+NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
+```
+
+La suite esperada contiene 18 pruebas. Si falla antes de iniciar, verifico que
+PostgreSQL esté activo, que `artify_test` tenga el esquema cargado y que
+`DATABASE_URL` continúe comentada en `backend/.env`.
+
+> **Protección activa:** la suite crea, modifica y elimina datos temporales, pero
+> ahora se detiene antes de conectarse si el entorno no es `test`, falta la
+> confirmación o la base no termina en `_test`. También rechaza hosts remotos;
+> solo una base remota exclusiva puede habilitarse adicionalmente con
+> `ALLOW_REMOTE_TEST_DATABASE=true`. Nunca uso esa excepción con Neon o
+> producción.
 
 ### 7.3 Flujo funcional
 

@@ -89,7 +89,6 @@ artify/
 │   └── pnpm-lock.yaml
 │
 ├── database/
-│   ├── artify_db.sql
 │   └── postgresql/
 │       ├── README.md
 │       ├── schema.sql
@@ -119,7 +118,7 @@ La base principal de esta variante es PostgreSQL. Los scripts activos se encuent
 - `database/postgresql/seed.sql`
 - `database/postgresql/queries.md`
 
-El archivo `database/artify_db.sql` se conserva solo como referencia del modelo anterior.
+Los dumps históricos del motor anterior no forman parte del repositorio activo. La trazabilidad técnica se conserva en la documentación y los únicos scripts SQL versionados son los artefactos PostgreSQL de `database/postgresql/`.
 
 ### Objetos principales
 
@@ -251,6 +250,8 @@ La versión PostgreSQL fue validada con:
 - Endpoint de salud `GET /health` para verificación de despliegue.
 - `pnpm run check`.
 - `pnpm test` contra una instancia temporal de PostgreSQL.
+- Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
+  base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas: 18/18 correctas.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y pruebas en `push` o `pull_request`.
@@ -339,6 +340,8 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Revisión integral y alineación de la documentación con el despliegue, las pruebas y el comportamiento actuales.
 - [2026-07-13] Consolidación de la instalación local en `plan-instalacion-artify.md` y del despliegue público en `despliegue.md`.
 - [2026-07-13] Reestructuración del plan local con preparación separada para Windows y macOS, flujo común y configuración `DB_*` sin `DATABASE_URL` activa.
+- [2026-07-13] Protección de la suite de integración para impedir mutaciones sobre bases de producción o mal identificadas.
+- [2026-07-13] Retiro del dump histórico del estado actual del repositorio para conservar únicamente artefactos PostgreSQL y datos de referencia controlados.
 
 ---
 

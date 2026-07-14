@@ -5,8 +5,12 @@ const { spawn } = require('node:child_process');
 
 const dotenv = require('dotenv');
 const { Pool } = require('pg');
+const {
+  validarBaseDatosPruebas,
+} = require('./helpers/test-database-guard');
 
 dotenv.config({ quiet: true });
+validarBaseDatosPruebas();
 
 const PORT = process.env.TEST_PORT || '3100';
 const API = `http://127.0.0.1:${PORT}`;

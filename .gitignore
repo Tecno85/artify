@@ -89,6 +89,10 @@ Desktop.ini
 *.sqlite
 *.sqlite3
 
+# Dumps locales o históricos en la raíz de database/.
+# Los scripts PostgreSQL oficiales viven en database/postgresql/.
+database/*.sql
+
 # ----------------------------------------
 # 8. ARCHIVOS DE TEST (Opcionales)
 # ----------------------------------------

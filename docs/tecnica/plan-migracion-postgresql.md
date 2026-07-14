@@ -21,7 +21,7 @@ El alcance consolidado de esta versión es:
 - Conservo el frontend actual.
 - Uso PostgreSQL como motor oficial de base de datos.
 - Mantengo `database/postgresql/schema.sql` como esquema activo.
-- Mantengo `database/artify_db.sql` solo como referencia histórica del modelo anterior.
+- Conservo la trazabilidad del modelo anterior en esta documentación, sin versionar dumps históricos ni datos de usuarios.
 - Documento despliegue full-stack con GitHub Pages, Render y Neon.
 - Valido backend, autenticación y analytics con pruebas automatizadas; compruebo el despliegue mediante GitHub Actions, `/health`, `/ready` y revisión funcional del sitio publicado.
 

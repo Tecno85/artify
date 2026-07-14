@@ -61,7 +61,11 @@ El mantenimiento preventivo lo realizo de forma programada para reducir riesgos 
 | Probar la restauración de un respaldo PostgreSQL | Trimestral, en los meses 3 y 6 del ciclo | Registro de restauración en un entorno controlado. |
 | Actualizar documentación técnica | Cada cambio relevante | Markdown actualizado. |
 
-> **Seguridad de las pruebas:** ejecuto `pnpm test` únicamente contra `artify_db` local o una base PostgreSQL exclusiva de pruebas. La suite crea, modifica y elimina registros temporales, por lo que nunca debe usar `DATABASE_URL` de Neon o de producción.
+> **Seguridad de las pruebas:** ejecuto `pnpm test` únicamente con
+> `NODE_ENV=test`, `ALLOW_TEST_DB_MUTATIONS=true` y una base exclusiva cuyo nombre
+> termine en `_test`. La suite se bloquea antes de conectarse si no cumple estas
+> condiciones y también rechaza hosts remotos salvo autorización adicional para
+> una base remota exclusiva. Nunca habilito esa excepción con Neon o producción.
 
 ### Mantenimiento correctivo
 

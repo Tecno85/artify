@@ -133,13 +133,31 @@ pnpm run check
 
 Pruebas de integración:
 
+**macOS o Linux:**
+
 ```bash
 cd backend
+NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
+```
+
+**Windows - PowerShell:**
+
+```powershell
+cd backend
+$env:NODE_ENV = 'test'
+$env:DB_NAME = 'artify_test'
+$env:ALLOW_TEST_DB_MUTATIONS = 'true'
 pnpm test
+Remove-Item Env:NODE_ENV
+Remove-Item Env:DB_NAME
+Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
 ```
 
 > [!WARNING]
-> Las pruebas crean, actualizan y eliminan registros. Deben ejecutarse únicamente contra una base PostgreSQL local o exclusiva para pruebas, nunca contra Neon ni una base de producción.
+> Antes debo crear y cargar `artify_test` según el
+> [plan de instalación](docs/tecnica/plan-instalacion-artify.md#72-sintaxis-y-pruebas-automatizadas).
+> La suite se bloquea si la base no termina en `_test` o si intenta usar un host
+> remoto sin autorización explícita; nunca debe apuntar a Neon ni a producción.
 
 GitHub Actions ejecuta automáticamente la validación y las 18 pruebas del backend en cada `push` a `main` y en los pull requests.
 
