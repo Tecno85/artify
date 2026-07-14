@@ -3,6 +3,7 @@ const test = require('node:test');
 
 const {
   normalizarDatosUsuario,
+  validarCredenciales,
   validarEdicionUsuario,
   validarUsuario,
 } = require('../utils/validacion');
@@ -29,6 +30,17 @@ test('creación y edición comparten normalización y reglas personales', () => 
   });
   assert.equal(validarUsuario(datosNormalizados), null);
   assert.equal(validarEdicionUsuario(datosNormalizados), null);
+  assert.equal(
+    validarCredenciales({
+      correo: datosNormalizados.correo,
+      password: 'aaaaaaaa',
+    }),
+    null
+  );
+  assert.equal(
+    validarUsuario({ ...datosNormalizados, password: 'aaaaaaaa' }),
+    'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
+  );
 
   const casosPersonalesInvalidos = [
     ['nombres', ' ', 'Ingresa nombres válidos'],

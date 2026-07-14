@@ -164,6 +164,7 @@
                     name="password"
                     placeholder="••••••••"
                     minlength="8"
+                    maxlength="128"
                     required
                     autocomplete="new-password"
                     aria-describedby="password-helper password-error"
@@ -196,7 +197,7 @@
 
                 <span class="error-message" id="password-error"></span>
                 <span class="helper-text" id="password-helper">
-                  Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número
+                  Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número
                 </span>
               </div>
 
@@ -212,6 +213,7 @@
                     name="confirmPassword"
                     placeholder="••••••••"
                     minlength="8"
+                    maxlength="128"
                     required
                     autocomplete="new-password"
                     aria-describedby="confirmPassword-error"

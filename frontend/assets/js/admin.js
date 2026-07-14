@@ -75,6 +75,17 @@ function esAdministradorActual(idUsuario) {
   );
 }
 
+function esPasswordNuevaValida(password) {
+  return (
+    typeof password === 'string' &&
+    password.length >= 8 &&
+    password.length <= 128 &&
+    /[a-z]/.test(password) &&
+    /[A-Z]/.test(password) &&
+    /[0-9]/.test(password)
+  );
+}
+
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
   const coincidencia = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -294,8 +305,11 @@ document
       mostrarError('modalCorreo', 'Correo inválido');
       valido = false;
     }
-    if (!modoEdicion && (!password || password.length < 8)) {
-      mostrarError('modalPassword', 'Mínimo 8 caracteres');
+    if (!modoEdicion && !esPasswordNuevaValida(password)) {
+      mostrarError(
+        'modalPassword',
+        'Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número'
+      );
       valido = false;
     }
 

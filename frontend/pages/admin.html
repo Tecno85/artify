@@ -231,8 +231,15 @@
                 type="password"
                 id="modalPassword"
                 placeholder="••••••••"
+                minlength="8"
+                maxlength="128"
+                autocomplete="new-password"
+                aria-describedby="modalPassword-helper modalPassword-error"
               />
               <span class="error-message" id="modalPassword-error"></span>
+              <span class="helper-text" id="modalPassword-helper">
+                Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número
+              </span>
             </div>
 
             <div class="form-group" id="estadoGroup" style="display: none">

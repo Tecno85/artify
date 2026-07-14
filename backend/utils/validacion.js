@@ -35,6 +35,15 @@ function esPassword(valor) {
   return typeof valor === 'string' && valor.length >= 8 && valor.length <= 128;
 }
 
+function esPasswordNuevaSegura(valor) {
+  return (
+    esPassword(valor) &&
+    /[a-z]/.test(valor) &&
+    /[A-Z]/.test(valor) &&
+    /[0-9]/.test(valor)
+  );
+}
+
 function esCedula(valor) {
   return esTexto(valor, 6, 20) && /^[0-9]+$/.test(valor);
 }
@@ -120,9 +129,12 @@ function validarUsuario({
     return errorDatosPersonales;
   }
 
-  const errorCredenciales = validarCredenciales({ correo, password });
-  if (errorCredenciales) {
-    return errorCredenciales;
+  if (!esCorreo(normalizarCorreo(correo))) {
+    return 'Ingresa un correo válido';
+  }
+
+  if (!esPasswordNuevaSegura(password)) {
+    return 'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número';
   }
 
   return null;

@@ -120,6 +120,14 @@ input[type='password'] {
   display: block;
 }
 
+.helper-text {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  margin-top: 6px;
+}
+
 .required {
   color: var(--accent);
 }

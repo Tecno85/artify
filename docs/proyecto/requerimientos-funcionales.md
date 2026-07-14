@@ -61,6 +61,7 @@ El sistema debe permitir que un visitante cree una cuenta ingresando nombres, ap
 
 - El sistema valida que los datos obligatorios estén completos.
 - El sistema rechaza correos o cédulas duplicadas.
+- Las contraseñas nuevas tienen entre 8 y 128 caracteres e incluyen, como mínimo, una mayúscula, una minúscula y un número.
 - La contraseña se almacena en la base de datos como hash generado con `bcrypt`.
 - Al finalizar el registro correctamente, el sistema crea el usuario y permite continuar el flujo autenticado.
 
@@ -218,6 +219,7 @@ El sistema debe permitir que el administrador cree usuarios desde el panel admin
 
 - El formulario valida los datos requeridos.
 - El sistema evita crear registros duplicados por correo o cédula.
+- La contraseña nueva cumple la misma política aplicada en el registro público.
 - La contraseña se almacena protegida mediante hash.
 
 ### RF-17 Editar usuarios

@@ -529,7 +529,7 @@ test('login bloquea temporalmente después de diez fallos equivalentes', async (
   assert.ok(esperaSegundos >= 1 && esperaSegundos <= 15 * 60);
 });
 
-test('registro rechaza fechas de nacimiento inexistentes', async () => {
+test('registro rechaza fechas inexistentes y contraseñas nuevas débiles', async () => {
   const { response, body } = await request('/api/registro', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -543,6 +543,23 @@ test('registro rechaza fechas de nacimiento inexistentes', async () => {
 
   assert.equal(response.status, 400);
   assert.equal(body.mensaje, 'Ingresa una fecha de nacimiento válida');
+
+  const passwordDebil = await request('/api/registro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...usuarioPrueba,
+      cedula: `${stamp}98`.slice(-10),
+      correo: `password.debil.${stamp}@artify.local`,
+      password: 'solominusculas',
+    }),
+  });
+
+  assert.equal(passwordDebil.response.status, 400);
+  assert.equal(
+    passwordDebil.body.mensaje,
+    'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
+  );
 });
 
 test('registro, login y flujo básico de usuario funcionan', async () => {
@@ -1079,6 +1096,21 @@ test('admin puede crear, consultar, editar y eliminar un usuario', async () => {
     Authorization: `Bearer ${tokenAdmin}`,
     'Content-Type': 'application/json',
   };
+  const creacionConPasswordDebil = await request('/api/admin/usuario', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      ...usuarioAdministrado,
+      password: 'solominusculas',
+    }),
+  });
+
+  assert.equal(creacionConPasswordDebil.response.status, 400);
+  assert.equal(
+    creacionConPasswordDebil.body.mensaje,
+    'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
+  );
+
   const creacion = await request('/api/admin/usuario', {
     method: 'POST',
     headers,

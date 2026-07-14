@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function validarPassword(input) {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/;
     return regex.test(input.value);
   }
 
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!validarPassword(this)) {
       mostrarError(
         'password',
-        'Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número'
+        'Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número'
       );
     } else {
       limpiarError('password');
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!validarPassword(password)) {
       mostrarError(
         'password',
-        'Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número'
+        'Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número'
       );
       isValid = false;
     }

@@ -90,6 +90,27 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
   assert.match(tabla, /Cuenta actual/);
   assert.doesNotMatch(tabla, /abrirEliminar\(7\)/);
   assert.match(tabla, /abrirEliminar\(8\)/);
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      "esPasswordNuevaValida('PasswordSeguro123')"
+    ),
+    true
+  );
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      "esPasswordNuevaValida('solominusculas')"
+    ),
+    false
+  );
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      `esPasswordNuevaValida('A1${'a'.repeat(127)}')`
+    ),
+    false
+  );
 });
 
 test('notificaciones muestran mensajes como texto y no como HTML ejecutable', () => {
