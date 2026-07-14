@@ -29,6 +29,7 @@ let operationsCount;
 // Variables para recorte
 let cropMode = false;
 let cropArea = { x: 0, y: 0, width: 0, height: 0 };
+let cropPreviewVisible = false;
 let isDragging = false;
 let startX, startY;
 let cropRatio = 'free'; // Proporción actual del recorte
@@ -427,6 +428,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
+        cancelarRecortePendiente(true);
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -531,6 +533,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   btnDescargar.addEventListener('click', async () => {
     if (!currentImage) return;
 
+    if (hayRecortePendiente()) {
+      mostrarNotificacion(
+        'warning',
+        'Aplica el recorte o cambia de herramienta antes de descargar la imagen'
+      );
+      return;
+    }
+
     if (filterPreviewActive || filterApplyInProgress) {
       mostrarNotificacion(
         'warning',
@@ -543,6 +553,16 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // Obtener preferencias desde la API
     const prefs = await cargarPreferencias();
+
+    // La carga de preferencias es asíncrona; volver a comprobar antes de exportar.
+    if (hayRecortePendiente()) {
+      actualizarEstado('Listo', 'success');
+      mostrarNotificacion(
+        'warning',
+        'Aplica el recorte o cambia de herramienta antes de descargar la imagen'
+      );
+      return;
+    }
 
     // Si hay un formato convertido, usar ese; si no, usar las preferencias
     const formato = formatoActual || prefs.formatoDefecto || 'png';
@@ -1375,8 +1395,14 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ Recorte finalizado:', cropArea);
   }
 
+  function hayRecortePendiente() {
+    return cropMode && cropPreviewVisible;
+  }
+
   function redibujarConRecorte() {
     if (!currentImage) return;
+
+    cropPreviewVisible = true;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(currentImage, 0, 0);
@@ -1541,6 +1567,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     cropMode = false;
     isDragging = false;
     cropArea = { x: 0, y: 0, width: 0, height: 0 };
+    cropPreviewVisible = false;
     canvas.style.cursor = 'default';
 
     canvas.removeEventListener('pointerdown', iniciarRecorte);
@@ -1551,6 +1578,17 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (currentImage) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(currentImage, 0, 0);
+    }
+  }
+
+  function cancelarRecortePendiente(ocultarControles = false) {
+    const recorteEstabaActivo = cropMode;
+    desactivarModoRecorte();
+
+    if (ocultarControles && recorteEstabaActivo) {
+      const cropControls = document.getElementById('cropControls');
+      if (cropControls) cropControls.style.display = 'none';
+      btnRecortar.classList.remove('active');
     }
   }
 
@@ -1577,6 +1615,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // ========== HISTORIAL (DESHACER/REHACER) ==========
   btnDeshacer.addEventListener('click', () => {
     cancelarVistaPreviaFiltro();
+    cancelarRecortePendiente(true);
     if (historyIndex <= 0) return;
 
     historyIndex--;
@@ -1586,6 +1625,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const img = new Image();
     img.onload = () => {
+      cancelarRecortePendiente(true);
       canvas.width = estado.width;
       canvas.height = estado.height;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1602,6 +1642,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   btnRehacer.addEventListener('click', () => {
     cancelarVistaPreviaFiltro();
+    cancelarRecortePendiente(true);
     if (historyIndex >= operationsHistory.length - 1) return;
 
     historyIndex++;
@@ -1611,6 +1652,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     const img = new Image();
     img.onload = () => {
+      cancelarRecortePendiente(true);
       canvas.width = estado.width;
       canvas.height = estado.height;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
