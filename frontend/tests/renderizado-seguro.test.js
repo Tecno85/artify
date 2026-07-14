@@ -130,6 +130,9 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
     evaluar(contextoFrontend.contexto, 'cumpleEdadMinima(fechaMenorEdad)'),
     false
   );
+
+  evaluar(contextoFrontend.contexto, 'renderizarTabla([])');
+  assert.match(elementos.get('tablaBody').innerHTML, /colspan="10"/);
 });
 
 test('notificaciones muestran mensajes como texto y no como HTML ejecutable', () => {
@@ -148,4 +151,7 @@ test('notificaciones muestran mensajes como texto y no como HTML ejecutable', ()
   assert.match(editorHtml, /id="modalRecuperacion"/);
   assert.match(editorHtml, /id="btnRecuperarRespaldo"/);
   assert.match(editorHtml, /id="btnDescartarRespaldo"/);
+  assert.match(editor, /operationsHistory\.splice\(historyIndex \+ 1\)/);
+  assert.match(editor, /URL\.revokeObjectURL\(estado\.imageUrl\)/);
+  assert.doesNotMatch(editor, /maxima:\s*1\.0/);
 });

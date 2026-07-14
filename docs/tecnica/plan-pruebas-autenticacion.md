@@ -451,7 +451,12 @@ cd backend
 pnpm run test:frontend
 ```
 
-Estas pruebas comprueban el almacenamiento y la limpieza de sesión, la incorporación del token en solicitudes protegidas, la reacción ante respuestas `401`, la validación previa del login, la redirección según el rol, el inicio no bloqueante de la sesión de edición, el tratamiento seguro de contenido dinámico y la semántica accesible básica de modales y mensajes.
+Estas pruebas comprueban el almacenamiento y la limpieza de sesión, la incorporación del token en solicitudes protegidas, la reacción ante respuestas `401`, la validación previa del login, la redirección según el rol, el inicio no bloqueante de la sesión de edición, el tratamiento seguro de contenido dinámico y la semántica accesible de modales y mensajes.
+
+Como verificación complementaria del navegador ejecuto `pnpm run test:e2e`.
+Esta prueba no amplía los casos de autenticación del backend: comprueba en
+Chromium que una sesión simulada puede usar el flujo principal del editor y que
+los modales responden correctamente al teclado.
 
 Antes de ejecutar la suite creo una base local exclusiva cuyo nombre termine en
 `_test` y cargo allí el esquema y los datos iniciales:
@@ -496,7 +501,8 @@ Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 ```text
 Backend: 28 pruebas ejecutadas y aprobadas
 Frontend: 14 pruebas ejecutadas y aprobadas
-Total: 42 pruebas aprobadas
+E2E del editor: 1 prueba ejecutada y aprobada
+Total: 43 pruebas automatizadas aprobadas
 0 pruebas fallidas
 ```
 

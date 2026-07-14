@@ -167,7 +167,19 @@ cd backend
 pnpm run test:frontend
 ```
 
-GitHub Actions ejecuta automáticamente 28 pruebas del backend y 14 del frontend en cada `push` a `main` y en los pull requests. También carga el esquema y valida las migraciones incrementales sobre PostgreSQL temporal.
+La prueba real del editor usa Chromium. La primera vez instalo el navegador y
+después ejecuto el flujo E2E:
+
+```bash
+cd backend
+pnpm exec playwright install chromium
+pnpm run test:e2e
+```
+
+GitHub Actions ejecuta automáticamente 28 pruebas del backend, 14 pruebas
+frontend con `node:test` y una prueba E2E del editor en cada `push` a `main` y
+en los pull requests. También carga el esquema y valida las migraciones
+incrementales sobre PostgreSQL temporal.
 
 Comprobación pública de solo lectura:
 
@@ -205,7 +217,6 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 - [API de analíticas](./docs/tecnica/api-analytics.md)
 - [Pruebas de autenticación](./docs/tecnica/plan-pruebas-autenticacion.md)
 - [Matriz de validación del frontend](./docs/tecnica/matriz-validacion-frontend.md)
-- [Lista de verificación para la presentación](./docs/tecnica/lista-verificacion-presentacion.md)
 - [Estándares de codificación](./docs/tecnica/coding-standards.md)
 - [Mantenimiento y soporte](./docs/tecnica/plan-mantenimiento-soporte-artify.md)
 

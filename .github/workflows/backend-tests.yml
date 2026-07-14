@@ -73,3 +73,11 @@ jobs:
       - name: Ejecutar pruebas frontend
         working-directory: backend
         run: pnpm run test:frontend
+
+      - name: Instalar Chromium para pruebas E2E
+        working-directory: backend
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Ejecutar prueba E2E del editor
+        working-directory: backend
+        run: pnpm run test:e2e

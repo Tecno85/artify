@@ -98,7 +98,7 @@ Esta tabla almacena preferencias de usuario para personalizar la experiencia den
 | `cfg_idioma` | `varchar(10)` | Idioma preferido. |
 | `cfg_atajos_teclado` | `jsonb` | Campo reservado en el modelo; no usado actualmente por la aplicación. |
 | `cfg_mostrar_ayudas` | `boolean` | Indicador para mostrar ayudas. |
-| `cfg_calidad_exportacion` | `varchar(20)` | Calidad: `baja`, `media`, `alta`, `maxima`. |
+| `cfg_calidad_exportacion` | `varchar(20)` | Calidad: `baja`, `media` o `alta`. |
 | `cfg_configuracion_avanzada` | `jsonb` | Preferencias avanzadas usadas por el sistema. |
 | `cfg_fecha_actualizacion` | `timestamp` | Fecha de última actualización. |
 

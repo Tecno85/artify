@@ -2,7 +2,7 @@
 
 > **Fecha:** 14 de julio de 2026
 >
-> **Alcance:** revisión local del layout, controles principales y accesibilidad básica
+> **Alcance:** revisión local del layout, controles principales y accesibilidad
 
 ## Objetivo
 
@@ -45,13 +45,17 @@ del despliegue y la API se realizó por separado con
   `role="dialog"`, `aria-modal="true"` y un título accesible.
 - Los mensajes dinámicos importantes usan regiones anunciables.
 - El cierre de los modales administrativos tiene nombre accesible.
+- Al abrir un modal, el foco entra en un control útil, Tab permanece dentro
+  del diálogo, Escape lo cierra y el foco vuelve al control que lo abrió.
 - La recuperación de contraseña se presenta como función no disponible y no
   como un enlace que no hace nada.
 
-La suite automatizada comprueba estas reglas estructurales. Esta revisión no es
-una auditoría WCAG completa: todavía sería conveniente probar navegación solo
-con teclado, foco visible, lector de pantalla y contraste con herramientas
-especializadas antes de declarar conformidad formal.
+La suite con `node:test` comprueba estas reglas estructurales y la prueba E2E en
+Chromium valida foco, Escape y retorno del foco en los modales de configuración
+y administración de usuarios.
+Esta revisión no es una auditoría WCAG completa: todavía sería conveniente
+probar lector de pantalla y contraste con herramientas especializadas antes de
+declarar conformidad formal.
 
 ## Cómo repetirla
 
@@ -61,3 +65,9 @@ especializadas antes de declarar conformidad formal.
 4. Confirmo que no exista desplazamiento horizontal.
 5. Repito registro, login y el flujo principal del editor.
 6. Registro navegador, tamaño, fecha y cualquier diferencia encontrada.
+
+El flujo automatizado principal se repite desde `backend/` con:
+
+```bash
+pnpm run test:e2e
+```

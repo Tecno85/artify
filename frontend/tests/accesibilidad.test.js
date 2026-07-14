@@ -4,6 +4,7 @@ const path = require('node:path');
 const test = require('node:test');
 
 const paginas = path.resolve(__dirname, '..', 'pages');
+const scripts = path.resolve(__dirname, '..', 'assets', 'js');
 
 function leerPagina(nombre) {
   return fs.readFileSync(path.join(paginas, nombre), 'utf8');
@@ -12,6 +13,7 @@ function leerPagina(nombre) {
 test('los modales principales exponen semántica accesible', () => {
   const editor = leerPagina('editor.html');
   const admin = leerPagina('admin.html');
+  const modal = fs.readFileSync(path.join(scripts, 'modal.js'), 'utf8');
 
   for (const id of [
     'modalResolucion',
@@ -32,6 +34,13 @@ test('los modales principales exponen semántica accesible', () => {
       new RegExp(`id="${id}"[\\s\\S]*?role="dialog"[\\s\\S]*?aria-modal="true"`)
     );
   }
+
+  assert.match(editor, /src="\.\.\/assets\/js\/modal\.js"/);
+  assert.match(admin, /src="\.\.\/assets\/js\/modal\.js"/);
+  assert.match(modal, /evento\.key === 'Escape'/);
+  assert.match(modal, /evento\.key !== 'Tab'/);
+  assert.match(modal, /focosAnteriores/);
+  assert.match(modal, /focoPrevio\.focus\(\)/);
 });
 
 test('errores y notificaciones dinámicas se anuncian sin enlaces falsos', () => {

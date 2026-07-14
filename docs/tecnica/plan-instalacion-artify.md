@@ -376,6 +376,15 @@ Después ejecuto las 14 pruebas del frontend. Estas no usan PostgreSQL ni crean 
 pnpm run test:frontend
 ```
 
+Para comprobar el flujo real del editor instalo Chromium una sola vez y ejecuto
+la prueba E2E. Esta prueba tampoco modifica PostgreSQL porque simula las
+respuestas necesarias de la API:
+
+```bash
+pnpm exec playwright install chromium
+pnpm run test:e2e
+```
+
 > **Protección activa:** la suite crea, modifica y elimina datos temporales, pero
 > ahora se detiene antes de conectarse si el entorno no es `test`, falta la
 > confirmación o la base no termina en `_test`. También rechaza hosts remotos;
@@ -402,7 +411,7 @@ pnpm run test:frontend
 - [ ] `/ready` confirma PostgreSQL.
 - [ ] El frontend abre en el puerto `8080`.
 - [ ] Registro, login, editor y descarga funcionan.
-- [ ] `pnpm run check`, `pnpm test` y `pnpm run test:frontend` finalizan correctamente.
+- [ ] `pnpm run check`, `pnpm test`, `pnpm run test:frontend` y `pnpm run test:e2e` finalizan correctamente.
 
 ---
 

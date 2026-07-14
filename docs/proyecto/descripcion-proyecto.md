@@ -124,7 +124,7 @@ Desde el punto de vista académico, el proyecto permite evidenciar el proceso de
 
 ## 10. Estado Actual
 
-El proyecto se encuentra en estado activo y desplegado. Actualmente cuenta con frontend funcional en GitHub Pages, backend modularizado en Render, base de datos PostgreSQL en Neon, autenticación real, panel administrativo, 42 pruebas automatizadas y documentación organizada en:
+El proyecto se encuentra en estado activo y desplegado. Actualmente cuenta con frontend funcional en GitHub Pages, backend modularizado en Render, base de datos PostgreSQL en Neon, autenticación real, panel administrativo, 42 pruebas automatizadas de unidad e integración, una prueba E2E en Chromium y documentación organizada en:
 
 - `docs/proyecto/`: documentación funcional y académica.
 - `docs/tecnica/`: documentación técnica y manual técnico.

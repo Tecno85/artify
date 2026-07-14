@@ -703,6 +703,24 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
     'Selecciona una calidad de exportación válida'
   );
 
+  const calidadHeredada = await request('/api/configuracion', {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({
+      idUsuario,
+      calidadExportacion: 'maxima',
+      notificaciones: true,
+      formatoDefecto: 'png',
+      autoguardado: false,
+    }),
+  });
+
+  assert.equal(calidadHeredada.response.status, 400);
+  assert.equal(
+    calidadHeredada.body.mensaje,
+    'Selecciona una calidad de exportación válida'
+  );
+
   const operacion = await request('/api/operacion', {
     method: 'POST',
     headers: authHeaders,

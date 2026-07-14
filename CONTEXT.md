@@ -63,9 +63,12 @@ artify/
 ├── frontend/
 │   ├── index.html
 │   ├── tests/
+│   │   ├── accesibilidad.test.js
 │   │   ├── auth.test.js
 │   │   ├── editor-session.test.js
-│   │   └── login.test.js
+│   │   ├── login.test.js
+│   │   ├── renderizado-seguro.test.js
+│   │   └── helpers/
 │   ├── pages/
 │   │   ├── editor.html
 │   │   ├── login.html
@@ -79,6 +82,7 @@ artify/
 │       │   ├── auth.js
 │       │   ├── editor.js
 │       │   ├── login.js
+│       │   ├── modal.js
 │       │   ├── registro.js
 │       │   └── admin.js
 │       ├── icons/
@@ -91,7 +95,9 @@ artify/
 │   ├── middlewares/
 │   ├── routes/
 │   ├── tests/
+│   │   └── e2e/
 │   ├── utils/
+│   ├── playwright.config.js
 │   ├── server.js
 │   ├── package.json
 │   └── pnpm-lock.yaml
@@ -99,21 +105,33 @@ artify/
 ├── database/
 │   └── postgresql/
 │       ├── README.md
+│       ├── app-role.sql
+│       ├── migrations/
+│       ├── promote-admin.sql
+│       ├── queries.md
 │       ├── schema.sql
-│       ├── seed.sql
-│       └── queries.md
+│       └── seed.sql
 │
 ├── scripts/
+│   ├── ejecutar-migraciones.js
+│   ├── medir-rendimiento.js
 │   ├── setup.sh
-│   └── write-frontend-config.js
+│   ├── validar-despliegue.js
+│   ├── verificar-respaldo-postgresql.js
+│   ├── write-frontend-config.js
+│   └── lib/
 │
-└── docs/
-    └── tecnica/
-        ├── despliegue.md
-        ├── plan-instalacion-artify.md
-        ├── plan-mantenimiento-soporte-artify.md
-        ├── plan-migracion-postgresql.md
-        └── otros documentos heredados del proyecto base
+├── docs/
+│   ├── proyecto/
+│   └── tecnica/
+│       ├── despliegue.md
+│       ├── plan-instalacion-artify.md
+│       ├── plan-mantenimiento-soporte-artify.md
+│       ├── plan-migracion-postgresql.md
+│       └── documentos técnicos y evidencias
+│
+└── skills/
+    └── artify/
 ```
 
 ---
@@ -125,6 +143,9 @@ La base principal de esta variante es PostgreSQL. Los scripts activos se encuent
 - `database/postgresql/schema.sql`
 - `database/postgresql/seed.sql`
 - `database/postgresql/queries.md`
+- `database/postgresql/app-role.sql`
+- `database/postgresql/promote-admin.sql`
+- `database/postgresql/migrations/`
 
 Los dumps históricos del motor anterior no forman parte del repositorio activo. La trazabilidad técnica se conserva en la documentación y los únicos scripts SQL versionados son los artefactos PostgreSQL de `database/postgresql/`.
 
@@ -261,7 +282,8 @@ La versión PostgreSQL fue validada con:
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas backend: 28/28 correctas.
-- Suite frontend con `node:test`: 14/14 correctas para autenticación, login por rol, inicio de sesión del editor, renderizado seguro y semántica accesible básica.
+- Suite frontend con `node:test`: 14/14 correctas para autenticación, login por rol, inicio de sesión del editor, renderizado seguro y semántica accesible.
+- Prueba E2E en Chromium para cargar una imagen, previsualizar y confirmar un filtro, actualizar el historial, descargar el resultado y comprobar foco y cierre con Escape en un modal.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -390,6 +412,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Incorporación de semántica accesible básica para modales, mensajes y controles administrativos.
 - [2026-07-14] Verificación real de respaldo y restauración local, rol PostgreSQL de menor privilegio y migraciones incrementales validadas por CI.
 - [2026-07-14] Medición controlada de salud pública con 25 solicitudes correctas y documentación explícita de sus límites.
+- [2026-07-14] Incorporación de prueba E2E del editor, gestión accesible de modales, limpieza del historial y unificación de las calidades de exportación.
 
 ---
 

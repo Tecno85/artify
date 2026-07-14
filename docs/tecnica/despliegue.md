@@ -56,7 +56,7 @@ pnpm run check
 
 `pnpm test` no es una comprobación de solo lectura. La suite crea, actualiza y elimina usuarios, sesiones, imágenes, configuraciones y operaciones temporales.
 
-> **Nunca ejecuto `pnpm test` con `DATABASE_URL` apuntando a Neon o a una base de producción.** Solo la ejecuto contra una base PostgreSQL exclusiva cuyo nombre termine en `_test`. Las pruebas frontend se ejecutan aparte con `pnpm run test:frontend` y no usan la base de datos.
+> **Nunca ejecuto `pnpm test` con `DATABASE_URL` apuntando a Neon o a una base de producción.** Solo la ejecuto contra una base PostgreSQL exclusiva cuyo nombre termine en `_test`. Las pruebas frontend se ejecutan aparte con `pnpm run test:frontend` y `pnpm run test:e2e`; el flujo E2E simula la API y no usa la base de datos.
 
 ## 3. Aprovisionamiento inicial de Neon
 

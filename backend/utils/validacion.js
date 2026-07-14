@@ -192,7 +192,7 @@ function validarConfiguracion({
   formatoDefecto,
   autoguardado,
 }) {
-  if (!['baja', 'media', 'alta', 'maxima'].includes(calidadExportacion)) {
+  if (!['baja', 'media', 'alta'].includes(calidadExportacion)) {
     return 'Selecciona una calidad de exportación válida';
   }
 

@@ -34,7 +34,8 @@ CREATE TABLE "CONFIGURACION" (
   "cfg_atajos_teclado" jsonb DEFAULT NULL,
   "cfg_mostrar_ayudas" boolean DEFAULT true,
   "cfg_calidad_exportacion" varchar(20) DEFAULT 'alta'
-    CHECK ("cfg_calidad_exportacion" IN ('baja', 'media', 'alta', 'maxima')),
+    CONSTRAINT "configuracion_calidad_exportacion_check"
+    CHECK ("cfg_calidad_exportacion" IN ('baja', 'media', 'alta')),
   "cfg_configuracion_avanzada" jsonb DEFAULT NULL,
   "cfg_fecha_actualizacion" timestamp DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT "configuracion_usuario_fk"

@@ -98,6 +98,8 @@ database/*.sql
 # ----------------------------------------
 coverage/
 .nyc_output/
+playwright-report/
+test-results/
 
 # ----------------------------------------
 # 9. ARCHIVOS DE RESPALDO

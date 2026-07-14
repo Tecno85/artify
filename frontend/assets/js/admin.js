@@ -2,6 +2,15 @@
 let usuarioIdEliminar = null;
 let modoEdicion = false;
 let todosLosUsuarios = [];
+const modalAccesible = window.ArtifyModal || {
+  abrir(modal) {
+    if (modal) modal.style.display = 'flex';
+  },
+  cerrar(modal) {
+    if (modal) modal.style.display = 'none';
+  },
+  registrar() {},
+};
 
 // ========== UTILIDADES ==========
 function mostrarNotificacion(tipo, mensaje) {
@@ -172,7 +181,7 @@ function renderizarTabla(usuarios) {
   if (usuarios.length === 0) {
     tbody.innerHTML = `
       <tr class="loading-row">
-        <td colspan="9">No se encontraron usuarios</td>
+        <td colspan="10">No se encontraron usuarios</td>
       </tr>`;
     return;
   }
@@ -276,7 +285,9 @@ document.getElementById('btnAgregarUsuario').addEventListener('click', () => {
   document.getElementById('modalTitulo').textContent = 'Agregar Usuario';
   document.getElementById('passwordGroup').style.display = 'block';
   document.getElementById('estadoGroup').style.display = 'none';
-  document.getElementById('modalUsuario').style.display = 'flex';
+  modalAccesible.abrir(document.getElementById('modalUsuario'), {
+    focoInicial: '#modalNombres',
+  });
 });
 
 // ========== UPDATE — EDITAR USUARIO ==========
@@ -304,7 +315,9 @@ window.abrirEditar = function (id) {
 
   document.getElementById('passwordGroup').style.display = 'none';
   document.getElementById('estadoGroup').style.display = 'block';
-  document.getElementById('modalUsuario').style.display = 'flex';
+  modalAccesible.abrir(document.getElementById('modalUsuario'), {
+    focoInicial: '#modalNombres',
+  });
 };
 
 // ========== GUARDAR (INSERT o UPDATE) ==========
@@ -433,7 +446,9 @@ window.abrirEliminar = function (id) {
 
   usuarioIdEliminar = id;
   document.getElementById('nombreEliminar').textContent = nombre;
-  document.getElementById('modalEliminar').style.display = 'flex';
+  modalAccesible.abrir(document.getElementById('modalEliminar'), {
+    focoInicial: '#btnCancelarEliminar',
+  });
 };
 
 document
@@ -452,7 +467,7 @@ document
       const data = await res.json();
 
       if (data.mensaje === 'Usuario eliminado correctamente') {
-        document.getElementById('modalEliminar').style.display = 'none';
+        cerrarModalEliminar();
         mostrarNotificacion('success', 'Usuario eliminado correctamente');
         cargarUsuarios();
       } else {
@@ -469,8 +484,13 @@ document
 
 // ========== CERRAR MODALES ==========
 function cerrarModal() {
-  document.getElementById('modalUsuario').style.display = 'none';
+  modalAccesible.cerrar(document.getElementById('modalUsuario'));
   limpiarModal();
+}
+
+function cerrarModalEliminar() {
+  modalAccesible.cerrar(document.getElementById('modalEliminar'));
+  usuarioIdEliminar = null;
 }
 
 function limpiarModal() {
@@ -492,14 +512,21 @@ document
 document
   .getElementById('btnCancelarModal')
   .addEventListener('click', cerrarModal);
-document.getElementById('btnCerrarEliminar').addEventListener('click', () => {
-  document.getElementById('modalEliminar').style.display = 'none';
-  usuarioIdEliminar = null;
-});
-document.getElementById('btnCancelarEliminar').addEventListener('click', () => {
-  document.getElementById('modalEliminar').style.display = 'none';
-  usuarioIdEliminar = null;
-});
+document
+  .getElementById('btnCerrarEliminar')
+  .addEventListener('click', cerrarModalEliminar);
+document
+  .getElementById('btnCancelarEliminar')
+  .addEventListener('click', cerrarModalEliminar);
+
+modalAccesible.registrar(
+  document.getElementById('modalUsuario'),
+  cerrarModal
+);
+modalAccesible.registrar(
+  document.getElementById('modalEliminar'),
+  cerrarModalEliminar
+);
 
 // Cerrar modal al hacer clic fuera
 document.getElementById('modalUsuario').addEventListener('click', (e) => {
@@ -508,8 +535,7 @@ document.getElementById('modalUsuario').addEventListener('click', (e) => {
 
 document.getElementById('modalEliminar').addEventListener('click', (e) => {
   if (e.target === document.getElementById('modalEliminar')) {
-    document.getElementById('modalEliminar').style.display = 'none';
-    usuarioIdEliminar = null;
+    cerrarModalEliminar();
   }
 });
 

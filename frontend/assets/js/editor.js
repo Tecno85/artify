@@ -19,6 +19,15 @@ let archivoActual = null;
 let preferenciasActuales = null;
 let autoguardadoTimeout = null;
 let promesaSesionEdicion = null;
+const modalAccesible = window.ArtifyModal || {
+  abrir(modal) {
+    if (modal) modal.style.display = 'flex';
+  },
+  cerrar(modal) {
+    if (modal) modal.style.display = 'none';
+  },
+  registrar() {},
+};
 
 // ========== ELEMENTOS DEL DOM ==========
 let fileInput, btnSubir, btnDescargar, dropZone, canvasWrapper, imageInfo;
@@ -335,7 +344,7 @@ async function autoguardarImagen() {
 
   const formato = prefs.formatoDefecto || 'png';
   const calidad = prefs.calidadExportacion || 'alta';
-  const calidadMap = { alta: 1.0, maxima: 1.0, media: 0.8, baja: 0.6 };
+  const calidadMap = { alta: 1.0, media: 0.8, baja: 0.6 };
   const mimeTypeMap = {
     png: 'image/png',
     jpeg: 'image/jpeg',
@@ -372,7 +381,10 @@ async function autoguardarImagen() {
 function guardarEstadoEnHistorial(descripcion) {
   // Si estamos en medio del historial, eliminar los estados futuros
   if (historyIndex < operationsHistory.length - 1) {
-    operationsHistory = operationsHistory.slice(0, historyIndex + 1);
+    const estadosDescartados = operationsHistory.splice(historyIndex + 1);
+    estadosDescartados.forEach((estado) => {
+      URL.revokeObjectURL(estado.imageUrl);
+    });
   }
 
   // Guardar el estado actual del canvas como imagen
@@ -430,7 +442,7 @@ function verificarResolucion() {
     anchoVentana >= RESOLUCION_MINIMA_ANCHO &&
     altoVentana >= RESOLUCION_MINIMA_ALTO
   ) {
-    if (modal) modal.style.display = 'none';
+    if (modal) modalAccesible.cerrar(modal);
     return;
   }
 
@@ -446,12 +458,12 @@ function mostrarModalResolucion(ancho, alto) {
   if (!modal || !resolucionActual) return;
 
   resolucionActual.textContent = `${ancho} x ${alto}px`;
-  modal.style.display = 'flex';
+  modalAccesible.abrir(modal);
 }
 
 window.cerrarModalResolucion = function () {
   const modal = document.getElementById('modalResolucion');
-  if (modal) modal.style.display = 'none';
+  if (modal) modalAccesible.cerrar(modal);
 };
 
 window.noVolverAMostrar = function () {
@@ -468,6 +480,10 @@ window.noVolverAMostrar = function () {
 // ========== INICIALIZACIÓN ==========
 window.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 Inicializando Artify Editor...');
+  modalAccesible.registrar(
+    document.getElementById('modalResolucion'),
+    window.cerrarModalResolucion
+  );
   verificarResolucion();
 
   // Cargar usuario e iniciar sesión de edición
@@ -719,7 +735,7 @@ window.addEventListener('DOMContentLoaded', () => {
   );
 
   function cerrarModalRecuperacion() {
-    if (modalRecuperacion) modalRecuperacion.style.display = 'none';
+    if (modalRecuperacion) modalAccesible.cerrar(modalRecuperacion);
   }
 
   function descartarRespaldo() {
@@ -809,8 +825,12 @@ window.addEventListener('DOMContentLoaded', () => {
         timeStyle: 'short',
       });
     }
-    modalRecuperacion.style.display = 'flex';
+    modalAccesible.abrir(modalRecuperacion, {
+      focoInicial: '#btnRecuperarRespaldo',
+    });
   }
+
+  modalAccesible.registrar(modalRecuperacion, cerrarModalRecuperacion);
 
   if (btnRecuperarRespaldo) {
     btnRecuperarRespaldo.addEventListener('click', recuperarRespaldo);
@@ -2262,7 +2282,7 @@ function aplicarPreferencias(prefs) {
   );
 }
 
-async function abrirModalConfiguracion() {
+async function abrirModalConfiguracion(disparador) {
   const modal = document.getElementById('modalConfiguracion');
   if (!modal) return;
 
@@ -2299,12 +2319,15 @@ async function abrirModalConfiguracion() {
   if (formato) formato.value = prefs.formatoDefecto;
   if (auto) auto.checked = prefs.autoguardado;
 
-  modal.style.display = 'flex';
+  modalAccesible.abrir(modal, {
+    disparador,
+    focoInicial: '#btnCerrarConfig',
+  });
 }
 
 function cerrarModalConfiguracion() {
   const modal = document.getElementById('modalConfiguracion');
-  if (modal) modal.style.display = 'none';
+  if (modal) modalAccesible.cerrar(modal);
 }
 
 async function guardarConfiguracion() {
@@ -2329,7 +2352,7 @@ async function guardarConfiguracion() {
   }
 }
 
-async function abrirModalPerfil() {
+async function abrirModalPerfil(disparador) {
   const modal = document.getElementById('modalPerfil');
   if (!modal) return;
 
@@ -2364,22 +2387,30 @@ async function abrirModalPerfil() {
     } catch {}
   }
 
-  modal.style.display = 'flex';
+  modalAccesible.abrir(modal, {
+    disparador,
+    focoInicial: '#btnCerrarPerfil',
+  });
 }
 
 function cerrarModalPerfil() {
   const modal = document.getElementById('modalPerfil');
-  if (modal) modal.style.display = 'none';
+  if (modal) modalAccesible.cerrar(modal);
 }
 
-function mostrarConfirmacionLogout() {
+function mostrarConfirmacionLogout(disparador) {
   const modal = document.getElementById('modalConfirmarLogout');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    modalAccesible.abrir(modal, {
+      disparador,
+      focoInicial: '#btnCancelarLogout',
+    });
+  }
 }
 
 function cerrarConfirmacionLogout() {
   const modal = document.getElementById('modalConfirmarLogout');
-  if (modal) modal.style.display = 'none';
+  if (modal) modalAccesible.cerrar(modal);
 }
 
 async function cerrarSesionSegura() {
@@ -2408,7 +2439,11 @@ function inicializarRF10yRF11() {
   const btnCancelarConfig = document.getElementById('btnCancelarConfig');
   const btnGuardarConfig = document.getElementById('btnGuardarConfig');
 
-  if (btnConfig) btnConfig.addEventListener('click', abrirModalConfiguracion);
+  if (btnConfig) {
+    btnConfig.addEventListener('click', () => {
+      abrirModalConfiguracion(btnConfig);
+    });
+  }
   if (btnCerrarConfig)
     btnCerrarConfig.addEventListener('click', cerrarModalConfiguracion);
   if (btnCancelarConfig)
@@ -2418,6 +2453,7 @@ function inicializarRF10yRF11() {
 
   const modalConfig = document.getElementById('modalConfiguracion');
   if (modalConfig) {
+    modalAccesible.registrar(modalConfig, cerrarModalConfiguracion);
     modalConfig.addEventListener('click', (e) => {
       if (e.target === modalConfig) cerrarModalConfiguracion();
     });
@@ -2430,24 +2466,27 @@ function inicializarRF10yRF11() {
   );
   const btnCerrarSesion = document.getElementById('btnCerrarSesion');
 
-  if (btnPerfil) btnPerfil.addEventListener('click', abrirModalPerfil);
+  if (btnPerfil) {
+    btnPerfil.addEventListener('click', () => abrirModalPerfil(btnPerfil));
+  }
   if (btnCerrarPerfil)
     btnCerrarPerfil.addEventListener('click', cerrarModalPerfil);
   if (btnAbrirConfigDesdePerfil) {
     btnAbrirConfigDesdePerfil.addEventListener('click', () => {
       cerrarModalPerfil();
-      abrirModalConfiguracion();
+      abrirModalConfiguracion(btnConfig);
     });
   }
   if (btnCerrarSesion) {
     btnCerrarSesion.addEventListener('click', () => {
       cerrarModalPerfil();
-      mostrarConfirmacionLogout();
+      mostrarConfirmacionLogout(btnPerfil);
     });
   }
 
   const modalPerfil = document.getElementById('modalPerfil');
   if (modalPerfil) {
+    modalAccesible.registrar(modalPerfil, cerrarModalPerfil);
     modalPerfil.addEventListener('click', (e) => {
       if (e.target === modalPerfil) cerrarModalPerfil();
     });
@@ -2463,6 +2502,10 @@ function inicializarRF10yRF11() {
 
   const modalConfirmarLogout = document.getElementById('modalConfirmarLogout');
   if (modalConfirmarLogout) {
+    modalAccesible.registrar(
+      modalConfirmarLogout,
+      cerrarConfirmacionLogout
+    );
     modalConfirmarLogout.addEventListener('click', (e) => {
       if (e.target === modalConfirmarLogout) cerrarConfirmacionLogout();
     });
