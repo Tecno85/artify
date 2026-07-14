@@ -62,6 +62,10 @@ artify/
 │
 ├── frontend/
 │   ├── index.html
+│   ├── tests/
+│   │   ├── auth.test.js
+│   │   ├── editor-session.test.js
+│   │   └── login.test.js
 │   ├── pages/
 │   │   ├── editor.html
 │   │   ├── login.html
@@ -257,11 +261,12 @@ La versión PostgreSQL fue validada con:
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas: 21/21 correctas.
+- Suite frontend con `node:test`: 12/12 correctas para autenticación, login por rol, inicio de sesión del editor y renderizado seguro de contenido dinámico.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
-- Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y pruebas en `push` o `pull_request`.
+- Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y las suites backend y frontend en `push` o `pull_request`.
 
 ---
 
@@ -352,6 +357,8 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Inicio no bloqueante del editor, límites seguros de imagen y corrección de mensajes accesibles en el registro.
 - [2026-07-13] Validación temprana de secretos, timeouts PostgreSQL y cierre ordenado del backend.
 - [2026-07-13] Ampliación de pruebas para autorización, CRUD administrativo y contratos de analytics.
+- [2026-07-13] Incorporación de pruebas frontend sin dependencias para sesión, login por rol e inicio no bloqueante del editor.
+- [2026-07-13] Renderizado seguro de mensajes dinámicos y cobertura contra inyección de HTML en el frontend.
 
 ---
 

@@ -1827,7 +1827,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 
     // Limpiar notificaciones anteriores
-    container.innerHTML = '';
+    container.replaceChildren();
 
     const iconos = { error: '❌', warning: '⚠️', success: '✔', info: 'ℹ️' };
 
@@ -1861,20 +1861,53 @@ window.addEventListener('DOMContentLoaded', () => {
     notificacion.style.animation = 'fadeIn 0.3s ease';
     notificacion.style.maxWidth = '100%';
 
-    notificacion.innerHTML = `
-      <span style="font-size: 1.2rem; line-height: 1;">${iconos[tipo]}</span>
-      <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${mensaje}</span>
-      <button style="background: transparent; border: none; color: rgba(255,255,255,0.7); cursor: pointer; font-size: 1.1rem; padding: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 3px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='rgba(255,255,255,0.7)'">✕</button>
-    `;
+    const icono = document.createElement('span');
+    icono.style.fontSize = '1.2rem';
+    icono.style.lineHeight = '1';
+    icono.textContent = iconos[tipo] || iconos.info;
+
+    const contenido = document.createElement('span');
+    contenido.style.flex = '1';
+    contenido.style.whiteSpace = 'nowrap';
+    contenido.style.overflow = 'hidden';
+    contenido.style.textOverflow = 'ellipsis';
+    contenido.textContent = String(mensaje);
+
+    const btnCerrar = document.createElement('button');
+    btnCerrar.type = 'button';
+    btnCerrar.setAttribute('aria-label', 'Cerrar notificación');
+    btnCerrar.style.background = 'transparent';
+    btnCerrar.style.border = 'none';
+    btnCerrar.style.color = 'rgba(255,255,255,0.7)';
+    btnCerrar.style.cursor = 'pointer';
+    btnCerrar.style.fontSize = '1.1rem';
+    btnCerrar.style.padding = '0';
+    btnCerrar.style.width = '20px';
+    btnCerrar.style.height = '20px';
+    btnCerrar.style.display = 'flex';
+    btnCerrar.style.alignItems = 'center';
+    btnCerrar.style.justifyContent = 'center';
+    btnCerrar.style.borderRadius = '3px';
+    btnCerrar.style.transition = 'all 0.2s';
+    btnCerrar.textContent = '✕';
+    btnCerrar.addEventListener('mouseenter', () => {
+      btnCerrar.style.background = 'rgba(255,255,255,0.1)';
+      btnCerrar.style.color = '#fff';
+    });
+    btnCerrar.addEventListener('mouseleave', () => {
+      btnCerrar.style.background = 'transparent';
+      btnCerrar.style.color = 'rgba(255,255,255,0.7)';
+    });
+
+    notificacion.append(icono, contenido, btnCerrar);
 
     container.appendChild(notificacion);
 
     // Botón cerrar
-    const btnCerrar = notificacion.querySelector('button');
     btnCerrar.addEventListener('click', () => {
       notificacion.style.animation = 'fadeOut 0.3s ease';
       setTimeout(() => {
-        container.innerHTML = '';
+        container.replaceChildren();
       }, 300);
     });
 
@@ -1890,7 +1923,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (notificacion.parentElement) {
         notificacion.style.animation = 'fadeOut 0.3s ease';
         setTimeout(() => {
-          container.innerHTML = '';
+          container.replaceChildren();
         }, 300);
       }
     }, duracion);

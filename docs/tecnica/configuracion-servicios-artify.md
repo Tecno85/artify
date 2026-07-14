@@ -381,16 +381,16 @@ Desde la raíz del proyecto ejecuto:
 
 ```bash
 cd backend
-pnpm test
+NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 ```
 
-> **Advertencia:** la suite crea, actualiza y elimina registros temporales. La ejecuto únicamente contra `artify_db` local o una base exclusiva de pruebas. Nunca uso `DATABASE_URL` de Neon o producción para ejecutar `pnpm test`.
+> **Advertencia:** la suite crea, actualiza y elimina registros temporales. La ejecuto únicamente contra una base exclusiva cuyo nombre termine en `_test`. Nunca uso `artify_db`, `DATABASE_URL` de Neon ni producción para ejecutar `pnpm test`.
 
 El resultado obtenido fue:
 
 ```text
-tests 18
-pass 18
+tests 21
+pass 21
 fail 0
 ```
 
@@ -408,7 +408,15 @@ La suite comprobó:
 - Autenticación administrativa.
 - Limpieza de los usuarios temporales creados durante la prueba.
 
-### 11.3 Prueba del frontend
+### 11.3 Pruebas del frontend
+
+Desde `backend/` ejecuto la suite frontend, que no necesita PostgreSQL:
+
+```bash
+pnpm run test:frontend
+```
+
+El resultado actual es de 12 pruebas aprobadas y cero fallos. La suite comprueba sesión, respuestas `401`, validación del login, redirección por rol, inicio no bloqueante del editor y renderizado seguro.
 
 Compruebo la página inicial mediante el navegador y mediante una solicitud HTTP:
 
@@ -430,7 +438,7 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 | Variables de entorno | Archivo local completo y valores sensibles protegidos. | Evidencia 4 | Verificado |
 | Dependencias | Lockfile consistente y paquetes al día. | Evidencia 5 | Verificado |
 | Sintaxis del backend | `pnpm run check` finaliza sin errores. | Evidencia 5 | Verificado |
-| Pruebas automatizadas | Dieciocho pruebas aprobadas y cero fallos. | Evidencia 5 | Verificado |
+| Pruebas automatizadas | 21 pruebas backend y 12 frontend aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
 | Servidor de aplicaciones | Express activo en el puerto `3000`. | Evidencia 6 | Verificado |
 | Conexión backend-PostgreSQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
 | Endpoint de salud | Respuesta HTTP `200` y JSON válido en `/health`. | Evidencia 6 | Verificado |

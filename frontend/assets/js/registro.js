@@ -400,10 +400,15 @@ document.addEventListener('DOMContentLoaded', () => {
       info: 'ℹ️',
     };
 
-    notificacion.innerHTML = `
-      <div class="notif-icon">${iconos[tipo]}</div>
-      <div class="notif-message">${mensaje}</div>
-    `;
+    const icono = document.createElement('div');
+    icono.className = 'notif-icon';
+    icono.textContent = iconos[tipo] || iconos.info;
+
+    const contenido = document.createElement('div');
+    contenido.className = 'notif-message';
+    contenido.textContent = String(mensaje);
+
+    notificacion.append(icono, contenido);
 
     document.body.appendChild(notificacion);
 

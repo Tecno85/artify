@@ -437,6 +437,15 @@ Actualmente ejecuto 21 pruebas automatizadas que cubren las siguientes validacio
 - Limpieza del usuario temporal en la base de datos.
 - Cierre ordenado del servidor HTTP y del pool PostgreSQL al terminar la suite.
 
+También ejecuto 12 pruebas frontend sin dependencias adicionales mediante:
+
+```bash
+cd backend
+pnpm run test:frontend
+```
+
+Estas pruebas comprueban el almacenamiento y la limpieza de sesión, la incorporación del token en solicitudes protegidas, la reacción ante respuestas `401`, la validación previa del login, la redirección según el rol, el inicio no bloqueante de la sesión de edición y el tratamiento seguro de contenido dinámico.
+
 Antes de ejecutar la suite creo una base local exclusiva cuyo nombre termine en
 `_test` y cargo allí el esquema y los datos iniciales:
 
@@ -478,8 +487,9 @@ NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 
 ```text
-21 pruebas ejecutadas
-21 pruebas aprobadas
+Backend: 21 pruebas ejecutadas y aprobadas
+Frontend: 12 pruebas ejecutadas y aprobadas
+Total: 33 pruebas aprobadas
 0 pruebas fallidas
 ```
 

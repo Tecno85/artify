@@ -159,7 +159,14 @@ Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
 > La suite se bloquea si la base no termina en `_test` o si intenta usar un host
 > remoto sin autorización explícita; nunca debe apuntar a Neon ni a producción.
 
-GitHub Actions ejecuta automáticamente la validación y las 21 pruebas del backend en cada `push` a `main` y en los pull requests.
+Las pruebas del frontend no requieren PostgreSQL:
+
+```bash
+cd backend
+pnpm run test:frontend
+```
+
+GitHub Actions ejecuta automáticamente 21 pruebas del backend y 12 del frontend en cada `push` a `main` y en los pull requests.
 
 ## Despliegue
 
@@ -202,7 +209,7 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 
 Artify se encuentra activo y utiliza PostgreSQL como motor oficial de persistencia. El frontend, el backend, las pruebas y el despliegue están integrados en el repositorio principal.
 
-Entre las mejoras futuras se consideran ampliar las pruebas del frontend, incorporar más herramientas de edición y agregar paginación al historial de operaciones.
+Entre las mejoras futuras se consideran ampliar la cobertura visual del editor, incorporar más herramientas de edición y agregar paginación al historial de operaciones.
 
 ## Autor
 

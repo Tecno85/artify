@@ -1,4 +1,4 @@
-name: Pruebas backend
+name: Pruebas automatizadas
 
 on:
   push:
@@ -63,6 +63,10 @@ jobs:
         working-directory: backend
         run: pnpm run check
 
-      - name: Ejecutar pruebas
+      - name: Ejecutar pruebas backend
         working-directory: backend
         run: pnpm test
+
+      - name: Ejecutar pruebas frontend
+        working-directory: backend
+        run: pnpm run test:frontend

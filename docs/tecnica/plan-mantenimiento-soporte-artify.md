@@ -52,6 +52,7 @@ El mantenimiento preventivo lo realizo de forma programada para reducir riesgos 
 | --- | --- | --- |
 | Ejecutar `pnpm run check` en backend | Antes de entregar cambios | Salida sin errores de sintaxis. |
 | Ejecutar `pnpm test` | Mensual o antes de cambios importantes | Resultado de pruebas automatizadas. |
+| Ejecutar `pnpm run test:frontend` | Antes de entregar cambios frontend | Resultado de pruebas de sesión, login y editor. |
 | Revisar dependencias Node.js | Mensual | Registro de versiones o alertas. |
 | Verificar login, editor y panel admin | Mensual | Lista de chequeo funcional. |
 | Verificar el workflow de GitHub Pages y la variable `ARTIFY_API_URL` | Después de cambios de despliegue | Ejecución exitosa del workflow y `config.js` publicado. |
@@ -150,7 +151,7 @@ Las pruebas mínimas dependen del tipo de cambio:
 | Backend | `cd backend && pnpm run check` |
 | Autenticación o rutas protegidas | `cd backend && pnpm test` |
 | Base de datos | Revisión de `schema.sql`, `seed.sql` y consultas afectadas |
-| Frontend | Prueba manual de login, editor o admin |
+| Frontend | `cd backend && pnpm run test:frontend` y revisión manual de la pantalla afectada |
 | Despliegue | Verificación de `/health` y consumo real de API |
 
 Para reducir riesgos de seguridad, también revisaré alertas de dependencias. GitHub permite automatizar y revisar actualizaciones de seguridad con Dependabot, lo cual ayuda a mantener el proyecto con menor exposición a vulnerabilidades conocidas (GitHub, 2026b).

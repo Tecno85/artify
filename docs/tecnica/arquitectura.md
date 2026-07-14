@@ -69,6 +69,7 @@ El frontend se encuentra en la carpeta `frontend/` y está construido con HTML, 
 | `frontend/assets/css/` | Estilos visuales de cada pantalla. |
 | `frontend/assets/js/` | Lógica del frontend y consumo de API. |
 | `frontend/assets/js/config.js` | Configuración de la URL del backend para despliegues. |
+| `frontend/tests/` | Pruebas con `node:test` para sesión, login por rol e inicio del editor. |
 
 ### Responsabilidades
 
@@ -159,6 +160,7 @@ La autenticación de Artify se apoya en correo, contraseña, `bcryptjs` y un tok
 - La firma recibida y la firma esperada del token se comparan en tiempo constante para evitar comparaciones sensibles directas.
 - El pool de PostgreSQL limita conexiones y tiempos de espera para que una consulta o conexión bloqueada no deje ocupado el backend indefinidamente.
 - Al recibir `SIGTERM` o `SIGINT`, el backend deja de aceptar solicitudes, detiene sus tareas periódicas y cierra el pool de PostgreSQL antes de terminar.
+- Los datos de usuario se escapan antes de formar la tabla administrativa y los mensajes dinámicos se insertan con `textContent`, no como HTML ejecutable.
 
 ---
 

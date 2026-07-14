@@ -370,6 +370,12 @@ La suite esperada contiene 21 pruebas. Si falla antes de iniciar, verifico que
 PostgreSQL esté activo, que `artify_test` tenga el esquema cargado y que
 `DATABASE_URL` continúe comentada en `backend/.env`.
 
+Después ejecuto las 12 pruebas del frontend. Estas no usan PostgreSQL ni crean datos:
+
+```bash
+pnpm run test:frontend
+```
+
 > **Protección activa:** la suite crea, modifica y elimina datos temporales, pero
 > ahora se detiene antes de conectarse si el entorno no es `test`, falta la
 > confirmación o la base no termina en `_test`. También rechaza hosts remotos;
@@ -396,7 +402,7 @@ PostgreSQL esté activo, que `artify_test` tenga el esquema cargado y que
 - [ ] `/ready` confirma PostgreSQL.
 - [ ] El frontend abre en el puerto `8080`.
 - [ ] Registro, login, editor y descarga funcionan.
-- [ ] `pnpm run check` y `pnpm test` finalizan correctamente.
+- [ ] `pnpm run check`, `pnpm test` y `pnpm run test:frontend` finalizan correctamente.
 
 ---
 
@@ -519,7 +525,7 @@ Para esta evidencia realizo una instalación directa. Una máquina virtual o un 
 
 Las siguientes evidencias conservan la trazabilidad académica del proceso:
 
-Los archivos SVG son representaciones visuales sanitizadas y reconstruidas a partir de las verificaciones descritas; no son capturas literales de terminal ni sustituyen la ejecución de los comandos. `frontend-artify.png` sí corresponde a una captura del navegador. Para sustentar la instalación, acompaño estas imágenes con la ejecución local de `/health`, `/ready`, `pnpm run check` y `pnpm test` sobre una base exclusiva de pruebas.
+Los archivos SVG son representaciones visuales sanitizadas y reconstruidas a partir de las verificaciones descritas; no son capturas literales de terminal ni sustituyen la ejecución de los comandos. `frontend-artify.png` sí corresponde a una captura del navegador. Para sustentar la instalación, acompaño estas imágenes con la ejecución local de `/health`, `/ready`, `pnpm run check`, `pnpm test` sobre una base exclusiva de pruebas y `pnpm run test:frontend`.
 
 1. Estructura del proyecto.
 
