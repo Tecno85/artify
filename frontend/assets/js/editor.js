@@ -18,6 +18,7 @@ let calidadActual = null; // Calidad actual de la imagen después de conversión
 let archivoActual = null;
 let preferenciasActuales = null;
 let autoguardadoTimeout = null;
+let promesaSesionEdicion = null;
 
 // ========== ELEMENTOS DEL DOM ==========
 let fileInput, btnSubir, btnDescargar, dropZone, canvasWrapper, imageInfo;
@@ -38,6 +39,77 @@ let cropRatio = 'free'; // Proporción actual del recorte
 const RESOLUCION_MINIMA_ANCHO = 1024;
 const RESOLUCION_MINIMA_ALTO = 600;
 const LOCAL_STORAGE_KEY = 'artify_no_mostrar_modal_resolucion';
+const TAMANO_MAXIMO_ARCHIVO = 10 * 1024 * 1024;
+const MAXIMO_PIXELES_IMAGEN = 16_000_000;
+const MAXIMA_DIMENSION_IMAGEN = 8192;
+
+// ========== SESIÓN DE EDICIÓN EN SEGUNDO PLANO ==========
+function iniciarSesionEdicionEnSegundoPlano(usuario) {
+  sessionStorage.removeItem('artifyIdSesion');
+
+  promesaSesionEdicion = (async () => {
+    try {
+      const res = await fetchAuth(`${API}/api/sesion/iniciar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idUsuario: usuario.id }),
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        limpiarSesionAuth();
+        window.location.href = './login.html';
+        return null;
+      }
+
+      const data = await res.json();
+      const idSesion = Number.parseInt(data.idSesion, 10);
+
+      if (
+        res.ok &&
+        data.mensaje === 'Sesión iniciada' &&
+        Number.isInteger(idSesion) &&
+        idSesion > 0
+      ) {
+        const usuarioActual = JSON.parse(
+          sessionStorage.getItem('artifyUser') || 'null'
+        );
+
+        if (
+          !obtenerTokenAuth() ||
+          !usuarioActual ||
+          String(usuarioActual.id) !== String(usuario.id)
+        ) {
+          return null;
+        }
+
+        sessionStorage.setItem('artifyIdSesion', idSesion.toString());
+        console.log('✅ Sesión de edición iniciada. ID:', idSesion);
+        return idSesion;
+      }
+
+      console.warn('⚠️ El servidor no pudo iniciar la sesión de edición');
+    } catch (error) {
+      console.warn('⚠️ No se pudo iniciar la sesión de edición:', error);
+    }
+
+    return null;
+  })();
+
+  return promesaSesionEdicion;
+}
+
+async function obtenerIdSesionEdicion() {
+  const idGuardado = Number.parseInt(
+    sessionStorage.getItem('artifyIdSesion'),
+    10
+  );
+
+  if (Number.isInteger(idGuardado) && idGuardado > 0) {
+    return idGuardado;
+  }
+
+  return promesaSesionEdicion ? await promesaSesionEdicion : null;
+}
 
 // ========== FUNCIÓN CRÍTICA: SINCRONIZAR IMAGEN Y CANVAS ==========
 function sincronizarImagenYCanvas(callback) {
@@ -92,8 +164,8 @@ function sincronizarImagenYCanvas(callback) {
 // ========== FUNCIÓN PARA REGISTRAR OPERACIÓN EN BACKEND ==========
 async function registrarOperacion(tipo, descripcion, parametros = {}) {
   try {
+    const idSesion = await obtenerIdSesionEdicion();
     const userData = sessionStorage.getItem('artifyUser');
-    const idSesion = sessionStorage.getItem('artifyIdSesion');
 
     if (!userData || !idSesion) return;
 
@@ -104,7 +176,7 @@ async function registrarOperacion(tipo, descripcion, parametros = {}) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         idUsuario: usuario.id,
-        idSesion: parseInt(idSesion),
+        idSesion,
         tipo,
         descripcion,
         parametros,
@@ -123,8 +195,8 @@ async function registrarOperacion(tipo, descripcion, parametros = {}) {
 
 async function registrarImagenDescargada(formato, blob) {
   try {
+    const idSesion = await obtenerIdSesionEdicion();
     const userData = sessionStorage.getItem('artifyUser');
-    const idSesion = sessionStorage.getItem('artifyIdSesion');
 
     if (!userData || !idSesion || !archivoActual || !blob) return;
 
@@ -134,7 +206,7 @@ async function registrarImagenDescargada(formato, blob) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         idUsuario: usuario.id,
-        idSesion: parseInt(idSesion),
+        idSesion,
         nombreOriginal: archivoActual.nombreOriginal,
         formatoOriginal: archivoActual.formatoOriginal,
         formatoFinal: formato,
@@ -294,7 +366,7 @@ window.noVolverAMostrar = function () {
 };
 
 // ========== INICIALIZACIÓN ==========
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 Inicializando Artify Editor...');
   verificarResolucion();
 
@@ -322,24 +394,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         userNameElement.textContent = `${usuario.nombres} ${usuario.apellidos}`;
       }
 
-      // Iniciar sesión de edición en el backend
-      const res = await fetchAuth(`${API}/api/sesion/iniciar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idUsuario: usuario.id }),
-      });
-
-      const data = await res.json();
-      if (data.mensaje === 'Sesión iniciada') {
-        sessionStorage.setItem('artifyIdSesion', data.idSesion);
-        console.log('✅ Sesión de edición iniciada. ID:', data.idSesion);
-      } else if (res.status === 401 || res.status === 403) {
-        limpiarSesionAuth();
-        window.location.href = './login.html';
-        return;
-      }
+      // La sesión se crea en segundo plano para no bloquear los controles.
+      iniciarSesionEdicionEnSegundoPlano(usuario);
     } catch (error) {
-      console.warn('⚠️ No se pudo iniciar la sesión de edición');
+      limpiarSesionAuth();
+      window.location.href = './login.html';
+      return;
     }
   }
   // Inicializar elementos del DOM
@@ -416,9 +476,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      mostrarNotificacion('error', 'La imagen supera el límite de 10MB');
+    if (file.size > TAMANO_MAXIMO_ARCHIVO) {
+      mostrarNotificacion('error', 'La imagen supera el límite de 10 MB');
       return;
     }
 
@@ -428,9 +487,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
+        const ancho = img.naturalWidth;
+        const alto = img.naturalHeight;
+        const totalPixeles = ancho * alto;
+
+        if (
+          ancho > MAXIMA_DIMENSION_IMAGEN ||
+          alto > MAXIMA_DIMENSION_IMAGEN ||
+          totalPixeles > MAXIMO_PIXELES_IMAGEN
+        ) {
+          const megapixeles = (totalPixeles / 1_000_000).toFixed(1);
+          mostrarNotificacion(
+            'error',
+            `Imagen demasiado grande: ${ancho} × ${alto} px (${megapixeles} MP). Máximo: 16 MP y 8192 px por lado.`
+          );
+          actualizarEstado('Imagen demasiado grande', 'error');
+          return;
+        }
+
         cancelarRecortePendiente(true);
-        canvas.width = img.width;
-        canvas.height = img.height;
+        canvas.width = ancho;
+        canvas.height = alto;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0);
         currentImage = img;
@@ -2078,10 +2155,7 @@ async function cerrarSesionSegura() {
   setTimeout(() => (window.location.href = '../index.html'), 1000);
 }
 
-async function inicializarRF10yRF11() {
-  const prefs = await cargarPreferencias();
-  aplicarPreferencias(prefs);
-
+function inicializarRF10yRF11() {
   const btnConfig = document.getElementById('btnConfig');
   const btnCerrarConfig = document.getElementById('btnCerrarConfig');
   const btnCancelarConfig = document.getElementById('btnCancelarConfig');
@@ -2146,4 +2220,7 @@ async function inicializarRF10yRF11() {
       if (e.target === modalConfirmarLogout) cerrarConfirmacionLogout();
     });
   }
+
+  // Las preferencias se cargan sin retrasar los controles del perfil.
+  cargarPreferencias().then(aplicarPreferencias);
 }

@@ -25,7 +25,7 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 
 ## Características principales
 
-- Carga de imágenes mediante selector de archivos o arrastrar y soltar.
+- Carga de imágenes JPG, PNG y WebP mediante selector o arrastrar y soltar, con límites de 10 MB, 16 MP y 8192 px por lado.
 - Recorte libre o con proporciones predefinidas.
 - Redimensionamiento y rotación.
 - Filtros de blanco y negro, sepia, brillo y contraste con vista previa y confirmación.

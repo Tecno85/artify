@@ -61,6 +61,8 @@
                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
                   required
                   autocomplete="given-name"
+                  aria-describedby="nombres-error"
+                  aria-invalid="false"
                 />
                 <span class="error-message" id="nombres-error"></span>
               </div>
@@ -78,6 +80,8 @@
                   pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+"
                   required
                   autocomplete="family-name"
+                  aria-describedby="apellidos-error"
+                  aria-invalid="false"
                 />
                 <span class="error-message" id="apellidos-error"></span>
               </div>
@@ -96,6 +100,8 @@
                     maxlength="10"
                     pattern="[0-9]+"
                     required
+                    aria-describedby="cedula-error"
+                    aria-invalid="false"
                   />
                   <span class="error-message" id="cedula-error"></span>
                 </div>
@@ -112,8 +118,13 @@
                     max=""
                     required
                     autocomplete="bday"
+                    aria-describedby="fechaNacimiento-error"
+                    aria-invalid="false"
                   />
-                  <span class="error-message" id="fecha-error"></span>
+                  <span
+                    class="error-message"
+                    id="fechaNacimiento-error"
+                  ></span>
                 </div>
               </div>
             </div>
@@ -137,6 +148,8 @@
                   placeholder="editor@imagina.com"
                   required
                   autocomplete="email"
+                  aria-describedby="email-error"
+                  aria-invalid="false"
                 />
                 <span class="error-message" id="email-error"></span>
               </div>
@@ -153,6 +166,8 @@
                     minlength="8"
                     required
                     autocomplete="new-password"
+                    aria-describedby="password-helper password-error"
+                    aria-invalid="false"
                   />
                   <button
                     type="button"
@@ -180,7 +195,7 @@
                 </div>
 
                 <span class="error-message" id="password-error"></span>
-                <span class="helper-text">
+                <span class="helper-text" id="password-helper">
                   Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número
                 </span>
               </div>
@@ -199,6 +214,8 @@
                     minlength="8"
                     required
                     autocomplete="new-password"
+                    aria-describedby="confirmPassword-error"
+                    aria-invalid="false"
                   />
                   <button
                     type="button"
@@ -214,14 +231,24 @@
                     </svg>
                   </button>
                 </div>
-                <span class="error-message" id="confirm-error"></span>
+                <span
+                  class="error-message"
+                  id="confirmPassword-error"
+                ></span>
               </div>
             </div>
 
             <!-- ===== TÉRMINOS ===== -->
             <div class="form-options">
               <label class="checkbox-label">
-                <input type="checkbox" id="terminos" name="terminos" required />
+                <input
+                  type="checkbox"
+                  id="terminos"
+                  name="terminos"
+                  required
+                  aria-describedby="terminos-error"
+                  aria-invalid="false"
+                />
                 <span>
                   Acepto los
                   <a href="#" class="link-inline">términos y condiciones</a>

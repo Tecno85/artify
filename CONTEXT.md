@@ -25,6 +25,8 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 - `sessionStorage` para manejo de sesión.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
 - Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva scroll vertical por la extensión del formulario.
+- El editor habilita sus controles sin esperar el arranque del backend; la sesión de edición y las preferencias se inicializan en segundo plano.
+- La carga admite JPG, PNG y WebP de hasta 10 MB, 16 MP y 8192 px por lado para proteger la memoria usada por Canvas y los filtros.
 
 ### Backend
 
@@ -253,6 +255,7 @@ La versión PostgreSQL fue validada con:
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas: 18/18 correctas.
+- Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y pruebas en `push` o `pull_request`.
 
@@ -342,6 +345,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Reestructuración del plan local con preparación separada para Windows y macOS, flujo común y configuración `DB_*` sin `DATABASE_URL` activa.
 - [2026-07-13] Protección de la suite de integración para impedir mutaciones sobre bases de producción o mal identificadas.
 - [2026-07-13] Retiro del dump histórico del estado actual del repositorio para conservar únicamente artefactos PostgreSQL y datos de referencia controlados.
+- [2026-07-13] Inicio no bloqueante del editor, límites seguros de imagen y corrección de mensajes accesibles en el registro.
 
 ---
 

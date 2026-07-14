@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (input && errorSpan) {
       input.classList.add('error');
+      input.setAttribute('aria-invalid', 'true');
       errorSpan.textContent = mensaje;
       errorSpan.classList.add('show');
     }
@@ -114,6 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (input && errorSpan) {
       input.classList.remove('error');
+      input.setAttribute('aria-invalid', 'false');
+      errorSpan.textContent = '';
       errorSpan.classList.remove('show');
     }
   }

@@ -105,6 +105,7 @@ El sistema debe permitir cargar imágenes desde el navegador mediante selector d
 **Criterios de aceptación:**
 
 - El sistema permite cargar imágenes compatibles.
+- Las imágenes JPG, PNG o WebP no deben superar 10 MB, 16 MP ni 8192 px por lado.
 - El sistema muestra la imagen en el área de edición.
 - Al cargar una imagen se habilitan las herramientas principales del editor.
 
