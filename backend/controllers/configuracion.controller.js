@@ -8,7 +8,13 @@ const {
 
 // ========== CONSULTA DE CONFIGURACIÓN ==========
 function obtenerConfiguracion(req, res) {
-  const { id } = req.params;
+  const id = normalizarIdEntero(req.params.id);
+
+  if (id === null) {
+    return res
+      .status(400)
+      .json({ mensaje: 'Identificador de usuario inválido' });
+  }
 
   console.log('📨 Cargando configuración de usuario');
 
@@ -76,67 +82,36 @@ function guardarConfiguracion(req, res) {
     autoguardado,
   });
 
-  const queryBuscar =
-    'SELECT * FROM CONFIGURACION WHERE cfg_usr_id_usuario = ?';
+  const queryGuardar = `
+    INSERT INTO CONFIGURACION
+      (cfg_usr_id_usuario, cfg_calidad_exportacion,
+       cfg_configuracion_avanzada, cfg_fecha_actualizacion)
+    VALUES (?, ?, ?, NOW())
+    ON CONFLICT (cfg_usr_id_usuario)
+    DO UPDATE SET
+      cfg_calidad_exportacion = EXCLUDED.cfg_calidad_exportacion,
+      cfg_configuracion_avanzada = EXCLUDED.cfg_configuracion_avanzada,
+      cfg_fecha_actualizacion = NOW()
+  `;
 
-  db.query(queryBuscar, [idUsuarioNormalizado], (err, results) => {
-    if (err) {
-      console.error('❌ Error al buscar configuración:', err.message);
-      return res.status(500).json({ mensaje: 'Error en el servidor' });
-    }
-
-    if (results.length === 0) {
-      const queryInsertar = `
-        INSERT INTO CONFIGURACION
-          (cfg_usr_id_usuario, cfg_calidad_exportacion, cfg_configuracion_avanzada, cfg_fecha_actualizacion)
-        VALUES (?, ?, ?, NOW())
-      `;
-
-      return db.query(
-        queryInsertar,
-        [idUsuarioNormalizado, calidadExportacion, avanzada],
-        (errInsertar) => {
-          if (errInsertar) {
-            console.error(
-              '❌ Error al insertar configuración:',
-              errInsertar.message
-            );
-            return res
-              .status(500)
-              .json({ mensaje: 'Error al guardar configuración' });
-          }
-
-          return res.json({ mensaje: 'Configuración guardada correctamente' });
-        }
-      );
-    }
-
-    const queryActualizar = `
-      UPDATE CONFIGURACION
-      SET cfg_calidad_exportacion = ?,
-          cfg_configuracion_avanzada = ?,
-          cfg_fecha_actualizacion = NOW()
-      WHERE cfg_usr_id_usuario = ?
-    `;
-
-    return db.query(
-      queryActualizar,
-      [calidadExportacion, avanzada, idUsuarioNormalizado],
-      (errActualizar) => {
-        if (errActualizar) {
-          console.error(
-            '❌ Error al actualizar configuración:',
-            errActualizar.message
-          );
-          return res
-            .status(500)
-            .json({ mensaje: 'Error al actualizar configuración' });
+  return db.query(
+    queryGuardar,
+    [idUsuarioNormalizado, calidadExportacion, avanzada],
+    (error) => {
+      if (error) {
+        if (error.code === '23503') {
+          return res.status(404).json({ mensaje: 'Usuario no encontrado' });
         }
 
-        return res.json({ mensaje: 'Configuración guardada correctamente' });
+        console.error('❌ Error al guardar configuración:', error.message);
+        return res
+          .status(500)
+          .json({ mensaje: 'Error al guardar configuración' });
       }
-    );
-  });
+
+      return res.json({ mensaje: 'Configuración guardada correctamente' });
+    }
+  );
 }
 
 // ========== EXPORTACIÓN ==========

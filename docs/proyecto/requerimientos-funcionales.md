@@ -202,6 +202,8 @@ El sistema debe permitir consultar y guardar preferencias del usuario.
 - El usuario puede consultar su configuración guardada.
 - El usuario puede guardar preferencias como formato por defecto, calidad, notificaciones y autoguardado.
 - El sistema conserva la configuración en la base de datos.
+- El sistema mantiene una sola configuración por usuario incluso ante guardados simultáneos.
+- La API rechaza identificadores inválidos y no crea configuraciones para usuarios inexistentes.
 
 ### RF-15 Listar usuarios
 

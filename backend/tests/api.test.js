@@ -641,6 +641,50 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
   assert.equal(configuracion.response.status, 200);
   assert.equal(configuracion.body.mensaje, 'ok');
 
+  const dbConfiguracion = await crearConexionDb();
+  try {
+    await dbConfiguracion.query(
+      'DELETE FROM "CONFIGURACION" WHERE cfg_usr_id_usuario = $1',
+      [idUsuario]
+    );
+  } finally {
+    await dbConfiguracion.end();
+  }
+
+  const guardadosConcurrentes = await Promise.all([
+    request('/api/configuracion', {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({
+        idUsuario,
+        calidadExportacion: 'alta',
+        notificaciones: true,
+        formatoDefecto: 'png',
+        autoguardado: false,
+      }),
+    }),
+    request('/api/configuracion', {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({
+        idUsuario,
+        calidadExportacion: 'media',
+        notificaciones: false,
+        formatoDefecto: 'webp',
+        autoguardado: true,
+      }),
+    }),
+  ]);
+
+  for (const guardado of guardadosConcurrentes) {
+    assert.equal(guardado.response.status, 200);
+    assert.equal(
+      guardado.body.mensaje,
+      'Configuración guardada correctamente'
+    );
+  }
+  assert.equal(await contarConfiguracionesUsuario(idUsuario), 1);
+
   const configuracionInvalida = await request('/api/configuracion', {
     method: 'POST',
     headers: authHeaders,
@@ -1020,6 +1064,7 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
   for (const ruta of [
     '/api/estadisticas/abc',
     '/api/operacion/total/abc',
+    '/api/configuracion/abc',
   ]) {
     const consultaIdInvalido = await request(ruta, {
       headers: { Authorization: `Bearer ${login.body.token}` },
@@ -1039,6 +1084,27 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
   assert.equal(usuarios.response.status, 200);
   assert.equal(usuarios.body.mensaje, 'ok');
   assert.ok(Array.isArray(usuarios.body.usuarios));
+
+  const configuracionUsuarioInexistente = await request('/api/configuracion', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${login.body.token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      idUsuario: idUsuario + 1_000_000,
+      calidadExportacion: 'alta',
+      notificaciones: true,
+      formatoDefecto: 'png',
+      autoguardado: false,
+    }),
+  });
+
+  assert.equal(configuracionUsuarioInexistente.response.status, 404);
+  assert.equal(
+    configuracionUsuarioInexistente.body.mensaje,
+    'Usuario no encontrado'
+  );
 
   const editarIdInvalido = await request('/api/admin/usuario/abc', {
     method: 'PUT',
