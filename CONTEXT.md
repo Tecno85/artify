@@ -256,8 +256,9 @@ La versión PostgreSQL fue validada con:
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas: 19/19 correctas.
+- Resultado de pruebas automatizadas: 21/21 correctas.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
+- Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y pruebas en `push` o `pull_request`.
@@ -350,6 +351,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Retiro del dump histórico del estado actual del repositorio para conservar únicamente artefactos PostgreSQL y datos de referencia controlados.
 - [2026-07-13] Inicio no bloqueante del editor, límites seguros de imagen y corrección de mensajes accesibles en el registro.
 - [2026-07-13] Validación temprana de secretos, timeouts PostgreSQL y cierre ordenado del backend.
+- [2026-07-13] Ampliación de pruebas para autorización, CRUD administrativo y contratos de analytics.
 
 ---
 

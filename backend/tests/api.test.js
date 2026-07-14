@@ -23,6 +23,16 @@ const usuarioPrueba = {
   correo: `test.${stamp}@artify.local`,
   password: 'PruebaArtify123!',
 };
+const usuarioAdministrado = {
+  nombres: 'Usuario',
+  apellidos: 'Gestionado por Admin',
+  cedula: `${stamp}2`,
+  fechaNacimiento: '1992-08-20',
+  correo: `admin.creado.${stamp}@artify.local`,
+  password: 'AdminCrea123!',
+};
+const correoUsuarioAdministradoEditado =
+  `admin.editado.${stamp}@artify.local`;
 
 let serverProcess;
 let idUsuario;
@@ -136,6 +146,42 @@ async function obtenerUsuarioTemporal() {
   }
 }
 
+async function obtenerUsuarioPorCorreo(correo) {
+  const db = await crearConexionDb();
+
+  try {
+    const { rows } = await db.query(
+      `SELECT usr_id_usuario, usr_nombres, usr_apellidos, usr_cedula,
+              usr_fecha_nacimiento, usr_correo, usr_contrasena,
+              usr_estado_usuario, usr_rol
+       FROM "USUARIO"
+       WHERE usr_correo = $1`,
+      [correo]
+    );
+
+    return rows[0];
+  } finally {
+    await db.end();
+  }
+}
+
+async function contarConfiguracionesUsuario(id) {
+  const db = await crearConexionDb();
+
+  try {
+    const { rows } = await db.query(
+      `SELECT COUNT(*)::int AS total
+       FROM "CONFIGURACION"
+       WHERE cfg_usr_id_usuario = $1`,
+      [id]
+    );
+
+    return rows[0].total;
+  } finally {
+    await db.end();
+  }
+}
+
 async function esperarActualizacionAcceso() {
   const inicio = Date.now();
   let usuario;
@@ -183,29 +229,44 @@ async function actualizarEstadoUsuario(estado) {
   }
 }
 
-async function limpiarUsuarioTemporal() {
-  if (!idUsuario) {
-    return;
-  }
+async function eliminarDatosUsuario(client, id) {
+  await client.query('DELETE FROM "OPERACION" WHERE opr_usr_id_usuario = $1', [
+    id,
+  ]);
+  await client.query(
+    'DELETE FROM "SESION_EDICION" WHERE ses_usr_id_usuario = $1',
+    [id]
+  );
+  await client.query('DELETE FROM "IMAGEN" WHERE img_usr_id_usuario = $1', [id]);
+  await client.query(
+    'DELETE FROM "CONFIGURACION" WHERE cfg_usr_id_usuario = $1',
+    [id]
+  );
+  await client.query('DELETE FROM "USUARIO" WHERE usr_id_usuario = $1', [id]);
+}
 
+async function limpiarUsuariosTemporales() {
   const db = await crearConexionDb();
   const client = await db.connect();
 
   try {
     await client.query('BEGIN');
-    await client.query('DELETE FROM "OPERACION" WHERE opr_usr_id_usuario = $1', [
-      idUsuario,
-    ]);
-    await client.query('DELETE FROM "SESION_EDICION" WHERE ses_usr_id_usuario = $1', [
-      idUsuario,
-    ]);
-    await client.query('DELETE FROM "IMAGEN" WHERE img_usr_id_usuario = $1', [
-      idUsuario,
-    ]);
-    await client.query('DELETE FROM "CONFIGURACION" WHERE cfg_usr_id_usuario = $1', [
-      idUsuario,
-    ]);
-    await client.query('DELETE FROM "USUARIO" WHERE usr_id_usuario = $1', [idUsuario]);
+
+    const { rows: usuariosAdministrados } = await client.query(
+      `SELECT usr_id_usuario
+       FROM "USUARIO"
+       WHERE usr_correo = ANY($1::text[])`,
+      [[usuarioAdministrado.correo, correoUsuarioAdministradoEditado]]
+    );
+
+    for (const usuario of usuariosAdministrados) {
+      await eliminarDatosUsuario(client, usuario.usr_id_usuario);
+    }
+
+    if (idUsuario) {
+      await eliminarDatosUsuario(client, idUsuario);
+    }
+
     await client.query('COMMIT');
   } catch (error) {
     await client.query('ROLLBACK');
@@ -243,8 +304,11 @@ before(async () => {
 });
 
 after(async () => {
-  await limpiarUsuarioTemporal();
-  await detenerBackend();
+  try {
+    await limpiarUsuariosTemporales();
+  } finally {
+    await detenerBackend();
+  }
 });
 
 test('health público responde sin consultar credenciales', async () => {
@@ -265,14 +329,46 @@ test('ready confirma que PostgreSQL está disponible', async () => {
   assert.equal(body.baseDatos, 'disponible');
 });
 
-test('analytics público responde correctamente', async () => {
-  const { response, body } = await request(
-    '/api/v1/analytics/filtros-populares'
-  );
+test('los cuatro endpoints públicos de analytics conservan su contrato', async () => {
+  const casos = [
+    {
+      ruta: '/api/v1/analytics/filtros-populares',
+      mensaje: 'Top filtros utilizados',
+      validar: (data) => assert.ok(Array.isArray(data.filtros)),
+    },
+    {
+      ruta: '/api/v1/analytics/horarios-edicion',
+      mensaje: 'Horarios pico de edición',
+      validar: (data) => assert.ok(Array.isArray(data.horarios)),
+    },
+    {
+      ruta: '/api/v1/analytics/formatos-preferidos',
+      mensaje: 'Formatos más descargados',
+      validar: (data) => assert.ok(Array.isArray(data.formatos)),
+    },
+    {
+      ruta: '/api/v1/analytics/tasa-conversion',
+      mensaje: 'Tasa de conversión de sesiones',
+      validar: (data) => {
+        assert.equal(typeof data.conversionData.total_sesiones, 'number');
+        assert.equal(typeof data.conversionData.sesiones_exitosas, 'number');
+        assert.equal(
+          typeof data.conversionData.tasa_conversion_porcentaje,
+          'number'
+        );
+      },
+    },
+  ];
 
-  assert.equal(response.status, 200);
-  assert.equal(body.ok, true);
-  assert.equal(body.mensaje, 'Top filtros utilizados');
+  for (const caso of casos) {
+    const { response, body } = await request(caso.ruta);
+
+    assert.equal(response.status, 200);
+    assert.equal(body.ok, true);
+    assert.equal(body.mensaje, caso.mensaje);
+    assert.match(body.meta.timestamp, /^\d{4}-\d{2}-\d{2}T/);
+    caso.validar(body.data);
+  }
 });
 
 test('login rechaza correo inválido antes de consultar credenciales', async () => {
@@ -693,6 +789,17 @@ test('rutas protegidas rechazan identificadores malformados', async () => {
   );
 });
 
+test('usuario sin rol admin no puede acceder al panel administrativo', async () => {
+  assert.ok(tokenUsuario);
+
+  const { response, body } = await request('/api/admin/usuarios', {
+    headers: { Authorization: `Bearer ${tokenUsuario}` },
+  });
+
+  assert.equal(response.status, 403);
+  assert.equal(body.mensaje, 'Se requieren permisos de administrador');
+});
+
 test('admin puede autenticarse desde el login principal y listar usuarios', async () => {
   assert.ok(idUsuario);
   await promoverUsuarioTemporalAAdmin();
@@ -745,6 +852,124 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
     eliminarIdInvalido.body.mensaje,
     'Identificador de usuario inválido'
   );
+});
+
+test('admin puede crear, consultar, editar y eliminar un usuario', async () => {
+  assert.ok(tokenAdmin);
+
+  const headers = {
+    Authorization: `Bearer ${tokenAdmin}`,
+    'Content-Type': 'application/json',
+  };
+  const creacion = await request('/api/admin/usuario', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      ...usuarioAdministrado,
+      nombres: ` ${usuarioAdministrado.nombres} `,
+      correo: ` ${usuarioAdministrado.correo.toUpperCase()} `,
+    }),
+  });
+
+  assert.equal(creacion.response.status, 200);
+  assert.equal(creacion.body.mensaje, 'Usuario agregado correctamente');
+
+  const usuarioCreado = await obtenerUsuarioPorCorreo(
+    usuarioAdministrado.correo
+  );
+  assert.ok(usuarioCreado);
+  assert.equal(usuarioCreado.usr_nombres, usuarioAdministrado.nombres);
+  assert.equal(usuarioCreado.usr_estado_usuario, 'activo');
+  assert.equal(usuarioCreado.usr_rol, 'usuario');
+  assert.notEqual(usuarioCreado.usr_contrasena, usuarioAdministrado.password);
+  assert.match(usuarioCreado.usr_contrasena, /^\$2[ab]\$10\$/);
+  assert.equal(
+    await contarConfiguracionesUsuario(usuarioCreado.usr_id_usuario),
+    1
+  );
+
+  const duplicado = await request('/api/admin/usuario', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(usuarioAdministrado),
+  });
+
+  assert.equal(duplicado.response.status, 400);
+  assert.equal(
+    duplicado.body.mensaje,
+    'El correo o cédula ya está registrado'
+  );
+
+  const edicion = await request(
+    `/api/admin/usuario/${usuarioCreado.usr_id_usuario}`,
+    {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        nombres: 'Usuario Editado',
+        apellidos: usuarioAdministrado.apellidos,
+        cedula: usuarioAdministrado.cedula,
+        fechaNacimiento: usuarioAdministrado.fechaNacimiento,
+        correo: correoUsuarioAdministradoEditado,
+        estado: 'suspendido',
+      }),
+    }
+  );
+
+  assert.equal(edicion.response.status, 200);
+  assert.equal(edicion.body.mensaje, 'Usuario editado correctamente');
+
+  const usuarioEditado = await obtenerUsuarioPorCorreo(
+    correoUsuarioAdministradoEditado
+  );
+  assert.ok(usuarioEditado);
+  assert.equal(usuarioEditado.usr_nombres, 'Usuario Editado');
+  assert.equal(usuarioEditado.usr_estado_usuario, 'suspendido');
+
+  const listado = await request('/api/admin/usuarios', {
+    headers: { Authorization: `Bearer ${tokenAdmin}` },
+  });
+
+  assert.equal(listado.response.status, 200);
+  assert.equal(listado.body.mensaje, 'ok');
+  assert.ok(Array.isArray(listado.body.usuarios));
+
+  const usuarioListado = listado.body.usuarios.find(
+    (usuario) => usuario.usr_id_usuario === usuarioCreado.usr_id_usuario
+  );
+
+  assert.ok(usuarioListado);
+  assert.equal(usuarioListado.usr_correo, correoUsuarioAdministradoEditado);
+
+  const eliminacion = await request(
+    `/api/admin/usuario/${usuarioCreado.usr_id_usuario}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${tokenAdmin}` },
+    }
+  );
+
+  assert.equal(eliminacion.response.status, 200);
+  assert.equal(eliminacion.body.mensaje, 'Usuario eliminado correctamente');
+  assert.equal(
+    await obtenerUsuarioPorCorreo(correoUsuarioAdministradoEditado),
+    undefined
+  );
+  assert.equal(
+    await contarConfiguracionesUsuario(usuarioCreado.usr_id_usuario),
+    0
+  );
+
+  const segundaEliminacion = await request(
+    `/api/admin/usuario/${usuarioCreado.usr_id_usuario}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${tokenAdmin}` },
+    }
+  );
+
+  assert.equal(segundaEliminacion.response.status, 404);
+  assert.equal(segundaEliminacion.body.mensaje, 'Usuario no encontrado');
 });
 
 test('una cuenta suspendida no puede iniciar sesión ni reutilizar su token', async () => {

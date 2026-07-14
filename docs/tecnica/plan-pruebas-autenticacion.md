@@ -19,7 +19,7 @@ También verifico que la contraseña del usuario no se almacene en texto plano, 
 
 ## 2. Alcance
 
-Este plan de pruebas lo centro exclusivamente en el módulo de autenticación:
+Este plan de pruebas se centra en el módulo de autenticación y en los controles de acceso que dependen de él:
 
 - Registro de usuario como paso previo para crear credenciales de prueba.
 - Inicio de sesión con credenciales válidas.
@@ -28,8 +28,9 @@ Este plan de pruebas lo centro exclusivamente en el módulo de autenticación:
 - Verificación de actualización de datos de acceso en la tabla `USUARIO`.
 - Validación de generación de token después de un login exitoso.
 - Rechazo de solicitudes sin token o con un token inválido en rutas protegidas.
+- Rechazo del panel administrativo para usuarios sin rol `admin`.
 
-No incluyo pruebas funcionales del editor de imágenes, filtros, recorte, panel de administración ni operaciones avanzadas, excepto cuando sirven como evidencia complementaria para demostrar que la autenticación permite acceder correctamente al sistema.
+No incluyo pruebas visuales del editor ni del panel administrativo. La suite sí verifica por API el CRUD administrativo y los contratos de analytics como controles de regresión complementarios al acceso autenticado.
 
 ---
 
@@ -404,10 +405,10 @@ Esta suite también se ejecuta en GitHub Actions mediante:
 .github/workflows/backend-tests.yml
 ```
 
-Actualmente ejecuto 19 pruebas automatizadas que cubren las siguientes validaciones:
+Actualmente ejecuto 21 pruebas automatizadas que cubren las siguientes validaciones:
 
 - Disponibilidad del proceso Express y de PostgreSQL mediante `/health` y `/ready`.
-- Respuesta del endpoint público de analíticas.
+- Contrato de respuesta de los cuatro endpoints públicos de analytics.
 - Rechazo de login con correo inválido.
 - Rechazo de login con correo no registrado.
 - Rechazo de fechas de nacimiento inexistentes.
@@ -429,6 +430,9 @@ Actualmente ejecuto 19 pruebas automatizadas que cubren las siguientes validacio
 - Rechazo de acceso a recursos de otro usuario.
 - Rechazo de identificadores malformados en rutas protegidas.
 - Autenticación de administrador.
+- Rechazo del panel administrativo para usuarios sin el rol necesario.
+- Creación, consulta, edición y eliminación de usuarios desde la API administrativa.
+- Verificación del hash y de la configuración inicial del usuario creado por el administrador.
 - Rechazo de login y revocación del token de una cuenta suspendida.
 - Limpieza del usuario temporal en la base de datos.
 - Cierre ordenado del servidor HTTP y del pool PostgreSQL al terminar la suite.
@@ -474,8 +478,8 @@ NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 
 ```text
-19 pruebas ejecutadas
-19 pruebas aprobadas
+21 pruebas ejecutadas
+21 pruebas aprobadas
 0 pruebas fallidas
 ```
 
