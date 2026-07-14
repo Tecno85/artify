@@ -270,6 +270,7 @@ La versión PostgreSQL fue validada con:
 - Bloqueo transaccional de la sesión al registrar operaciones o imágenes para conservar el orden y el estado ante solicitudes concurrentes.
 - Protección de la cuenta administrativa autenticada frente a eliminación o desactivación accidental desde el panel.
 - Política uniforme para contraseñas nuevas en el registro público, el panel administrativo y el backend, sin bloquear el acceso de cuentas existentes.
+- Validación coherente de cédulas de 6 a 20 dígitos y mayoría de edad para cuentas nuevas, conservando la edición de datos históricos.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y las suites backend y frontend en `push` o `pull_request`.
 
@@ -374,6 +375,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Refuerzo de consultas, metadatos y concurrencia en el registro de actividad del editor.
 - [2026-07-14] Protección backend y visual contra la autoeliminación o autodesactivación del administrador.
 - [2026-07-14] Validación uniforme de longitud, mayúscula, minúscula y número para toda contraseña nueva.
+- [2026-07-14] Alineación de cédula, fecha de nacimiento y mensajes de validación entre registro, administración y API.
 
 ---
 

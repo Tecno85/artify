@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function validarCedula(input) {
-    const regex = /^[0-9]{6,10}$/;
+    const regex = /^[0-9]{6,20}$/;
     return regex.test(input.value);
   }
 
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('cedula').addEventListener('blur', function () {
     if (!validarCedula(this)) {
-      mostrarError('cedula', 'Cédula debe tener entre 6 y 10 dígitos');
+      mostrarError('cedula', 'Cédula debe tener entre 6 y 20 dígitos');
     } else {
       limpiarError('cedula');
     }
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
           'Debes ingresar tu fecha de nacimiento'
         );
       } else if (!validarEdad(this)) {
-        mostrarError('fechaNacimiento', 'Debes ser mayor de 18 años');
+        mostrarError('fechaNacimiento', 'Debes tener al menos 18 años');
       } else {
         limpiarError('fechaNacimiento');
       }
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cedula = document.getElementById('cedula');
     if (!validarCedula(cedula)) {
-      mostrarError('cedula', 'Cédula debe tener entre 6 y 10 dígitos');
+      mostrarError('cedula', 'Cédula debe tener entre 6 y 20 dígitos');
       isValid = false;
     }
 
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mostrarError('fechaNacimiento', 'Debes ingresar tu fecha de nacimiento');
       isValid = false;
     } else if (!validarEdad(fechaNacimiento)) {
-      mostrarError('fechaNacimiento', 'Debes ser mayor de 18 años');
+      mostrarError('fechaNacimiento', 'Debes tener al menos 18 años');
       isValid = false;
     }
 

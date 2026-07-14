@@ -48,6 +48,7 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
   });
   contextoFrontend.contexto.obtenerTokenAuth = () => 'token-admin';
   contextoFrontend.contexto.limpiarSesionAuth = () => {};
+  contextoFrontend.contexto.fechaMenorEdad = `${new Date().getFullYear() - 17}-01-01`;
   ejecutarScript(contextoFrontend.contexto, 'admin.js');
   contextoFrontend.contexto.valorMalicioso =
     '<img src=x onerror="alert(1)"> &\' ataque';
@@ -109,6 +110,24 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
       contextoFrontend.contexto,
       `esPasswordNuevaValida('A1${'a'.repeat(127)}')`
     ),
+    false
+  );
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      "esCedulaValida('12345678901234567890')"
+    ),
+    true
+  );
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      "esCedulaValida('123456789012345678901')"
+    ),
+    false
+  );
+  assert.equal(
+    evaluar(contextoFrontend.contexto, 'cumpleEdadMinima(fechaMenorEdad)'),
     false
   );
 });

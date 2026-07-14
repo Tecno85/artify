@@ -86,6 +86,40 @@ function esPasswordNuevaValida(password) {
   );
 }
 
+function esCedulaValida(cedula) {
+  return typeof cedula === 'string' && /^[0-9]{6,20}$/.test(cedula);
+}
+
+function esFechaNacimientoValida(fechaNacimiento) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
+    return false;
+  }
+
+  const fecha = new Date(`${fechaNacimiento}T00:00:00.000Z`);
+  return (
+    !Number.isNaN(fecha.getTime()) &&
+    fecha.toISOString().slice(0, 10) === fechaNacimiento &&
+    fecha <= new Date()
+  );
+}
+
+function cumpleEdadMinima(fechaNacimiento, edadMinima = 18) {
+  if (!esFechaNacimientoValida(fechaNacimiento)) {
+    return false;
+  }
+
+  const [anio, mes, dia] = fechaNacimiento.split('-').map(Number);
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - anio;
+  const diferenciaMes = hoy.getMonth() + 1 - mes;
+
+  if (diferenciaMes < 0 || (diferenciaMes === 0 && hoy.getDate() < dia)) {
+    edad -= 1;
+  }
+
+  return edad >= edadMinima;
+}
+
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
   const coincidencia = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -289,16 +323,23 @@ document
 
     let valido = true;
 
-    if (!nombres) {
-      mostrarError('modalNombres', 'Campo requerido');
+    if (nombres.length < 2 || nombres.length > 100) {
+      mostrarError('modalNombres', 'Ingresa nombres válidos');
       valido = false;
     }
-    if (!apellidos) {
-      mostrarError('modalApellidos', 'Campo requerido');
+    if (apellidos.length < 2 || apellidos.length > 100) {
+      mostrarError('modalApellidos', 'Ingresa apellidos válidos');
       valido = false;
     }
-    if (!cedula || !/^[0-9]{6,10}$/.test(cedula)) {
-      mostrarError('modalCedula', 'Cédula inválida (6-10 dígitos)');
+    if (!esCedulaValida(cedula)) {
+      mostrarError('modalCedula', 'Cédula inválida (6-20 dígitos)');
+      valido = false;
+    }
+    if (!esFechaNacimientoValida(fechaNac)) {
+      mostrarError('modalFechaNac', 'Ingresa una fecha de nacimiento válida');
+      valido = false;
+    } else if (!modoEdicion && !cumpleEdadMinima(fechaNac)) {
+      mostrarError('modalFechaNac', 'Debes tener al menos 18 años');
       valido = false;
     }
     if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
@@ -355,12 +396,17 @@ document
         data = await res.json();
       }
 
-      if (data.mensaje.includes('correctamente')) {
+      const mensaje =
+        typeof data?.mensaje === 'string'
+          ? data.mensaje
+          : 'No fue posible completar la operación';
+
+      if (res.ok && mensaje.includes('correctamente')) {
         cerrarModal();
-        mostrarNotificacion('success', data.mensaje);
+        mostrarNotificacion('success', mensaje);
         cargarUsuarios();
       } else {
-        mostrarError('modalCorreo', data.mensaje);
+        mostrarNotificacion('error', mensaje);
       }
     } catch (err) {
       mostrarNotificacion('error', 'Error al conectar con el servidor');

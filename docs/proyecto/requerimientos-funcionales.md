@@ -60,6 +60,8 @@ El sistema debe permitir que un visitante cree una cuenta ingresando nombres, ap
 **Criterios de aceptación:**
 
 - El sistema valida que los datos obligatorios estén completos.
+- La cédula contiene entre 6 y 20 dígitos.
+- El usuario debe tener al menos 18 años al crear la cuenta.
 - El sistema rechaza correos o cédulas duplicadas.
 - Las contraseñas nuevas tienen entre 8 y 128 caracteres e incluyen, como mínimo, una mayúscula, una minúscula y un número.
 - La contraseña se almacena en la base de datos como hash generado con `bcrypt`.
@@ -218,6 +220,7 @@ El sistema debe permitir que el administrador cree usuarios desde el panel admin
 **Criterios de aceptación:**
 
 - El formulario valida los datos requeridos.
+- La nueva cuenta cumple las mismas reglas de cédula y mayoría de edad del registro público.
 - El sistema evita crear registros duplicados por correo o cédula.
 - La contraseña nueva cumple la misma política aplicada en el registro público.
 - La contraseña se almacena protegida mediante hash.

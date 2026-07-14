@@ -544,6 +544,23 @@ test('registro rechaza fechas inexistentes y contraseñas nuevas débiles', asyn
   assert.equal(response.status, 400);
   assert.equal(body.mensaje, 'Ingresa una fecha de nacimiento válida');
 
+  const registroMenorEdad = await request('/api/registro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      ...usuarioPrueba,
+      cedula: `${stamp}97`.slice(-10),
+      correo: `menor.edad.${stamp}@artify.local`,
+      fechaNacimiento: `${new Date().getFullYear() - 17}-01-01`,
+    }),
+  });
+
+  assert.equal(registroMenorEdad.response.status, 400);
+  assert.equal(
+    registroMenorEdad.body.mensaje,
+    'Debes tener al menos 18 años'
+  );
+
   const passwordDebil = await request('/api/registro', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

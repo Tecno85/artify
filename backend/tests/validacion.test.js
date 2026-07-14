@@ -42,6 +42,36 @@ test('creación y edición comparten normalización y reglas personales', () => 
     'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
   );
 
+  const fechaMenorEdad = `${new Date().getFullYear() - 17}-01-01`;
+  assert.equal(
+    validarUsuario({
+      ...datosNormalizados,
+      fechaNacimiento: fechaMenorEdad,
+    }),
+    'Debes tener al menos 18 años'
+  );
+  assert.equal(
+    validarEdicionUsuario({
+      ...datosNormalizados,
+      fechaNacimiento: fechaMenorEdad,
+    }),
+    null
+  );
+  assert.equal(
+    validarUsuario({
+      ...datosNormalizados,
+      cedula: '12345678901234567890',
+    }),
+    null
+  );
+  assert.equal(
+    validarUsuario({
+      ...datosNormalizados,
+      cedula: '123456789012345678901',
+    }),
+    'Ingresa una cédula válida'
+  );
+
   const casosPersonalesInvalidos = [
     ['nombres', ' ', 'Ingresa nombres válidos'],
     ['apellidos', ' ', 'Ingresa apellidos válidos'],
