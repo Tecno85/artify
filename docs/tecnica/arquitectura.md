@@ -161,6 +161,8 @@ La autenticación de Artify se apoya en correo, contraseña, `bcryptjs` y un tok
 - El pool de PostgreSQL limita conexiones y tiempos de espera para que una consulta o conexión bloqueada no deje ocupado el backend indefinidamente.
 - Al recibir `SIGTERM` o `SIGINT`, el backend deja de aceptar solicitudes, detiene sus tareas periódicas y cierra el pool de PostgreSQL antes de terminar.
 - Los datos de usuario se escapan antes de formar la tabla administrativa y los mensajes dinámicos se insertan con `textContent`, no como HTML ejecutable.
+- Express oculta la cabecera `X-Powered-By`, limita los cuerpos a 64 KB y evita que las respuestas de `/api` se almacenen en caché.
+- Los cuerpos JSON malformados o demasiado grandes reciben errores JSON controlados con estados `400` y `413`.
 
 ---
 

@@ -38,7 +38,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 | Conector Node.js | `pg` | backend | Oficial en esta variante |
 | Gestor backend | pnpm 11.1.1 | backend | Oficial en esta variante |
 
-El backend valida `TOKEN_SECRET` antes de abrir PostgreSQL o escuchar el puerto. En producción rechaza valores ausentes, menores de 32 caracteres o copiados de las plantillas; en desarrollo usa un secreto temporal y muestra una advertencia. El pool PostgreSQL limita conexiones y tiempos de espera, informa errores inesperados y se cierra de forma ordenada ante `SIGTERM` o `SIGINT`.
+El backend valida `TOKEN_SECRET` antes de abrir PostgreSQL o escuchar el puerto. En producción rechaza valores ausentes, menores de 32 caracteres o copiados de las plantillas; en desarrollo usa un secreto temporal y muestra una advertencia. El pool PostgreSQL limita conexiones y tiempos de espera, informa errores inesperados y se cierra de forma ordenada ante `SIGTERM` o `SIGINT`. Express oculta `X-Powered-By`, limita los cuerpos a 64 KB, evita almacenar respuestas `/api` en caché y devuelve JSON uniforme cuando el cuerpo es inválido o demasiado grande.
 
 ### Control de versiones
 
@@ -260,7 +260,7 @@ La versión PostgreSQL fue validada con:
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas: 21/21 correctas.
+- Resultado de pruebas automatizadas backend: 23/23 correctas.
 - Suite frontend con `node:test`: 12/12 correctas para autenticación, login por rol, inicio de sesión del editor y renderizado seguro de contenido dinámico.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -359,6 +359,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Ampliación de pruebas para autorización, CRUD administrativo y contratos de analytics.
 - [2026-07-13] Incorporación de pruebas frontend sin dependencias para sesión, login por rol e inicio no bloqueante del editor.
 - [2026-07-13] Renderizado seguro de mensajes dinámicos y cobertura contra inyección de HTML en el frontend.
+- [2026-07-14] Refuerzo HTTP con límite de solicitudes, respuestas de error uniformes y cabeceras seguras verificadas.
 
 ---
 

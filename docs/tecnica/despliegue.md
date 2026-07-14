@@ -31,6 +31,8 @@ GitHub Pages publica solamente archivos estáticos. El backend Express y Postgre
 
 GitHub Pages no permite definir encabezados HTTP personalizados desde el repositorio. Las cabeceras de seguridad de la API continúan configuradas en Express; cualquier política adicional para el frontend debe implementarse en el HTML cuando sea compatible o requeriría otro proveedor o CDN.
 
+La API oculta `X-Powered-By`, limita los cuerpos a 64 KB y marca las respuestas bajo `/api` con `Cache-Control: no-store`. Artify envía al backend datos de usuario, preferencias y metadatos; el archivo de imagen permanece en el navegador, por lo que este límite no afecta la carga normal del editor.
+
 ## 2. Elegir el procedimiento
 
 Uso el procedimiento que corresponda:

@@ -319,6 +319,17 @@ test('health público responde sin consultar credenciales', async () => {
   assert.equal(body.servicio, 'artify-api');
   assert.equal(body.entorno, 'test');
   assert.match(body.timestamp, /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(response.headers.get('x-powered-by'), null);
+  assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(response.headers.get('x-frame-options'), 'DENY');
+  assert.equal(
+    response.headers.get('referrer-policy'),
+    'strict-origin-when-cross-origin'
+  );
+  assert.equal(
+    response.headers.get('permissions-policy'),
+    'camera=(), microphone=(), geolocation=()'
+  );
 });
 
 test('ready confirma que PostgreSQL está disponible', async () => {
@@ -367,8 +378,33 @@ test('los cuatro endpoints públicos de analytics conservan su contrato', async 
     assert.equal(body.ok, true);
     assert.equal(body.mensaje, caso.mensaje);
     assert.match(body.meta.timestamp, /^\d{4}-\d{2}-\d{2}T/);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
     caso.validar(body.data);
   }
+});
+
+test('API rechaza cuerpos JSON malformados con una respuesta uniforme', async () => {
+  const { response, body } = await request('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{"correo":',
+  });
+
+  assert.equal(response.status, 400);
+  assert.equal(body.mensaje, 'El cuerpo JSON no es válido');
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+});
+
+test('API rechaza solicitudes que superan el límite permitido', async () => {
+  const { response, body } = await request('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contenido: 'a'.repeat(70 * 1024) }),
+  });
+
+  assert.equal(response.status, 413);
+  assert.equal(body.mensaje, 'Solicitud demasiado grande');
+  assert.equal(response.headers.get('cache-control'), 'no-store');
 });
 
 test('login rechaza correo inválido antes de consultar credenciales', async () => {

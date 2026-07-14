@@ -17,9 +17,12 @@ const sesionRoutes = require('./routes/sesion.routes');
 const actividadRoutes = require('./routes/actividad.routes');
 const adminRoutes = require('./routes/admin.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
+const LIMITE_CUERPO_SOLICITUD = '64kb';
 
 // ========== APP EXPRESS ==========
 const app = express();
+app.disable('x-powered-by');
+
 const origenesPermitidos = (process.env.CORS_ORIGIN || '')
   .split(',')
   .map((origen) => origen.trim())
@@ -54,8 +57,16 @@ app.use((req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   next();
 });
-app.use(express.json());
-app.use(express.text({ type: 'text/plain' }));
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+app.use(express.json({ limit: LIMITE_CUERPO_SOLICITUD }));
+app.use(
+  express.text({ type: 'text/plain', limit: LIMITE_CUERPO_SOLICITUD })
+);
 
 // ========== RUTA DE SALUD ==========
 app.get('/health', (req, res) => {
@@ -94,6 +105,24 @@ app.use('/api', sesionRoutes);
 app.use('/api', actividadRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', analyticsRoutes);
+
+// ========== ERRORES DE SOLICITUD ==========
+app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
+
+  if (error?.type === 'entity.too.large') {
+    return res.status(413).json({ mensaje: 'Solicitud demasiado grande' });
+  }
+
+  if (error?.type === 'entity.parse.failed') {
+    return res.status(400).json({ mensaje: 'El cuerpo JSON no es válido' });
+  }
+
+  console.error('❌ Error no controlado en la API:', error?.message || error);
+  return res.status(500).json({ mensaje: 'Error en el servidor' });
+});
 
 // ========== LIMPIEZA AUTOMÁTICA DE SESIONES INACTIVAS ==========
 // Cerrar sesiones abandonadas para mantener consistencia de estado en la base de datos
