@@ -179,6 +179,7 @@ Reglas importantes:
 - `DATABASE_URL` y `TOKEN_SECRET` nunca se guardan en Git.
 - `TOKEN_SECRET` debe tener al menos 32 caracteres y no puede conservar un valor de ejemplo; el backend detiene el arranque si la configuración es insegura.
 - `CORS_ORIGIN` contiene el origen de Pages, sin `/artify/` y sin barra final.
+- El backend permite por CORS los métodos `GET`, `POST`, `PUT`, `DELETE` y `OPTIONS`, y las cabeceras `Content-Type` y `Authorization`; el navegador puede reutilizar el preflight durante 10 minutos.
 - Render asigna `PORT`; normalmente no lo configuro manualmente.
 - Si necesito varios orígenes autorizados, los separo con comas.
 

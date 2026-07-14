@@ -254,13 +254,13 @@ La versión PostgreSQL fue validada con:
 - Carga de `database/postgresql/seed.sql`.
 - Creación de 5 tablas y la vista `v_usuarios_activos`.
 - Integridad referencial con cascadas PostgreSQL, checks de valores no negativos e índices para analytics.
-- Login con mensaje genérico ante credenciales inválidas, límite de intentos y CORS configurable por entorno.
+- Login con mensaje genérico ante credenciales inválidas, límite de intentos y CORS configurable por entorno, con métodos y cabeceras permitidos de forma explícita.
 - Endpoint de salud `GET /health` para verificación de despliegue.
 - `pnpm run check`.
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas backend: 24/24 correctas.
+- Resultado de pruebas automatizadas backend: 25/25 correctas.
 - Suite frontend con `node:test`: 12/12 correctas para autenticación, login por rol, inicio de sesión del editor y renderizado seguro de contenido dinámico.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -361,6 +361,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Renderizado seguro de mensajes dinámicos y cobertura contra inyección de HTML en el frontend.
 - [2026-07-14] Refuerzo HTTP con límite de solicitudes, respuestas de error uniformes y cabeceras seguras verificadas.
 - [2026-07-14] Límite de intentos con `Retry-After`, limpieza periódica y memoria acotada a 1000 registros.
+- [2026-07-14] Configuración CORS explícita y prueba automatizada para orígenes autorizados y no autorizados.
 
 ---
 

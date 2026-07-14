@@ -14,6 +14,8 @@ validarBaseDatosPruebas();
 
 const PORT = process.env.TEST_PORT || '3100';
 const API = `http://127.0.0.1:${PORT}`;
+const ORIGEN_FRONTEND_PRUEBAS = 'https://frontend.artify.test';
+const ORIGEN_NO_AUTORIZADO = 'https://malicioso.example';
 const stamp = Date.now().toString().slice(-10);
 const usuarioPrueba = {
   nombres: 'Usuario',
@@ -284,6 +286,7 @@ before(async () => {
       ...process.env,
       PORT,
       NODE_ENV: 'test',
+      CORS_ORIGIN: ORIGEN_FRONTEND_PRUEBAS,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -338,6 +341,53 @@ test('ready confirma que PostgreSQL está disponible', async () => {
   assert.equal(response.status, 200);
   assert.equal(body.ok, true);
   assert.equal(body.baseDatos, 'disponible');
+});
+
+test('CORS autoriza el frontend configurado y omite cabeceras para otros orígenes', async () => {
+  const respuestaPreflight = await fetch(`${API}/api/login`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: ORIGEN_FRONTEND_PRUEBAS,
+      'Access-Control-Request-Method': 'POST',
+      'Access-Control-Request-Headers': 'content-type,authorization',
+    },
+  });
+
+  assert.equal(respuestaPreflight.status, 204);
+  assert.equal(
+    respuestaPreflight.headers.get('access-control-allow-origin'),
+    ORIGEN_FRONTEND_PRUEBAS
+  );
+
+  const metodosPermitidos = respuestaPreflight.headers
+    .get('access-control-allow-methods')
+    .split(',')
+    .map((metodo) => metodo.trim());
+  assert.deepEqual(metodosPermitidos, [
+    'GET',
+    'POST',
+    'PUT',
+    'DELETE',
+    'OPTIONS',
+  ]);
+
+  const headersPermitidos = respuestaPreflight.headers
+    .get('access-control-allow-headers')
+    .split(',')
+    .map((header) => header.trim().toLowerCase());
+  assert.ok(headersPermitidos.includes('content-type'));
+  assert.ok(headersPermitidos.includes('authorization'));
+  assert.equal(respuestaPreflight.headers.get('access-control-max-age'), '600');
+
+  const respuestaOrigenNoAutorizado = await fetch(`${API}/health`, {
+    headers: { Origin: ORIGEN_NO_AUTORIZADO },
+  });
+
+  assert.equal(respuestaOrigenNoAutorizado.status, 200);
+  assert.equal(
+    respuestaOrigenNoAutorizado.headers.get('access-control-allow-origin'),
+    null
+  );
 });
 
 test('los cuatro endpoints públicos de analytics conservan su contrato', async () => {

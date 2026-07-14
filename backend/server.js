@@ -18,6 +18,9 @@ const actividadRoutes = require('./routes/actividad.routes');
 const adminRoutes = require('./routes/admin.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const LIMITE_CUERPO_SOLICITUD = '64kb';
+const METODOS_CORS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
+const HEADERS_CORS = ['Content-Type', 'Authorization'];
+const MAX_AGE_CORS_SEGUNDOS = 10 * 60;
 
 // ========== APP EXPRESS ==========
 const app = express();
@@ -48,6 +51,10 @@ if (process.env.NODE_ENV === 'production') {
 app.use(
   cors({
     origin: validarOrigenCors,
+    methods: METODOS_CORS,
+    allowedHeaders: HEADERS_CORS,
+    maxAge: MAX_AGE_CORS_SEGUNDOS,
+    optionsSuccessStatus: 204,
   })
 );
 app.use((req, res, next) => {

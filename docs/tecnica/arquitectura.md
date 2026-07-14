@@ -51,6 +51,8 @@ Artify utiliza una arquitectura web full stack organizada en tres capas principa
 
 La URL del backend no queda fija en el código fuente: el workflow de GitHub Pages genera `frontend/assets/js/config.js` con la variable de repositorio `ARTIFY_API_URL`. Esta distribución separa responsabilidades, pero no implementa por sí sola redundancia, clústeres ni conmutación por error.
 
+El backend solo entrega permisos CORS a los orígenes definidos en `CORS_ORIGIN`. Además, declara de forma explícita los métodos `GET`, `POST`, `PUT`, `DELETE` y `OPTIONS`, acepta las cabeceras `Content-Type` y `Authorization`, y permite conservar el resultado del preflight durante 10 minutos.
+
 ---
 
 ## 3. Capa Frontend
