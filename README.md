@@ -166,7 +166,7 @@ cd backend
 pnpm run test:frontend
 ```
 
-GitHub Actions ejecuta automáticamente 25 pruebas del backend y 12 del frontend en cada `push` a `main` y en los pull requests.
+GitHub Actions ejecuta automáticamente 28 pruebas del backend y 12 del frontend en cada `push` a `main` y en los pull requests.
 
 ## Despliegue
 

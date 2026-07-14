@@ -5,6 +5,7 @@ const db = require('../config/db');
 const { crearToken } = require('../utils/token');
 const {
   normalizarCorreo,
+  normalizarDatosUsuario,
   validarCredenciales,
   validarUsuario,
 } = require('../utils/validacion');
@@ -104,14 +105,14 @@ function login(req, res) {
 
 // ========== REGISTRO DE USUARIO ==========
 async function registro(req, res) {
-  const { nombres, apellidos, cedula, fechaNacimiento, correo, password } =
-    req.body;
-  const nombresNormalizados =
-    typeof nombres === 'string' ? nombres.trim() : nombres;
-  const apellidosNormalizados =
-    typeof apellidos === 'string' ? apellidos.trim() : apellidos;
-  const cedulaNormalizada = typeof cedula === 'string' ? cedula.trim() : cedula;
-  const correoNormalizado = normalizarCorreo(correo);
+  const {
+    nombres: nombresNormalizados,
+    apellidos: apellidosNormalizados,
+    cedula: cedulaNormalizada,
+    fechaNacimiento,
+    correo: correoNormalizado,
+    password,
+  } = normalizarDatosUsuario(req.body);
   const dbPromise = db.promise();
   const errorValidacion = validarUsuario({
     nombres: nombresNormalizados,

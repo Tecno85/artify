@@ -15,6 +15,22 @@ function normalizarCorreo(valor) {
   return typeof valor === 'string' ? valor.trim().toLowerCase() : valor;
 }
 
+function normalizarTexto(valor) {
+  return typeof valor === 'string' ? valor.trim() : valor;
+}
+
+function normalizarDatosUsuario(datos = {}) {
+  return {
+    nombres: normalizarTexto(datos.nombres),
+    apellidos: normalizarTexto(datos.apellidos),
+    cedula: normalizarTexto(datos.cedula),
+    fechaNacimiento: datos.fechaNacimiento,
+    correo: normalizarCorreo(datos.correo),
+    password: datos.password,
+    estado: datos.estado,
+  };
+}
+
 function esPassword(valor) {
   return typeof valor === 'string' && valor.length >= 8 && valor.length <= 128;
 }
@@ -61,13 +77,11 @@ function validarCredenciales({ correo, password }) {
   return null;
 }
 
-function validarUsuario({
+function validarDatosPersonales({
   nombres,
   apellidos,
   cedula,
   fechaNacimiento,
-  correo,
-  password,
 }) {
   if (!esTexto(nombres, 2, 100)) {
     return 'Ingresa nombres válidos';
@@ -83,6 +97,27 @@ function validarUsuario({
 
   if (!esFecha(fechaNacimiento)) {
     return 'Ingresa una fecha de nacimiento válida';
+  }
+
+  return null;
+}
+
+function validarUsuario({
+  nombres,
+  apellidos,
+  cedula,
+  fechaNacimiento,
+  correo,
+  password,
+}) {
+  const errorDatosPersonales = validarDatosPersonales({
+    nombres,
+    apellidos,
+    cedula,
+    fechaNacimiento,
+  });
+  if (errorDatosPersonales) {
+    return errorDatosPersonales;
   }
 
   const errorCredenciales = validarCredenciales({ correo, password });
@@ -101,20 +136,14 @@ function validarEdicionUsuario({
   correo,
   estado,
 }) {
-  if (!esTexto(nombres, 2, 100)) {
-    return 'Ingresa nombres válidos';
-  }
-
-  if (!esTexto(apellidos, 2, 100)) {
-    return 'Ingresa apellidos válidos';
-  }
-
-  if (!esCedula(cedula)) {
-    return 'Ingresa una cédula válida';
-  }
-
-  if (!esFecha(fechaNacimiento)) {
-    return 'Ingresa una fecha de nacimiento válida';
+  const errorDatosPersonales = validarDatosPersonales({
+    nombres,
+    apellidos,
+    cedula,
+    fechaNacimiento,
+  });
+  if (errorDatosPersonales) {
+    return errorDatosPersonales;
   }
 
   if (!esCorreo(correo)) {
@@ -151,6 +180,7 @@ function validarConfiguracion({
 
 module.exports = {
   normalizarCorreo,
+  normalizarDatosUsuario,
   normalizarIdEntero,
   validarConfiguracion,
   validarCredenciales,

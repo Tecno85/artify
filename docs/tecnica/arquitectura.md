@@ -96,7 +96,7 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 | `backend/routes/` | Definición de endpoints por módulo. |
 | `backend/controllers/` | Lógica de negocio de cada recurso. |
 | `backend/middlewares/` | Autenticación, autorización y control de acceso. |
-| `backend/utils/` | Funciones reutilizables para token, validación y configuración. |
+| `backend/utils/` | Funciones reutilizables para token, configuración, normalización y reglas compartidas de validación. |
 | `backend/tests/` | Pruebas automatizadas unitarias y de integración. |
 
 ### Rutas principales
@@ -159,12 +159,14 @@ La autenticación de Artify se apoya en correo, contraseña, `bcryptjs` y un tok
 - El estado y el rol se consultan nuevamente en PostgreSQL para cada ruta privada.
 - Las variables sensibles se cargan desde `.env` y no deben subirse al repositorio.
 - En producción, `TOKEN_SECRET` debe existir, tener al menos 32 caracteres y no usar el valor de ejemplo; esta validación ocurre antes de abrir conexiones o aceptar solicitudes.
+- En producción, `CORS_ORIGIN` debe contener al menos un origen autorizado; una omisión detiene el arranque antes de abrir PostgreSQL o aceptar solicitudes.
 - La firma recibida y la firma esperada del token se comparan en tiempo constante para evitar comparaciones sensibles directas.
 - El pool de PostgreSQL limita conexiones y tiempos de espera para que una consulta o conexión bloqueada no deje ocupado el backend indefinidamente.
 - Al recibir `SIGTERM` o `SIGINT`, el backend deja de aceptar solicitudes, detiene sus tareas periódicas y cierra el pool de PostgreSQL antes de terminar.
 - Los datos de usuario se escapan antes de formar la tabla administrativa y los mensajes dinámicos se insertan con `textContent`, no como HTML ejecutable.
-- Express oculta la cabecera `X-Powered-By`, limita los cuerpos a 64 KB y evita que las respuestas de `/api` se almacenen en caché.
+- Express oculta la cabecera `X-Powered-By`, limita los cuerpos a 64 KB y evita que las respuestas de `/api`, `/health` y `/ready` se almacenen en caché.
 - Los cuerpos JSON malformados o demasiado grandes reciben errores JSON controlados con estados `400` y `413`.
+- Las rutas inexistentes bajo `/api` reciben una respuesta JSON uniforme con estado `404`, en lugar de la página HTML predeterminada de Express.
 - El login limita diez fallos por IP, ruta y correo durante quince minutos; responde `429` con `Retry-After` y conserva como máximo 1000 registros temporales en memoria.
 
 ---

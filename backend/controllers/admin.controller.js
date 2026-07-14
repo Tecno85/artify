@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const db = require('../config/db');
 const {
-  normalizarCorreo,
+  normalizarDatosUsuario,
   normalizarIdEntero,
   validarUsuario,
   validarEdicionUsuario,
@@ -41,14 +41,14 @@ function listarUsuarios(req, res) {
 
 // ========== CREACIÓN DE USUARIO ==========
 async function crearUsuario(req, res) {
-  const { nombres, apellidos, cedula, fechaNacimiento, correo, password } =
-    req.body;
-  const nombresNormalizados =
-    typeof nombres === 'string' ? nombres.trim() : nombres;
-  const apellidosNormalizados =
-    typeof apellidos === 'string' ? apellidos.trim() : apellidos;
-  const cedulaNormalizada = typeof cedula === 'string' ? cedula.trim() : cedula;
-  const correoNormalizado = normalizarCorreo(correo);
+  const {
+    nombres: nombresNormalizados,
+    apellidos: apellidosNormalizados,
+    cedula: cedulaNormalizada,
+    fechaNacimiento,
+    correo: correoNormalizado,
+    password,
+  } = normalizarDatosUsuario(req.body);
   const dbPromise = db.promise();
   const errorValidacion = validarUsuario({
     nombres: nombresNormalizados,
@@ -126,14 +126,14 @@ async function crearUsuario(req, res) {
 // ========== EDICIÓN DE USUARIO ==========
 function editarUsuario(req, res) {
   const id = normalizarIdEntero(req.params.id);
-  const { nombres, apellidos, cedula, fechaNacimiento, correo, estado } =
-    req.body;
-  const nombresNormalizados =
-    typeof nombres === 'string' ? nombres.trim() : nombres;
-  const apellidosNormalizados =
-    typeof apellidos === 'string' ? apellidos.trim() : apellidos;
-  const cedulaNormalizada = typeof cedula === 'string' ? cedula.trim() : cedula;
-  const correoNormalizado = normalizarCorreo(correo);
+  const {
+    nombres: nombresNormalizados,
+    apellidos: apellidosNormalizados,
+    cedula: cedulaNormalizada,
+    fechaNacimiento,
+    correo: correoNormalizado,
+    estado,
+  } = normalizarDatosUsuario(req.body);
 
   if (id === null) {
     return res.status(400).json({ mensaje: 'Identificador de usuario inválido' });

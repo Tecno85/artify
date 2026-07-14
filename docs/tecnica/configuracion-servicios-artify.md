@@ -389,14 +389,14 @@ NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 El resultado obtenido fue:
 
 ```text
-tests 25
-pass 25
+tests 28
+pass 28
 fail 0
 ```
 
 La suite comprobó:
 
-- Respuesta del endpoint público de salud.
+- Respuesta actual del endpoint público de salud sin almacenamiento en caché.
 - Respuesta del endpoint público de analítica.
 - Validación de correos.
 - Registro y login de usuario.
@@ -408,6 +408,9 @@ La suite comprobó:
 - Autenticación administrativa.
 - Cabeceras HTTP seguras y respuestas de API sin caché.
 - Permisos CORS para el origen configurado y ausencia de autorización para otros orígenes.
+- Validación obligatoria de `CORS_ORIGIN` al iniciar en producción.
+- Normalización y reglas personales compartidas entre registro y administración.
+- Respuesta JSON con estado `404` para rutas inexistentes bajo `/api`.
 - Rechazo de JSON malformado y cuerpos superiores a 64 KB.
 - Limpieza de los usuarios temporales creados durante la prueba.
 
@@ -441,7 +444,7 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 | Variables de entorno | Archivo local completo y valores sensibles protegidos. | Evidencia 4 | Verificado |
 | Dependencias | Lockfile consistente y paquetes al día. | Evidencia 5 | Verificado |
 | Sintaxis del backend | `pnpm run check` finaliza sin errores. | Evidencia 5 | Verificado |
-| Pruebas automatizadas | 25 pruebas backend y 12 frontend aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
+| Pruebas automatizadas | 28 pruebas backend y 12 frontend aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
 | Servidor de aplicaciones | Express activo en el puerto `3000`. | Evidencia 6 | Verificado |
 | Conexión backend-PostgreSQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
 | Endpoint de salud | Respuesta HTTP `200` y JSON válido en `/health`. | Evidencia 6 | Verificado |

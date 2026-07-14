@@ -38,7 +38,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 | Conector Node.js | `pg` | backend | Oficial en esta variante |
 | Gestor backend | pnpm 11.1.1 | backend | Oficial en esta variante |
 
-El backend valida `TOKEN_SECRET` antes de abrir PostgreSQL o escuchar el puerto. En producción rechaza valores ausentes, menores de 32 caracteres o copiados de las plantillas; en desarrollo usa un secreto temporal y muestra una advertencia. El pool PostgreSQL limita conexiones y tiempos de espera, informa errores inesperados y se cierra de forma ordenada ante `SIGTERM` o `SIGINT`. Express oculta `X-Powered-By`, limita los cuerpos a 64 KB, evita almacenar respuestas `/api` en caché y devuelve JSON uniforme cuando el cuerpo es inválido o demasiado grande.
+El backend valida `TOKEN_SECRET` y `CORS_ORIGIN` antes de abrir PostgreSQL o escuchar el puerto. En producción rechaza secretos ausentes, menores de 32 caracteres o copiados de las plantillas, y exige al menos un origen CORS; en desarrollo usa un secreto temporal, muestra una advertencia y permite omitir el origen. El pool PostgreSQL limita conexiones y tiempos de espera, informa errores inesperados y se cierra de forma ordenada ante `SIGTERM` o `SIGINT`. Express oculta `X-Powered-By`, limita los cuerpos a 64 KB, evita almacenar respuestas `/api`, `/health` y `/ready` en caché, y devuelve JSON uniforme cuando el cuerpo es inválido, demasiado grande o la ruta solicitada no existe.
 
 ### Control de versiones
 
@@ -255,14 +255,15 @@ La versión PostgreSQL fue validada con:
 - Creación de 5 tablas y la vista `v_usuarios_activos`.
 - Integridad referencial con cascadas PostgreSQL, checks de valores no negativos e índices para analytics.
 - Login con mensaje genérico ante credenciales inválidas, límite de intentos y CORS configurable por entorno, con métodos y cabeceras permitidos de forma explícita.
-- Endpoint de salud `GET /health` para verificación de despliegue.
+- Endpoints `GET /health` y `GET /ready` sin caché para verificar el estado actual del despliegue y PostgreSQL.
 - `pnpm run check`.
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas backend: 25/25 correctas.
+- Resultado de pruebas automatizadas backend: 28/28 correctas.
 - Suite frontend con `node:test`: 12/12 correctas para autenticación, login por rol, inicio de sesión del editor y renderizado seguro de contenido dinámico.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
+- Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
@@ -362,6 +363,10 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Refuerzo HTTP con límite de solicitudes, respuestas de error uniformes y cabeceras seguras verificadas.
 - [2026-07-14] Límite de intentos con `Retry-After`, limpieza periódica y memoria acotada a 1000 registros.
 - [2026-07-14] Configuración CORS explícita y prueba automatizada para orígenes autorizados y no autorizados.
+- [2026-07-14] Respuesta JSON uniforme para rutas inexistentes bajo `/api` y cobertura automatizada del estado `404`.
+- [2026-07-14] Cabeceras sin caché verificadas en `/health` y `/ready` para conservar diagnósticos operativos actuales.
+- [2026-07-14] Validación temprana de `CORS_ORIGIN` para impedir despliegues de producción sin un origen autorizado.
+- [2026-07-14] Normalización y reglas personales compartidas entre registro público y gestión administrativa de usuarios.
 
 ---
 

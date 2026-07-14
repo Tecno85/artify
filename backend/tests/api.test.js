@@ -333,6 +333,9 @@ test('health público responde sin consultar credenciales', async () => {
     response.headers.get('permissions-policy'),
     'camera=(), microphone=(), geolocation=()'
   );
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.equal(response.headers.get('pragma'), 'no-cache');
+  assert.equal(response.headers.get('expires'), '0');
 });
 
 test('ready confirma que PostgreSQL está disponible', async () => {
@@ -341,6 +344,9 @@ test('ready confirma que PostgreSQL está disponible', async () => {
   assert.equal(response.status, 200);
   assert.equal(body.ok, true);
   assert.equal(body.baseDatos, 'disponible');
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.equal(response.headers.get('pragma'), 'no-cache');
+  assert.equal(response.headers.get('expires'), '0');
 });
 
 test('CORS autoriza el frontend configurado y omite cabeceras para otros orígenes', async () => {
@@ -443,6 +449,15 @@ test('API rechaza cuerpos JSON malformados con una respuesta uniforme', async ()
   assert.equal(response.status, 400);
   assert.equal(body.mensaje, 'El cuerpo JSON no es válido');
   assert.equal(response.headers.get('cache-control'), 'no-store');
+});
+
+test('API responde JSON uniforme cuando la ruta no existe', async () => {
+  const { response, body } = await request('/api/ruta-inexistente');
+
+  assert.equal(response.status, 404);
+  assert.match(response.headers.get('content-type'), /^application\/json/);
+  assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.deepEqual(body, { mensaje: 'Ruta de API no encontrada' });
 });
 
 test('API rechaza solicitudes que superan el límite permitido', async () => {

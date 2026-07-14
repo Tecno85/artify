@@ -9,6 +9,9 @@ dotenv.config();
 const { validarConfiguracionToken } = require('./utils/token');
 validarConfiguracionToken();
 
+const { obtenerOrigenesPermitidos } = require('./utils/cors');
+const origenesPermitidos = obtenerOrigenesPermitidos();
+
 const db = require('./config/db');
 
 const authRoutes = require('./routes/auth.routes');
@@ -25,11 +28,6 @@ const MAX_AGE_CORS_SEGUNDOS = 10 * 60;
 // ========== APP EXPRESS ==========
 const app = express();
 app.disable('x-powered-by');
-
-const origenesPermitidos = (process.env.CORS_ORIGIN || '')
-  .split(',')
-  .map((origen) => origen.trim())
-  .filter(Boolean);
 
 function validarOrigenCors(origen, callback) {
   if (!origen) {
@@ -64,12 +62,16 @@ app.use((req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
   next();
 });
-app.use('/api', (req, res, next) => {
+
+function evitarCache(req, res, next) {
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
   next();
-});
+}
+
+app.use(['/health', '/ready'], evitarCache);
+app.use('/api', evitarCache);
 app.use(express.json({ limit: LIMITE_CUERPO_SOLICITUD }));
 app.use(
   express.text({ type: 'text/plain', limit: LIMITE_CUERPO_SOLICITUD })
@@ -112,6 +114,10 @@ app.use('/api', sesionRoutes);
 app.use('/api', actividadRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', analyticsRoutes);
+
+app.use('/api', (req, res) => {
+  return res.status(404).json({ mensaje: 'Ruta de API no encontrada' });
+});
 
 // ========== ERRORES DE SOLICITUD ==========
 app.use((error, req, res, next) => {
