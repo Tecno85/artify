@@ -266,6 +266,8 @@ La versión PostgreSQL fue validada con:
 - Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
+- Validación backend de identificadores en consultas de actividad y de metadatos de imagen con los límites de 10 MB y 8192 px del editor.
+- Bloqueo transaccional de la sesión al registrar operaciones o imágenes para conservar el orden y el estado ante solicitudes concurrentes.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y las suites backend y frontend en `push` o `pull_request`.
 
@@ -367,6 +369,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Cabeceras sin caché verificadas en `/health` y `/ready` para conservar diagnósticos operativos actuales.
 - [2026-07-14] Validación temprana de `CORS_ORIGIN` para impedir despliegues de producción sin un origen autorizado.
 - [2026-07-14] Normalización y reglas personales compartidas entre registro público y gestión administrativa de usuarios.
+- [2026-07-14] Refuerzo de consultas, metadatos y concurrencia en el registro de actividad del editor.
 
 ---
 

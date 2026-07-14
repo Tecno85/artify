@@ -677,6 +677,17 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
   assert.equal(estadisticas.body.mensaje, 'ok');
   assert.ok(estadisticas.body.estadisticas.operaciones >= 1);
 
+  const totalOperaciones = await request(
+    `/api/operacion/total/${idUsuario}`,
+    {
+      headers: { Authorization: `Bearer ${tokenUsuario}` },
+    }
+  );
+
+  assert.equal(totalOperaciones.response.status, 200);
+  assert.equal(totalOperaciones.body.mensaje, 'ok');
+  assert.ok(totalOperaciones.body.total >= 1);
+
   const cierre = await request('/api/sesion/cerrar', {
     method: 'POST',
     headers: authHeaders,
@@ -920,6 +931,26 @@ test('rutas protegidas rechazan identificadores malformados', async () => {
     operacionInvalida.body.mensaje,
     'Datos de operación inválidos'
   );
+
+  const imagenInvalida = await request('/api/imagen', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${tokenUsuario}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      idUsuario,
+      idSesion,
+      nombreOriginal: 'dimensiones-invalidas.png',
+      formatoOriginal: 'png',
+      tamanoOriginal: 1024,
+      anchoOriginal: 8193,
+      altoOriginal: 480,
+    }),
+  });
+
+  assert.equal(imagenInvalida.response.status, 400);
+  assert.equal(imagenInvalida.body.mensaje, 'Datos de imagen inválidos');
 });
 
 test('usuario sin rol admin no puede acceder al panel administrativo', async () => {
@@ -951,6 +982,21 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
   assert.equal(login.body.usuario.rol, 'admin');
   assert.ok(login.body.token);
   tokenAdmin = login.body.token;
+
+  for (const ruta of [
+    '/api/estadisticas/abc',
+    '/api/operacion/total/abc',
+  ]) {
+    const consultaIdInvalido = await request(ruta, {
+      headers: { Authorization: `Bearer ${login.body.token}` },
+    });
+
+    assert.equal(consultaIdInvalido.response.status, 400);
+    assert.equal(
+      consultaIdInvalido.body.mensaje,
+      'Identificador de usuario inválido'
+    );
+  }
 
   const usuarios = await request('/api/admin/usuarios', {
     headers: { Authorization: `Bearer ${login.body.token}` },

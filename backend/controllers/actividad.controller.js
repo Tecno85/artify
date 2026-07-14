@@ -2,9 +2,20 @@
 const db = require('../config/db');
 const { normalizarIdEntero } = require('../utils/validacion');
 
+const TAMANO_MAXIMO_IMAGEN_BYTES = 10 * 1024 * 1024;
+const DIMENSION_MAXIMA_IMAGEN_PX = 8192;
+
+function obtenerTotal(results) {
+  return Number(results?.[0]?.total ?? 0);
+}
+
 // ========== ESTADÍSTICAS DEL USUARIO ==========
 function obtenerEstadisticas(req, res) {
-  const { id } = req.params;
+  const idUsuario = normalizarIdEntero(req.params.id);
+
+  if (idUsuario === null) {
+    return res.status(400).json({ mensaje: 'Identificador de usuario inválido' });
+  }
 
   console.log('📨 Cargando estadísticas de usuario');
 
@@ -14,27 +25,27 @@ function obtenerEstadisticas(req, res) {
     WHERE ses_usr_id_usuario = ?
   `;
 
-  db.query(querySesiones, [id], (err, results) => {
+  return db.query(querySesiones, [idUsuario], (err, results) => {
     if (err) {
       console.error('❌ Error al obtener estadísticas:', err.message);
       return res.status(500).json({ mensaje: 'Error en el servidor' });
     }
 
-    const totalSesiones = results[0].total;
+    const totalSesiones = obtenerTotal(results);
 
-      const queryOperaciones = `
+    const queryOperaciones = `
       SELECT COUNT(*)::int as total
       FROM OPERACION
       WHERE opr_usr_id_usuario = ?
     `;
 
-    db.query(queryOperaciones, [id], (errOperaciones, resOpe) => {
+    db.query(queryOperaciones, [idUsuario], (errOperaciones, resOpe) => {
       if (errOperaciones) {
         console.error('❌ Error al obtener operaciones:', errOperaciones.message);
         return res.status(500).json({ mensaje: 'Error en el servidor' });
       }
 
-      const totalOperaciones = resOpe[0].total;
+      const totalOperaciones = obtenerTotal(resOpe);
 
       const queryImagenes = `
         SELECT COUNT(*)::int as total
@@ -42,7 +53,7 @@ function obtenerEstadisticas(req, res) {
         WHERE img_usr_id_usuario = ?
       `;
 
-      db.query(queryImagenes, [id], (errImagenes, resImg) => {
+      db.query(queryImagenes, [idUsuario], (errImagenes, resImg) => {
         if (errImagenes) {
           console.error('❌ Error al obtener imágenes:', errImagenes.message);
           return res.status(500).json({ mensaje: 'Error en el servidor' });
@@ -53,7 +64,7 @@ function obtenerEstadisticas(req, res) {
           estadisticas: {
             sesiones: totalSesiones,
             operaciones: totalOperaciones,
-            imagenesEditadas: resImg[0].total,
+            imagenesEditadas: obtenerTotal(resImg),
           },
         });
       });
@@ -87,6 +98,7 @@ async function registrarOperacion(req, res) {
         SELECT ses_id_sesion, ses_usr_id_usuario, ses_estado_sesion
         FROM SESION_EDICION
         WHERE ses_id_sesion = ?
+        FOR UPDATE
       `,
       [idSesionNormalizado]
     );
@@ -169,7 +181,11 @@ async function registrarOperacion(req, res) {
 
 // ========== CONSULTAS DE ACTIVIDAD ==========
 function obtenerTotalOperaciones(req, res) {
-  const { id } = req.params;
+  const idUsuario = normalizarIdEntero(req.params.id);
+
+  if (idUsuario === null) {
+    return res.status(400).json({ mensaje: 'Identificador de usuario inválido' });
+  }
 
   const query = `
     SELECT COUNT(*)::int as total
@@ -177,7 +193,7 @@ function obtenerTotalOperaciones(req, res) {
     WHERE opr_usr_id_usuario = ?
   `;
 
-  db.query(query, [id], (err, results) => {
+  return db.query(query, [idUsuario], (err, results) => {
     if (err) {
       console.error('❌ Error al obtener operaciones:', err.message);
       return res.status(500).json({ mensaje: 'Error en el servidor' });
@@ -185,7 +201,7 @@ function obtenerTotalOperaciones(req, res) {
 
     return res.json({
       mensaje: 'ok',
-      total: results[0].total,
+      total: obtenerTotal(results),
     });
   });
 }
@@ -207,7 +223,7 @@ async function registrarImagen(req, res) {
   const formato = String(formatoFinal || formatoOriginal || '')
     .trim()
     .toLowerCase()
-    .replace('jpg', 'jpeg');
+    .replace(/^jpg$/, 'jpeg');
   const tamano = Number(tamanoOriginal);
   const ancho = Number(anchoOriginal);
   const alto = Number(altoOriginal);
@@ -221,11 +237,14 @@ async function registrarImagen(req, res) {
     nombreOriginal.trim().length > 255 ||
     !['png', 'jpeg', 'webp'].includes(formato) ||
     !Number.isSafeInteger(tamano) ||
-    tamano < 0 ||
+    tamano <= 0 ||
+    tamano > TAMANO_MAXIMO_IMAGEN_BYTES ||
     !Number.isSafeInteger(ancho) ||
     ancho <= 0 ||
+    ancho > DIMENSION_MAXIMA_IMAGEN_PX ||
     !Number.isSafeInteger(alto) ||
-    alto <= 0
+    alto <= 0 ||
+    alto > DIMENSION_MAXIMA_IMAGEN_PX
   ) {
     return res.status(400).json({ mensaje: 'Datos de imagen inválidos' });
   }
@@ -240,6 +259,7 @@ async function registrarImagen(req, res) {
         SELECT ses_id_sesion, ses_usr_id_usuario, ses_estado_sesion
         FROM SESION_EDICION
         WHERE ses_id_sesion = ?
+        FOR UPDATE
       `,
       [idSesionNormalizado]
     );
