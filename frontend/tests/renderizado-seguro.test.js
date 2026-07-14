@@ -136,9 +136,16 @@ test('notificaciones muestran mensajes como texto y no como HTML ejecutable', ()
   const rutaJs = path.resolve(__dirname, '..', 'assets', 'js');
   const editor = fs.readFileSync(path.join(rutaJs, 'editor.js'), 'utf8');
   const registro = fs.readFileSync(path.join(rutaJs, 'registro.js'), 'utf8');
+  const editorHtml = fs.readFileSync(
+    path.resolve(__dirname, '..', 'pages', 'editor.html'),
+    'utf8'
+  );
 
   assert.match(editor, /contenido\.textContent = String\(mensaje\)/);
   assert.match(registro, /contenido\.textContent = String\(mensaje\)/);
   assert.doesNotMatch(editor, /innerHTML\s*=\s*`[^`]*\$\{mensaje\}/s);
   assert.doesNotMatch(registro, /innerHTML\s*=\s*`[^`]*\$\{mensaje\}/s);
+  assert.match(editorHtml, /id="modalRecuperacion"/);
+  assert.match(editorHtml, /id="btnRecuperarRespaldo"/);
+  assert.match(editorHtml, /id="btnDescartarRespaldo"/);
 });

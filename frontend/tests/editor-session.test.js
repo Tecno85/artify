@@ -56,6 +56,24 @@ test('editor inicia la sesión en segundo plano sin bloquear su inicialización'
 
   assert.equal(await promesa, 42);
   assert.equal(escenario.sessionStorage.getItem('artifyIdSesion'), '42');
+
+  escenario.contexto.datosRespaldo = {
+    dataUrl: 'data:image/png;base64,AAAA',
+    formato: 'png',
+    nombreOriginal: 'prueba.png',
+    tamanoBytes: 128,
+  };
+  assert.equal(
+    evaluar(escenario.contexto, 'guardarRespaldoLocal(datosRespaldo)'),
+    true
+  );
+  const respaldo = evaluar(
+    escenario.contexto,
+    'leerRespaldoLocalParaUsuario(7)'
+  );
+  assert.equal(respaldo.idUsuario, 7);
+  assert.equal(respaldo.nombreOriginal, 'prueba.png');
+  assert.equal(respaldo.formato, 'png');
 });
 
 test('editor descarta una sesión tardía si el usuario autenticado cambió', async () => {
@@ -68,6 +86,16 @@ test('editor descarta una sesión tardía si el usuario autenticado cambió', as
   );
 
   escenario.contexto.usuarioPrueba = escenario.usuario;
+  escenario.contexto.datosRespaldo = {
+    dataUrl: 'data:image/webp;base64,AAAA',
+    formato: 'webp',
+    nombreOriginal: 'privada.webp',
+    tamanoBytes: 256,
+  };
+  assert.equal(
+    evaluar(escenario.contexto, 'guardarRespaldoLocal(datosRespaldo)'),
+    true
+  );
   const promesa = evaluar(
     escenario.contexto,
     'iniciarSesionEdicionEnSegundoPlano(usuarioPrueba)'
@@ -84,6 +112,11 @@ test('editor descarta una sesión tardía si el usuario autenticado cambió', as
 
   assert.equal(await promesa, null);
   assert.equal(escenario.sessionStorage.getItem('artifyIdSesion'), null);
+  assert.equal(
+    evaluar(escenario.contexto, 'leerRespaldoLocalParaUsuario(99)'),
+    null
+  );
+  assert.equal(escenario.localStorage.getItem('artify_backup_v1'), null);
 });
 
 test('editor limpia la sesión y vuelve al login cuando la API rechaza el token', async () => {

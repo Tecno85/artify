@@ -21,6 +21,7 @@ function limpiarSesionAuth() {
   sessionStorage.removeItem('artifyUser');
   sessionStorage.removeItem('artifyToken');
   sessionStorage.removeItem('artifyIdSesion');
+  localStorage.removeItem('artify_backup_v1');
   localStorage.removeItem('artify_backup_image');
   localStorage.removeItem('artify_backup_timestamp');
 }

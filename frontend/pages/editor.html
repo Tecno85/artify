@@ -381,6 +381,35 @@
       </div>
     </div>
 
+    <!-- ========== MODAL DE RECUPERACIÓN DE AUTOGUARDADO ========== -->
+    <div
+      id="modalRecuperacion"
+      class="modal-confirm modal-recovery"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloRecuperacion"
+    >
+      <div class="modal-confirm-content">
+        <h2 class="modal-confirm-title" id="tituloRecuperacion">
+          Recuperar trabajo
+        </h2>
+        <p class="modal-confirm-message">
+          Encontramos una copia local guardada el
+          <strong id="fechaRespaldo">-</strong>. Puedes recuperarla o
+          descartarla para comenzar de nuevo.
+        </p>
+        <div class="modal-confirm-actions">
+          <button class="btn-confirm-cancel" id="btnDescartarRespaldo">
+            Descartar
+          </button>
+          <button class="btn-confirm-primary" id="btnRecuperarRespaldo">
+            Recuperar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- ========== MODAL DE CONFIGURACIÓN (RF-10) ========== -->
     <div id="modalConfiguracion" class="modal-config" style="display: none">
       <div class="modal-config-content">
@@ -440,8 +469,12 @@
                   id="configAutoguardado"
                   class="config-checkbox"
                 />
-                <span>Activar autoguardado</span>
+                <span>Activar autoguardado local</span>
               </label>
+              <small class="config-help">
+                Permite recuperar en este navegador el último trabajo de los
+                últimos 7 días.
+              </small>
             </div>
           </section>
 

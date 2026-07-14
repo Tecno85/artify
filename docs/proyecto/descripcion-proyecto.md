@@ -82,7 +82,7 @@ Permite cargar imágenes y aplicar operaciones como recorte, redimensionamiento,
 
 ### 7.3 Módulo de configuración
 
-Permite guardar preferencias del usuario, como calidad de exportación, formato por defecto, notificaciones y autoguardado.
+Permite guardar preferencias del usuario, como calidad de exportación, formato por defecto, notificaciones y autoguardado. Cuando esta última opción está activa, el editor conserva una copia local asociada al usuario y permite recuperarla durante los siguientes 7 días desde el mismo navegador.
 
 ### 7.4 Módulo de sesiones y operaciones
 

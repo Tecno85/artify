@@ -1221,6 +1221,14 @@ header {
   accent-color: var(--primary);
 }
 
+.config-help {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin-left: 28px;
+}
+
 .config-user-info {
   display: flex;
   flex-direction: column;
@@ -1465,6 +1473,19 @@ header {
 .btn-confirm-primary:hover {
   background: #dc2626;
   transform: translateY(-2px);
+}
+
+.modal-recovery .btn-confirm-primary {
+  background: var(--primary);
+  color: var(--background-dark);
+}
+
+.modal-recovery .btn-confirm-primary:hover {
+  background: #3395ff;
+}
+
+.modal-recovery .modal-confirm-message strong {
+  color: var(--primary);
 }
 
 /* ========== MEDIA QUERY PARA 1920x1080 ========== */

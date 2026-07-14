@@ -42,6 +42,101 @@ const LOCAL_STORAGE_KEY = 'artify_no_mostrar_modal_resolucion';
 const TAMANO_MAXIMO_ARCHIVO = 10 * 1024 * 1024;
 const MAXIMO_PIXELES_IMAGEN = 16_000_000;
 const MAXIMA_DIMENSION_IMAGEN = 8192;
+const RESPALDO_LOCAL_KEY = 'artify_backup_v1';
+const RESPALDO_EXPIRACION_MS = 7 * 24 * 60 * 60 * 1000;
+const RESPALDO_LEGACY_KEYS = [
+  'artify_backup_image',
+  'artify_backup_timestamp',
+];
+
+function eliminarRespaldoLocal() {
+  [RESPALDO_LOCAL_KEY, ...RESPALDO_LEGACY_KEYS].forEach((clave) => {
+    try {
+      localStorage.removeItem(clave);
+    } catch {}
+  });
+}
+
+function guardarRespaldoLocal({
+  dataUrl,
+  formato,
+  nombreOriginal,
+  tamanoBytes,
+}) {
+  try {
+    const usuario = JSON.parse(
+      sessionStorage.getItem('artifyUser') || 'null'
+    );
+    const idUsuario = Number(usuario?.id);
+    const formatoNormalizado = String(formato || '').toLowerCase();
+
+    if (
+      !Number.isSafeInteger(idUsuario) ||
+      idUsuario <= 0 ||
+      typeof dataUrl !== 'string' ||
+      !/^data:image\/(png|jpeg|webp);base64,/.test(dataUrl) ||
+      !['png', 'jpeg', 'webp'].includes(formatoNormalizado)
+    ) {
+      return false;
+    }
+
+    const respaldo = {
+      version: 1,
+      idUsuario,
+      timestamp: Date.now(),
+      dataUrl,
+      formato: formatoNormalizado,
+      nombreOriginal:
+        typeof nombreOriginal === 'string' && nombreOriginal.trim()
+          ? nombreOriginal.trim().slice(0, 255)
+          : `imagen-recuperada.${formatoNormalizado}`,
+      tamanoBytes:
+        Number.isSafeInteger(tamanoBytes) && tamanoBytes > 0
+          ? tamanoBytes
+          : 0,
+    };
+
+    localStorage.setItem(RESPALDO_LOCAL_KEY, JSON.stringify(respaldo));
+    RESPALDO_LEGACY_KEYS.forEach((clave) => localStorage.removeItem(clave));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function leerRespaldoLocalParaUsuario(idUsuario, ahora = Date.now()) {
+  RESPALDO_LEGACY_KEYS.forEach((clave) => {
+    try {
+      localStorage.removeItem(clave);
+    } catch {}
+  });
+
+  try {
+    const respaldo = JSON.parse(localStorage.getItem(RESPALDO_LOCAL_KEY));
+    const idNormalizado = Number(idUsuario);
+    const esValido =
+      respaldo?.version === 1 &&
+      Number.isSafeInteger(idNormalizado) &&
+      idNormalizado > 0 &&
+      respaldo.idUsuario === idNormalizado &&
+      Number.isFinite(respaldo.timestamp) &&
+      respaldo.timestamp <= ahora &&
+      ahora - respaldo.timestamp <= RESPALDO_EXPIRACION_MS &&
+      typeof respaldo.dataUrl === 'string' &&
+      /^data:image\/(png|jpeg|webp);base64,/.test(respaldo.dataUrl) &&
+      ['png', 'jpeg', 'webp'].includes(respaldo.formato);
+
+    if (!esValido) {
+      eliminarRespaldoLocal();
+      return null;
+    }
+
+    return respaldo;
+  } catch {
+    eliminarRespaldoLocal();
+    return null;
+  }
+}
 
 // ========== SESIÓN DE EDICIÓN EN SEGUNDO PLANO ==========
 function iniciarSesionEdicionEnSegundoPlano(usuario) {
@@ -253,11 +348,16 @@ async function autoguardarImagen() {
 
       const reader = new FileReader();
       reader.onloadend = () => {
-        try {
-          localStorage.setItem('artify_backup_image', reader.result);
-          localStorage.setItem('artify_backup_timestamp', Date.now().toString());
+        const guardado = guardarRespaldoLocal({
+          dataUrl: reader.result,
+          formato,
+          nombreOriginal: archivoActual?.nombreOriginal,
+          tamanoBytes: blob.size,
+        });
+
+        if (guardado) {
           console.log('💾 Backup automático guardado');
-        } catch {
+        } else {
           console.warn('⚠️ No se pudo guardar backup (imagen muy grande)');
         }
       };
@@ -373,6 +473,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Cargar usuario e iniciar sesión de edición
   const usuarioData = sessionStorage.getItem('artifyUser');
   const token = obtenerTokenAuth();
+  let usuarioActual = null;
 
   if (!usuarioData || !token) {
     limpiarSesionAuth();
@@ -382,20 +483,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (usuarioData) {
     try {
-      const usuario = JSON.parse(usuarioData);
+      usuarioActual = JSON.parse(usuarioData);
 
-      if (usuario.rol === 'admin') {
+      if (usuarioActual.rol === 'admin') {
         window.location.href = './admin.html';
         return;
       }
 
       const userNameElement = document.getElementById('userName');
       if (userNameElement) {
-        userNameElement.textContent = `${usuario.nombres} ${usuario.apellidos}`;
+        userNameElement.textContent =
+          `${usuarioActual.nombres} ${usuarioActual.apellidos}`;
       }
 
       // La sesión se crea en segundo plano para no bloquear los controles.
-      iniciarSesionEdicionEnSegundoPlano(usuario);
+      iniciarSesionEdicionEnSegundoPlano(usuarioActual);
     } catch (error) {
       limpiarSesionAuth();
       window.location.href = './login.html';
@@ -604,6 +706,117 @@ window.addEventListener('DOMContentLoaded', () => {
     if (bytes < 1024) return bytes + ' B';
     else if (bytes < 1048576) return (bytes / 1024).toFixed(2) + ' KB';
     else return (bytes / 1048576).toFixed(2) + ' MB';
+  }
+
+  // ========== RECUPERACIÓN DE AUTOGUARDADO ==========
+  let respaldoPendiente = leerRespaldoLocalParaUsuario(usuarioActual?.id);
+  const modalRecuperacion = document.getElementById('modalRecuperacion');
+  const btnRecuperarRespaldo = document.getElementById(
+    'btnRecuperarRespaldo'
+  );
+  const btnDescartarRespaldo = document.getElementById(
+    'btnDescartarRespaldo'
+  );
+
+  function cerrarModalRecuperacion() {
+    if (modalRecuperacion) modalRecuperacion.style.display = 'none';
+  }
+
+  function descartarRespaldo() {
+    eliminarRespaldoLocal();
+    respaldoPendiente = null;
+    cerrarModalRecuperacion();
+    mostrarNotificacion('info', 'Respaldo local descartado');
+  }
+
+  function recuperarRespaldo() {
+    if (!respaldoPendiente) return;
+
+    const respaldo = respaldoPendiente;
+    const img = new Image();
+    actualizarEstado('Recuperando imagen...', 'processing');
+
+    img.onload = () => {
+      const ancho = img.naturalWidth || img.width;
+      const alto = img.naturalHeight || img.height;
+
+      if (
+        ancho <= 0 ||
+        alto <= 0 ||
+        ancho > MAXIMA_DIMENSION_IMAGEN ||
+        alto > MAXIMA_DIMENSION_IMAGEN ||
+        ancho * alto > MAXIMO_PIXELES_IMAGEN
+      ) {
+        descartarRespaldo();
+        mostrarNotificacion('error', 'El respaldo local no es válido');
+        actualizarEstado('Error', 'error');
+        return;
+      }
+
+      cancelarVistaPreviaFiltro();
+      cancelarRecortePendiente(true);
+      canvas.width = ancho;
+      canvas.height = alto;
+      ctx.clearRect(0, 0, ancho, alto);
+      ctx.drawImage(img, 0, 0);
+      currentImage = img;
+      archivoActual = {
+        nombreOriginal: respaldo.nombreOriginal,
+        formatoOriginal: respaldo.formato,
+      };
+      formatoActual = respaldo.formato;
+      calidadActual = null;
+
+      mostrarCanvas();
+      habilitarHerramientas();
+      actualizarPropiedades(
+        {
+          name: respaldo.nombreOriginal,
+          size: respaldo.tamanoBytes,
+          type: `image/${respaldo.formato}`,
+        },
+        img
+      );
+      actualizarEstado('Listo', 'success');
+
+      operationsHistory.forEach((op) => URL.revokeObjectURL(op.imageUrl));
+      operationsHistory = [];
+      historyIndex = -1;
+      eliminarRespaldoLocal();
+      respaldoPendiente = null;
+      cerrarModalRecuperacion();
+      guardarEstadoEnHistorial('Respaldo recuperado');
+      mostrarNotificacion('success', 'Trabajo recuperado correctamente');
+    };
+
+    img.onerror = () => {
+      eliminarRespaldoLocal();
+      respaldoPendiente = null;
+      cerrarModalRecuperacion();
+      mostrarNotificacion('error', 'No se pudo recuperar el respaldo local');
+      actualizarEstado('Error', 'error');
+    };
+    img.src = respaldo.dataUrl;
+  }
+
+  if (respaldoPendiente && modalRecuperacion) {
+    const fechaRespaldo = document.getElementById('fechaRespaldo');
+    if (fechaRespaldo) {
+      fechaRespaldo.textContent = new Date(
+        respaldoPendiente.timestamp
+      ).toLocaleString('es-CO', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      });
+    }
+    modalRecuperacion.style.display = 'flex';
+  }
+
+  if (btnRecuperarRespaldo) {
+    btnRecuperarRespaldo.addEventListener('click', recuperarRespaldo);
+  }
+  if (btnDescartarRespaldo) {
+    btnDescartarRespaldo.addEventListener('click', descartarRespaldo);
   }
 
   // ========== DESCARGAR IMAGEN ==========
@@ -2109,6 +2322,7 @@ async function guardarConfiguracion() {
 
   const guardado = await guardarPreferencias(nuevas);
   if (guardado) {
+    if (!nuevas.autoguardado) eliminarRespaldoLocal();
     aplicarPreferencias(nuevas);
     cerrarModalConfiguracion();
     mostrarNotificacion('success', 'Configuración guardada correctamente');

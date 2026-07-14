@@ -272,6 +272,7 @@ La versión PostgreSQL fue validada con:
 - Política uniforme para contraseñas nuevas en el registro público, el panel administrativo y el backend, sin bloquear el acceso de cuentas existentes.
 - Validación coherente de cédulas de 6 a 20 dígitos y mayoría de edad para cuentas nuevas, conservando la edición de datos históricos.
 - Guardado de configuración mediante UPSERT para conservar una sola fila por usuario y responder correctamente ante IDs inválidos o inexistentes.
+- Autoguardado local recuperable durante 7 días, aislado por usuario y eliminado al desactivarlo, cerrar sesión o detectar un respaldo inválido.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y las suites backend y frontend en `push` o `pull_request`.
 
@@ -378,6 +379,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Validación uniforme de longitud, mayúscula, minúscula y número para toda contraseña nueva.
 - [2026-07-14] Alineación de cédula, fecha de nacimiento y mensajes de validación entre registro, administración y API.
 - [2026-07-14] Refuerzo del módulo de configuración con validación de identificadores y guardados concurrentes seguros.
+- [2026-07-14] Incorporación de recuperación visible y aislamiento por usuario para el autoguardado local del editor.
 
 ---
 

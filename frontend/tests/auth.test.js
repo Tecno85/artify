@@ -34,6 +34,7 @@ test('auth limpia todos los datos locales relacionados con la sesión', () => {
     artifyIdSesion: '25',
   });
   const localStorage = new AlmacenamientoSimulado({
+    artify_backup_v1: '{"version":1}',
     artify_backup_image: 'imagen',
     artify_backup_timestamp: '123',
     preferencia_no_relacionada: 'conservar',
@@ -50,6 +51,7 @@ test('auth limpia todos los datos locales relacionados con la sesión', () => {
   assert.equal(sessionStorage.getItem('artifyUser'), null);
   assert.equal(sessionStorage.getItem('artifyToken'), null);
   assert.equal(sessionStorage.getItem('artifyIdSesion'), null);
+  assert.equal(localStorage.getItem('artify_backup_v1'), null);
   assert.equal(localStorage.getItem('artify_backup_image'), null);
   assert.equal(localStorage.getItem('artify_backup_timestamp'), null);
   assert.equal(localStorage.getItem('preferencia_no_relacionada'), 'conservar');
