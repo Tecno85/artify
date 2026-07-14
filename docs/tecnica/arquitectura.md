@@ -163,6 +163,7 @@ La autenticación de Artify se apoya en correo, contraseña, `bcryptjs` y un tok
 - Los datos de usuario se escapan antes de formar la tabla administrativa y los mensajes dinámicos se insertan con `textContent`, no como HTML ejecutable.
 - Express oculta la cabecera `X-Powered-By`, limita los cuerpos a 64 KB y evita que las respuestas de `/api` se almacenen en caché.
 - Los cuerpos JSON malformados o demasiado grandes reciben errores JSON controlados con estados `400` y `413`.
+- El login limita diez fallos por IP, ruta y correo durante quince minutos; responde `429` con `Retry-After` y conserva como máximo 1000 registros temporales en memoria.
 
 ---
 

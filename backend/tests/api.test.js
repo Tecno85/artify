@@ -432,6 +432,38 @@ test('login rechaza correo no registrado', async () => {
   assert.equal(body.mensaje, 'Credenciales incorrectas');
 });
 
+test('login bloquea temporalmente después de diez fallos equivalentes', async () => {
+  const credenciales = {
+    correo: `bloqueo.${stamp}@artify.local`,
+    password: usuarioPrueba.password,
+  };
+
+  for (let intento = 0; intento < 10; intento++) {
+    const { response, body } = await request('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credenciales),
+    });
+
+    assert.equal(response.status, 401);
+    assert.equal(body.mensaje, 'Credenciales incorrectas');
+  }
+
+  const bloqueo = await request('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(credenciales),
+  });
+  const esperaSegundos = Number(bloqueo.response.headers.get('retry-after'));
+
+  assert.equal(bloqueo.response.status, 429);
+  assert.equal(
+    bloqueo.body.mensaje,
+    'Demasiados intentos. Intenta nuevamente más tarde'
+  );
+  assert.ok(esperaSegundos >= 1 && esperaSegundos <= 15 * 60);
+});
+
 test('registro rechaza fechas de nacimiento inexistentes', async () => {
   const { response, body } = await request('/api/registro', {
     method: 'POST',

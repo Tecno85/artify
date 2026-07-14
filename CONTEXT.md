@@ -260,7 +260,7 @@ La versión PostgreSQL fue validada con:
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas backend: 23/23 correctas.
+- Resultado de pruebas automatizadas backend: 24/24 correctas.
 - Suite frontend con `node:test`: 12/12 correctas para autenticación, login por rol, inicio de sesión del editor y renderizado seguro de contenido dinámico.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -360,6 +360,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Incorporación de pruebas frontend sin dependencias para sesión, login por rol e inicio no bloqueante del editor.
 - [2026-07-13] Renderizado seguro de mensajes dinámicos y cobertura contra inyección de HTML en el frontend.
 - [2026-07-14] Refuerzo HTTP con límite de solicitudes, respuestas de error uniformes y cabeceras seguras verificadas.
+- [2026-07-14] Límite de intentos con `Retry-After`, limpieza periódica y memoria acotada a 1000 registros.
 
 ---
 

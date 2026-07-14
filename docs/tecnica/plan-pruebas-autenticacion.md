@@ -405,7 +405,7 @@ Esta suite también se ejecuta en GitHub Actions mediante:
 .github/workflows/backend-tests.yml
 ```
 
-Actualmente ejecuto 23 pruebas automatizadas que cubren las siguientes validaciones:
+Actualmente ejecuto 24 pruebas automatizadas que cubren las siguientes validaciones:
 
 - Disponibilidad del proceso Express y de PostgreSQL mediante `/health` y `/ready`.
 - Contrato de respuesta de los cuatro endpoints públicos de analytics.
@@ -423,6 +423,7 @@ Actualmente ejecuto 23 pruebas automatizadas que cubren las siguientes validacio
 - Acceso a rutas protegidas con token.
 - Rechazo de login con contraseña incorrecta.
 - Confirmación de que logins correctos no consumen el límite de fallos.
+- Bloqueo temporal después de diez fallos equivalentes y envío de `Retry-After`.
 - Consistencia del indicador cuando existen sesiones simultáneas.
 - Rechazo de rutas protegidas sin token.
 - Rechazo de rutas protegidas con token inválido.
@@ -489,9 +490,9 @@ NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 
 ```text
-Backend: 23 pruebas ejecutadas y aprobadas
+Backend: 24 pruebas ejecutadas y aprobadas
 Frontend: 12 pruebas ejecutadas y aprobadas
-Total: 35 pruebas aprobadas
+Total: 36 pruebas aprobadas
 0 pruebas fallidas
 ```
 
@@ -523,4 +524,4 @@ Las pruebas realizadas me permitieron confirmar que el sistema diferencia entre 
 
 También confirmé mediante pruebas automatizadas que el hash almacenado no coincide con la contraseña original y que las rutas protegidas rechazan solicitudes sin token o con un token inválido. Esto fortalece la evidencia del comportamiento esperado del módulo de autenticación.
 
-Como mejora futura, considero importante mantener las pruebas automatizadas y ampliarlas progresivamente para cubrir recuperación de contraseña, variaciones del límite de intentos fallidos y más escenarios de expiración de tokens.
+Como mejora futura, considero importante mantener las pruebas automatizadas y ampliarlas progresivamente para cubrir recuperación de contraseña y más escenarios de expiración de tokens.
