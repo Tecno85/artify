@@ -157,11 +157,23 @@
     </div>
 
     <!-- ===== MODAL AGREGAR / EDITAR USUARIO ===== -->
-    <div class="modal-overlay" id="modalUsuario" style="display: none">
+    <div
+      class="modal-overlay"
+      id="modalUsuario"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitulo"
+    >
       <div class="modal-card">
         <div class="modal-header">
           <h3 id="modalTitulo">Agregar Usuario</h3>
-          <button class="modal-close" id="btnCerrarModal">
+          <button
+            class="modal-close"
+            id="btnCerrarModal"
+            type="button"
+            aria-label="Cerrar formulario de usuario"
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -281,11 +293,23 @@
     </div>
 
     <!-- ===== MODAL CONFIRMAR ELIMINAR ===== -->
-    <div class="modal-overlay" id="modalEliminar" style="display: none">
+    <div
+      class="modal-overlay"
+      id="modalEliminar"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloEliminar"
+    >
       <div class="modal-card modal-small">
         <div class="modal-header danger">
-          <h3>Confirmar Eliminación</h3>
-          <button class="modal-close" id="btnCerrarEliminar">
+          <h3 id="tituloEliminar">Confirmar Eliminación</h3>
+          <button
+            class="modal-close"
+            id="btnCerrarEliminar"
+            type="button"
+            aria-label="Cerrar confirmación de eliminación"
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -319,7 +343,13 @@
     </div>
 
     <!-- NOTIFICACIÓN -->
-    <div class="admin-notificacion" id="adminNotificacion"></div>
+    <div
+      class="admin-notificacion"
+      id="adminNotificacion"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/auth.js"></script>

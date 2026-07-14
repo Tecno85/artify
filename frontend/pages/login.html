@@ -55,7 +55,11 @@
                 required
                 autocomplete="email"
               />
-              <span class="error-message" id="email-error"></span>
+              <span
+                class="error-message"
+                id="email-error"
+                aria-live="polite"
+              ></span>
             </div>
 
             <!-- Campo Contraseña -->
@@ -88,7 +92,11 @@
                   </svg>
                 </button>
               </div>
-              <span class="error-message" id="password-error"></span>
+              <span
+                class="error-message"
+                id="password-error"
+                aria-live="polite"
+              ></span>
             </div>
 
             <!-- Recordar sesión -->
@@ -104,7 +112,13 @@
 
             <!-- Enlaces adicionales -->
             <div class="links-section">
-              <a href="#" class="link-secondary"> ¿Olvidaste tu contraseña? </a>
+              <span
+                class="link-secondary"
+                aria-disabled="true"
+                title="Función fuera del alcance actual"
+              >
+                Recuperación de contraseña no disponible
+              </span>
               <p class="register-link">
                 ¿No tienes cuenta?
                 <a href="./registro.html">Regístrate aquí</a>
@@ -125,7 +139,7 @@
           <img
             src="../assets/icons/copyright.svg"
             alt="Icono de copyright"
-          />2025 Artify | DazaDev Solutions
+          />2026 Artify | DazaDev Solutions
         </p>
       </footer>
 

@@ -52,7 +52,7 @@ El alcance actual de Artify incluye:
 - Persistencia de usuarios, configuraciones, sesiones, operaciones e imágenes en PostgreSQL.
 - Panel de administración protegido por rol.
 - API REST para funcionalidades internas y endpoints de analíticas.
-- Cuarenta pruebas automatizadas: 28 del backend para autenticación, sesiones, configuración, imágenes, analíticas, administración y seguridad HTTP, y 12 del frontend para sesión, login por rol, inicio del editor y renderizado seguro.
+- Cuarenta y dos pruebas automatizadas: 28 del backend para autenticación, sesiones, configuración, imágenes, analíticas, administración y seguridad HTTP, y 14 del frontend para sesión, login por rol, inicio del editor, renderizado seguro y accesibilidad básica.
 - Documentación del proyecto y documentación técnica separadas en la carpeta `docs/`.
 - Despliegue del frontend en GitHub Pages, del backend en Render y de PostgreSQL en Neon.
 
@@ -124,7 +124,7 @@ Desde el punto de vista académico, el proyecto permite evidenciar el proceso de
 
 ## 10. Estado Actual
 
-El proyecto se encuentra en estado activo y desplegado. Actualmente cuenta con frontend funcional en GitHub Pages, backend modularizado en Render, base de datos PostgreSQL en Neon, autenticación real, panel administrativo, dieciocho pruebas automatizadas de integración y documentación organizada en:
+El proyecto se encuentra en estado activo y desplegado. Actualmente cuenta con frontend funcional en GitHub Pages, backend modularizado en Render, base de datos PostgreSQL en Neon, autenticación real, panel administrativo, 42 pruebas automatizadas y documentación organizada en:
 
 - `docs/proyecto/`: documentación funcional y académica.
 - `docs/tecnica/`: documentación técnica y manual técnico.

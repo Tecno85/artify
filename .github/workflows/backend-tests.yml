@@ -59,6 +59,9 @@ jobs:
           psql -h 127.0.0.1 -U postgres -d artify_test -f database/postgresql/schema.sql
           psql -h 127.0.0.1 -U postgres -d artify_test -f database/postgresql/seed.sql
 
+      - name: Validar migraciones incrementales
+        run: node scripts/ejecutar-migraciones.js --apply
+
       - name: Validar sintaxis
         working-directory: backend
         run: pnpm run check

@@ -218,8 +218,8 @@ La siguiente tabla diferencia las comprobaciones funcionales realizadas sobre el
 | Memoria RAM del servidor | 2 GB | 4 GB | Por verificar | Consultar los recursos y límites del plan de Render y Neon. | Los servicios se ejecutan por separado. |
 | Almacenamiento | 40 GB SSD | 80 GB SSD | Por verificar | Revisar almacenamiento, retención y límites del plan de Neon. | Considerar crecimiento, logs y respaldos. |
 | Sistema operativo | Compatible con Node.js y PostgreSQL | Plataforma mantenida y actualizada | Gestionado por proveedor | Revisar documentación y estado de Render y Neon. | No se administra un VPS propio. |
-| Base de datos | PostgreSQL accesible y configurado | PostgreSQL con respaldos verificados | Cumple funcionalmente | Consultar `/ready` y ejecutar los flujos que requieren persistencia. | Capacidad, retención y restauración siguen por verificar. |
-| Backend | Servicio Node.js activo | Servicio estable y supervisado | Cumple funcionalmente | Consultar `/health`, `/ready` y ejecutar pruebas de integración. | Falta prueba de carga y verificación de límites del plan. |
+| Base de datos | PostgreSQL accesible y configurado | PostgreSQL con respaldos verificados | Cumple parcialmente | Consultar `/ready` y ejecutar la restauración local controlada. | Restauración local verificada; retención y recuperación administrada de Neon siguen por comprobar. |
+| Backend | Servicio Node.js activo | Servicio estable y supervisado | Cumple funcionalmente | Consultar `/health`, `/ready` y ejecutar pruebas de integración. | El smoke de 25 lecturas no reemplaza una prueba de carga ni verifica límites del plan. |
 | Frontend | Carpeta publicada | Publicación por HTTPS | Cumple | Abrir la URL de GitHub Pages desde un navegador moderno. | El workflow de Pages publica la carpeta `frontend/`. |
 | Red | Conexión entre componentes | HTTPS y CORS restringido | Cumple funcionalmente | Probar frontend, API y encabezados CORS desde el origen publicado. | Debe repetirse después de cambios de dominio o API. |
 | Cliente | Navegador moderno | Equipo con recursos suficientes | Cumple funcionalmente | Probar carga, edición y descarga desde navegadores objetivo. | El rendimiento depende del equipo y del tamaño de la imagen. |
@@ -231,7 +231,9 @@ La siguiente tabla diferencia las comprobaciones funcionales realizadas sobre el
 
 Artify ya cuenta con una infraestructura real distribuida entre GitHub Pages, Render y Neon. Se ha verificado funcionalmente el acceso HTTPS al frontend, la disponibilidad de la API, la conexión con PostgreSQL y la comunicación CORS entre las capas. Esto permite considerar el entorno apto para demostración académica y validación funcional.
 
-El resultado de capacidad continúa como `Por verificar`: faltan pruebas de carga, consulta de límites efectivos de los planes y una prueba documentada de respaldo y restauración. Los valores de VPS definidos en este informe permanecen como referencia si en el futuro se adopta infraestructura autogestionada.
+El resultado de capacidad continúa como `Por verificar`: faltan una prueba de carga con un objetivo medible y la consulta de límites efectivos de los planes. El 14 de julio de 2026 ejecuté 25 solicitudes de lectura a `/health` con concurrencia 5: todas respondieron correctamente, con promedio de 259 ms y percentil 95 de 558 ms. Esta muestra sirve como smoke técnico puntual, no como demostración de capacidad sostenida.
+
+También restauré un respaldo real de la base local en un destino temporal y comprobé cinco tablas funcionales, migraciones y permisos restringidos. Continúa pendiente verificar las políticas de retención y recuperación que ofrece el plan activo de Neon. Los valores de VPS definidos en este informe permanecen como referencia si en el futuro se adopta infraestructura autogestionada.
 
 ---
 
@@ -239,7 +241,7 @@ El resultado de capacidad continúa como `Por verificar`: faltan pruebas de carg
 
 Después de revisar los elementos mínimos de hardware, software, sistema operativo, red y licenciamiento, concluyo que Artify dispone de un despliegue administrado funcional para fines académicos, con frontend en GitHub Pages, backend Node.js en Render y PostgreSQL en Neon.
 
-Esta verificación no permite afirmar que la plataforma soporte 250 usuarios con un nivel de servicio determinado. Para sustentar esa capacidad se deben medir tiempos de respuesta y errores bajo carga, revisar los límites de cada plan y comprobar los procedimientos de respaldo y restauración. El equipo cliente también debe contar con un navegador moderno y recursos adecuados, porque la edición de imágenes se procesa principalmente en el navegador.
+Esta verificación no permite afirmar que la plataforma soporte 250 usuarios con un nivel de servicio determinado. Para sustentar esa capacidad se deben medir tiempos de respuesta y errores bajo una carga acordada, revisar los límites de cada plan y comprobar también la recuperación administrada de Neon. El equipo cliente debe contar con un navegador moderno y recursos adecuados, porque la edición de imágenes se procesa principalmente en el navegador.
 
 ---
 

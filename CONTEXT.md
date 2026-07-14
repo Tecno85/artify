@@ -261,7 +261,7 @@ La versión PostgreSQL fue validada con:
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas backend: 28/28 correctas.
-- Suite frontend con `node:test`: 12/12 correctas para autenticación, login por rol, inicio de sesión del editor y renderizado seguro de contenido dinámico.
+- Suite frontend con `node:test`: 14/14 correctas para autenticación, login por rol, inicio de sesión del editor, renderizado seguro y semántica accesible básica.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -275,6 +275,12 @@ La versión PostgreSQL fue validada con:
 - Autoguardado local recuperable durante 7 días, aislado por usuario y eliminado al desactivarlo, cerrar sesión o detectar un respaldo inválido.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y las suites backend y frontend en `push` o `pull_request`.
+- GitHub Actions también valida el ejecutor de migraciones incrementales sobre la base temporal de CI.
+- Smoke público reproducible de Pages, configuración, salud, disponibilidad, analytics y CORS mediante `scripts/validar-despliegue.js`.
+- Restauración local real verificada con cinco tablas funcionales, migraciones, rol restringido y limpieza automática mediante `scripts/verificar-respaldo-postgresql.js`.
+- Rol técnico reproducible de menor privilegio en `database/postgresql/app-role.sql` y migraciones versionadas en `database/postgresql/migrations/`.
+- Matriz manual aprobada en Chromium, Firefox y WebKit; login sin scroll en 1024 × 600, 1366 × 768 y 1920 × 1080.
+- Smoke de rendimiento del 14 de julio de 2026: 25/25 lecturas correctas a `/health`, concurrencia 5, promedio 259 ms y p95 558 ms; no representa capacidad para 250 usuarios.
 
 ---
 
@@ -299,7 +305,7 @@ Enfoque recomendado:
 
 ### Despliegue público validado
 
-Validación técnica realizada el 13 de julio de 2026:
+Validación técnica realizada el 14 de julio de 2026:
 
 | Servicio | URL |
 | --- | --- |
@@ -380,6 +386,10 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Alineación de cédula, fecha de nacimiento y mensajes de validación entre registro, administración y API.
 - [2026-07-14] Refuerzo del módulo de configuración con validación de identificadores y guardados concurrentes seguros.
 - [2026-07-14] Incorporación de recuperación visible y aislamiento por usuario para el autoguardado local del editor.
+- [2026-07-14] Validación integral del despliegue público, matriz responsive en tres motores de navegador y ajuste del login para portátiles de poca altura.
+- [2026-07-14] Incorporación de semántica accesible básica para modales, mensajes y controles administrativos.
+- [2026-07-14] Verificación real de respaldo y restauración local, rol PostgreSQL de menor privilegio y migraciones incrementales validadas por CI.
+- [2026-07-14] Medición controlada de salud pública con 25 solicitudes correctas y documentación explícita de sus límites.
 
 ---
 

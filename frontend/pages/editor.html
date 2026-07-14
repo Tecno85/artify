@@ -347,10 +347,19 @@
     </div>
 
     <!-- ========== MODAL DE ADVERTENCIA DE RESOLUCIÓN ========== -->
-    <div id="modalResolucion" class="modal-resolucion" style="display: none">
+    <div
+      id="modalResolucion"
+      class="modal-resolucion"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloResolucion"
+    >
       <div class="modal-resolucion-content">
         <div class="modal-resolucion-icon">⚠️</div>
-        <h2 class="modal-resolucion-title">Ventana demasiado pequeña</h2>
+        <h2 class="modal-resolucion-title" id="tituloResolucion">
+          Ventana demasiado pequeña
+        </h2>
         <p class="modal-resolucion-message">
           Artify necesita un área útil mínima de
           <strong>1024 x 600 píxeles</strong> para mostrar el editor completo.
@@ -411,10 +420,17 @@
     </div>
 
     <!-- ========== MODAL DE CONFIGURACIÓN (RF-10) ========== -->
-    <div id="modalConfiguracion" class="modal-config" style="display: none">
+    <div
+      id="modalConfiguracion"
+      class="modal-config"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloConfiguracion"
+    >
       <div class="modal-config-content">
         <div class="modal-config-header">
-          <h2 class="modal-config-title">
+          <h2 class="modal-config-title" id="tituloConfiguracion">
             <img
               src="../assets/icons/configuration.svg"
               alt="Icono de Configuración"
@@ -508,10 +524,17 @@
     </div>
 
     <!-- ========== MODAL DE PERFIL / CERRAR SESIÓN (RF-11) ========== -->
-    <div id="modalPerfil" class="modal-perfil" style="display: none">
+    <div
+      id="modalPerfil"
+      class="modal-perfil"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloPerfil"
+    >
       <div class="modal-perfil-content">
         <div class="modal-perfil-header">
-          <h2 class="modal-perfil-title">Mi Perfil</h2>
+          <h2 class="modal-perfil-title" id="tituloPerfil">Mi Perfil</h2>
           <button
             class="modal-perfil-close"
             id="btnCerrarPerfil"
@@ -562,9 +585,16 @@
     </div>
 
     <!-- ========== MODAL DE CONFIRMACIÓN CERRAR SESIÓN ========== -->
-    <div id="modalConfirmarLogout" class="modal-confirm" style="display: none">
+    <div
+      id="modalConfirmarLogout"
+      class="modal-confirm"
+      style="display: none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tituloConfirmarLogout"
+    >
       <div class="modal-confirm-content">
-        <h2 class="modal-confirm-title">
+        <h2 class="modal-confirm-title" id="tituloConfirmarLogout">
           <img
             src="../assets/icons/logout.svg"
             alt="Icono cerrar sesión"

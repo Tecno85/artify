@@ -32,6 +32,7 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 - Conversión a PNG, JPEG y WebP con ajuste de calidad.
 - Historial de hasta 20 pasos para deshacer y rehacer.
 - Zoom entre 50 % y 200 %.
+- Autoguardado local opcional, aislado por usuario y recuperable durante 7 días.
 - Registro, inicio de sesión y autorización por roles.
 - Panel administrativo con gestión de usuarios y analíticas.
 - Persistencia de configuraciones, sesiones y operaciones en PostgreSQL.
@@ -44,7 +45,7 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 | Backend | Node.js 22.13+, Express 5 |
 | Base de datos | PostgreSQL 15+, `pg` |
 | Seguridad | JWT, bcrypt, CORS, variables de entorno |
-| Pruebas | Node Test Runner, Supertest, PostgreSQL |
+| Pruebas | Node Test Runner, PostgreSQL y validación en navegadores |
 | Despliegue | GitHub Pages, Render, Neon, GitHub Actions |
 
 ## Arquitectura
@@ -166,7 +167,17 @@ cd backend
 pnpm run test:frontend
 ```
 
-GitHub Actions ejecuta automáticamente 28 pruebas del backend y 12 del frontend en cada `push` a `main` y en los pull requests.
+GitHub Actions ejecuta automáticamente 28 pruebas del backend y 14 del frontend en cada `push` a `main` y en los pull requests. También carga el esquema y valida las migraciones incrementales sobre PostgreSQL temporal.
+
+Comprobación pública de solo lectura:
+
+```bash
+node scripts/validar-despliegue.js
+```
+
+La medición básica de `/health` se ejecuta con
+`node scripts/medir-rendimiento.js`. Es un smoke controlado y no sustituye una
+prueba formal de capacidad.
 
 ## Despliegue
 
@@ -193,6 +204,8 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 - [Base de datos](./docs/tecnica/base-datos.md)
 - [API de analíticas](./docs/tecnica/api-analytics.md)
 - [Pruebas de autenticación](./docs/tecnica/plan-pruebas-autenticacion.md)
+- [Matriz de validación del frontend](./docs/tecnica/matriz-validacion-frontend.md)
+- [Lista de verificación para la presentación](./docs/tecnica/lista-verificacion-presentacion.md)
 - [Estándares de codificación](./docs/tecnica/coding-standards.md)
 - [Mantenimiento y soporte](./docs/tecnica/plan-mantenimiento-soporte-artify.md)
 
@@ -209,7 +222,7 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 
 Artify se encuentra activo y utiliza PostgreSQL como motor oficial de persistencia. El frontend, el backend, las pruebas y el despliegue están integrados en el repositorio principal.
 
-Entre las mejoras futuras se consideran ampliar la cobertura visual del editor, incorporar más herramientas de edición y agregar paginación al historial de operaciones.
+Entre las mejoras futuras se consideran ampliar la cobertura automatizada con navegador, incorporar más herramientas de edición y agregar paginación al historial de operaciones.
 
 ## Autor
 

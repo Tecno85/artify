@@ -250,17 +250,30 @@ Desde mi punto de vista, el mayor aporte de ISO 27001 para esta evidencia es que
 
 ## Formato de registro de prueba
 
-Para cada prueba de restauracion usaria una tabla como esta:
+Registro la prueba más reciente en una tabla sencilla. El resultado siguiente
+corresponde a PostgreSQL local y no debe confundirse con una restauración del
+servicio administrado de Neon:
 
 | Campo | Registro |
 | --- | --- |
-| Fecha de prueba | 2026-07-08 |
-| Backup usado | `artify_db_2026-07-08_completo_produccion.backup` |
-| Base destino | `artify_restore_test` |
+| Fecha de prueba | 2026-07-14 |
+| Backup usado | Archivo temporal en formato personalizado generado por `pg_dump` |
+| Base destino | Base local temporal con nombre único `artify_restore_*` |
 | Responsable | Ivan Dario Madrid Daza |
-| Resultado tecnico | Restauracion sin errores |
-| Resultado funcional | Health, login, admin y analytics revisados |
-| Observaciones | Sin novedades |
+| Resultado tecnico | 23 552 bytes restaurados; cinco tablas funcionales encontradas; migración base aplicada |
+| Resultado funcional | Lectura y escritura transaccional correctas con rol restringido; creación/eliminación de objetos denegada |
+| Observaciones | Base, rol y archivo temporales eliminados automáticamente al finalizar |
+
+La prueba se reproduce desde la raíz con:
+
+```bash
+node scripts/verificar-respaldo-postgresql.js
+```
+
+El script solo acepta una conexión PostgreSQL local. Genera un respaldo, lo
+restaura en una base temporal, aplica las migraciones, comprueba el rol de menor
+privilegio y limpia todos los recursos creados. No reemplaza la verificación de
+las políticas de retención ni del mecanismo de copias propio de Neon.
 
 ## Conclusiones
 

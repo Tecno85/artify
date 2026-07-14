@@ -37,6 +37,8 @@ USUARIO
 | --- | --- |
 | `database/postgresql/schema.sql` | Crea tablas, índices, relaciones y vista principal. |
 | `database/postgresql/seed.sql` | Inserta un registro de referencia para verificar la carga inicial. |
+| `database/postgresql/app-role.sql` | Prepara el rol técnico de aplicación con permisos mínimos. |
+| `database/postgresql/migrations/` | Conserva cambios incrementales aplicables sin reconstruir la base. |
 | `database/postgresql/queries.md` | Registra ajustes de consultas realizados durante la migración. |
 
 Los dumps del motor anterior no se versionan. La estructura oficial y los datos controlados de referencia se mantienen exclusivamente dentro de `database/postgresql/`.
@@ -219,6 +221,7 @@ Esta vista se basa en `USUARIO`, `IMAGEN` y `SESION_EDICION`.
 - Las operaciones protegidas se validan desde el backend antes de consultar o modificar la base de datos.
 - El correo se normaliza a minúsculas y el estado/rol vigentes se consultan al autorizar cada ruta privada.
 - El archivo `.env` debe permanecer fuera del repositorio porque contiene credenciales de conexión.
+- `app-role.sql` limita el usuario del backend a conexión, lectura, escritura y uso de secuencias; no concede creación de roles, bases ni objetos.
 
 ---
 
@@ -235,6 +238,17 @@ psql -d artify_db -f database/postgresql/seed.sql
 El comando `createdb` crea la base vacía. Después `schema.sql` crea los objetos del proyecto dentro de esa base y `seed.sql` carga datos mínimos de referencia.
 
 `schema.sql` reinicializa los objetos del proyecto: elimina tablas y vista antes de volver a crearlas. Por eso debe usarse para aprovisionamiento inicial o restauraciones controladas, no sobre una base con datos útiles sin respaldo previo.
+
+Después de la carga inicial ejecuto las migraciones incrementales desde la raíz:
+
+```bash
+node scripts/ejecutar-migraciones.js --apply
+```
+
+El ejecutor registra versiones en la tabla técnica `MIGRACION_ESQUEMA`, usa una
+transacción y un bloqueo para evitar aplicaciones simultáneas. Por seguridad,
+rechaza hosts remotos salvo que la persona responsable autorice explícitamente
+`ALLOW_REMOTE_MIGRATIONS=true` después de crear y comprobar un respaldo.
 
 Variables principales:
 
@@ -271,3 +285,5 @@ Verificación con `psql`:
 - No guardo credenciales reales dentro de scripts SQL ni en archivos versionados.
 - Verifico relaciones, cascadas e índices antes de eliminar usuarios o registros dependientes.
 - Mantengo la compatibilidad entre controladores backend y estructura de tablas.
+- Creo una migración incremental por cada cambio posterior al esquema inicial y verifico que pueda ejecutarse una sola vez.
+- Pruebo periódicamente respaldo, restauración y permisos mediante `node scripts/verificar-respaldo-postgresql.js` sobre PostgreSQL local.

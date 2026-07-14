@@ -57,9 +57,11 @@ El mantenimiento preventivo lo realizo de forma programada para reducir riesgos 
 | Verificar login, editor y panel admin | Mensual | Lista de chequeo funcional. |
 | Verificar el workflow de GitHub Pages y la variable `ARTIFY_API_URL` | Después de cambios de despliegue | Ejecución exitosa del workflow y `config.js` publicado. |
 | Consultar `/health`, `/ready` y revisar CORS | Mensual o después de cambios de dominio | Respuesta correcta de Render, conexión con Neon y origen autorizado. |
+| Ejecutar `node scripts/validar-despliegue.js` | Después de cada publicación | Nueve verificaciones públicas de solo lectura aprobadas. |
 | Generar un respaldo de PostgreSQL | Mensual o antes de migrar | Archivo de respaldo identificado con fecha y entorno. |
 | Revisar `schema.sql`, `seed.sql` y la validez de los respaldos | Trimestral o antes de migrar | Confirmación de estructura, datos iniciales y respaldo disponible. |
 | Probar la restauración de un respaldo PostgreSQL | Trimestral, en los meses 3 y 6 del ciclo | Registro de restauración en un entorno controlado. |
+| Revisar y aplicar migraciones incrementales | Antes de cada cambio de estructura | Plan revisado, respaldo comprobado y versión registrada. |
 | Actualizar documentación técnica | Cada cambio relevante | Markdown actualizado. |
 
 > **Seguridad de las pruebas:** ejecuto `pnpm test` únicamente con

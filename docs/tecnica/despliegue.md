@@ -4,7 +4,7 @@
 > **Frontend:** GitHub Pages
 > **Backend:** Render
 > **Base de datos:** Neon PostgreSQL
-> **Última validación:** 13 de julio de 2026
+> **Última validación:** 14 de julio de 2026
 
 En esta guía documento cómo aprovisiono por primera vez y cómo vuelvo a desplegar la versión pública de Artify. La instalación en un equipo personal se explica por separado en [`plan-instalacion-artify.md`](./plan-instalacion-artify.md).
 
@@ -298,11 +298,11 @@ No vuelvo a crear Neon, Render ni Pages para publicar cambios normales.
 
 No ejecuto automáticamente `schema.sql` sobre Neon porque elimina y reconstruye los objetos.
 
-1. Reviso el SQL exacto del cambio.
+1. Reviso el SQL exacto del cambio dentro de `database/postgresql/migrations/`.
 2. Creo y verifico un respaldo de Neon.
-3. Preparo una migración incremental que conserve los datos.
-4. Pruebo la migración en otra base PostgreSQL.
-5. Solo después la ejecuto en producción.
+3. Ejecuto `node scripts/ejecutar-migraciones.js` sin `--apply` para revisar el plan.
+4. Pruebo la migración y una restauración en otra base PostgreSQL.
+5. Solo después autorizo el host remoto y ejecuto `ALLOW_REMOTE_MIGRATIONS=true node scripts/ejecutar-migraciones.js --apply` con `DATABASE_URL` apuntando al destino correcto.
 
 `schema.sql` completo se reserva para aprovisionamiento inicial o reinicios controlados con autorización.
 
@@ -313,6 +313,15 @@ No ejecuto automáticamente `schema.sql` sobre Neon porque elimina y reconstruye
 - Si cambia Neon, actualizo `DATABASE_URL` en Render y compruebo `/ready`.
 
 ## 8. Verificación posterior
+
+La comprobación pública de solo lectura se puede repetir desde la raíz con:
+
+```bash
+node scripts/validar-despliegue.js
+```
+
+El script verifica Pages, la URL publicada del backend, salud, disponibilidad de
+PostgreSQL, analytics y CORS sin crear ni modificar usuarios.
 
 ### 8.1 Servicios
 
@@ -375,13 +384,14 @@ Estas rutas buscarían recursos en la raíz de `tecno85.github.io`. Las formas c
 
 ## 11. Estado validado
 
-El 13 de julio de 2026 comprobé:
+El 14 de julio de 2026 comprobé:
 
 - Workflow de Pages finalizado con `success`.
 - Frontend público con HTTP `200`.
 - Login publicado con HTTP `200`.
 - `config.js` apuntando al backend de Render.
 - Respuesta CORS de Render para `https://tecno85.github.io`.
+- Respuestas correctas de `/health`, `/ready` y los cuatro endpoints públicos de analytics mediante el smoke automatizado.
 - Repositorio local y remoto sincronizados después del despliegue.
 
 ## 12. Evidencia académica sin exponer secretos
