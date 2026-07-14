@@ -204,6 +204,12 @@ Copy-Item .env.example backend/.env
 cp .env.example backend/.env
 ```
 
+Genero un secreto local de 64 caracteres y copio el resultado para usarlo como `TOKEN_SECRET`:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
 Para la instalación local dejo `DATABASE_URL` comentada y uso las variables `DB_*`. En `backend/.env` configuro:
 
 ```env
@@ -360,7 +366,7 @@ Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
 NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 ```
 
-La suite esperada contiene 18 pruebas. Si falla antes de iniciar, verifico que
+La suite esperada contiene 19 pruebas. Si falla antes de iniciar, verifico que
 PostgreSQL esté activo, que `artify_test` tenga el esquema cargado y que
 `DATABASE_URL` continúe comentada en `backend/.env`.
 

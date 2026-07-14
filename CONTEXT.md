@@ -38,6 +38,8 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 | Conector Node.js | `pg` | backend | Oficial en esta variante |
 | Gestor backend | pnpm 11.1.1 | backend | Oficial en esta variante |
 
+El backend valida `TOKEN_SECRET` antes de abrir PostgreSQL o escuchar el puerto. En producción rechaza valores ausentes, menores de 32 caracteres o copiados de las plantillas; en desarrollo usa un secreto temporal y muestra una advertencia. El pool PostgreSQL limita conexiones y tiempos de espera, informa errores inesperados y se cierra de forma ordenada ante `SIGTERM` o `SIGINT`.
+
 ### Control de versiones
 
 - Git + GitHub.
@@ -254,7 +256,8 @@ La versión PostgreSQL fue validada con:
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas: 18/18 correctas.
+- Resultado de pruebas automatizadas: 19/19 correctas.
+- Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y pruebas en `push` o `pull_request`.
@@ -346,6 +349,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-13] Protección de la suite de integración para impedir mutaciones sobre bases de producción o mal identificadas.
 - [2026-07-13] Retiro del dump histórico del estado actual del repositorio para conservar únicamente artefactos PostgreSQL y datos de referencia controlados.
 - [2026-07-13] Inicio no bloqueante del editor, límites seguros de imagen y corrección de mensajes accesibles en el registro.
+- [2026-07-13] Validación temprana de secretos, timeouts PostgreSQL y cierre ordenado del backend.
 
 ---
 

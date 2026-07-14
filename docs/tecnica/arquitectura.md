@@ -88,13 +88,13 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 
 | Carpeta o archivo | Responsabilidad |
 | --- | --- |
-| `backend/server.js` | Punto de entrada, middlewares globales, montaje de rutas y limpieza de sesiones. |
-| `backend/config/db.js` | Conexión PostgreSQL y compatibilidad con consultas heredadas. |
+| `backend/server.js` | Punto de entrada, validación inicial de seguridad, montaje de rutas, limpieza de sesiones y cierre controlado del proceso. |
+| `backend/config/db.js` | Conexión PostgreSQL con límite de conexiones, tiempos máximos de espera y compatibilidad con consultas heredadas. |
 | `backend/routes/` | Definición de endpoints por módulo. |
 | `backend/controllers/` | Lógica de negocio de cada recurso. |
 | `backend/middlewares/` | Autenticación, autorización y control de acceso. |
 | `backend/utils/` | Funciones reutilizables para token, validación y configuración. |
-| `backend/tests/` | Pruebas automatizadas de integración. |
+| `backend/tests/` | Pruebas automatizadas unitarias y de integración. |
 
 ### Rutas principales
 
@@ -155,6 +155,10 @@ La autenticación de Artify se apoya en correo, contraseña, `bcryptjs` y un tok
 - Las acciones administrativas requieren rol `admin`.
 - El estado y el rol se consultan nuevamente en PostgreSQL para cada ruta privada.
 - Las variables sensibles se cargan desde `.env` y no deben subirse al repositorio.
+- En producción, `TOKEN_SECRET` debe existir, tener al menos 32 caracteres y no usar el valor de ejemplo; esta validación ocurre antes de abrir conexiones o aceptar solicitudes.
+- La firma recibida y la firma esperada del token se comparan en tiempo constante para evitar comparaciones sensibles directas.
+- El pool de PostgreSQL limita conexiones y tiempos de espera para que una consulta o conexión bloqueada no deje ocupado el backend indefinidamente.
+- Al recibir `SIGTERM` o `SIGINT`, el backend deja de aceptar solicitudes, detiene sus tareas periódicas y cierra el pool de PostgreSQL antes de terminar.
 
 ---
 

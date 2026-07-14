@@ -6,7 +6,9 @@ const cors = require('cors');
 // ========== CONFIGURACIÓN INICIAL ==========
 dotenv.config();
 
-require('./config/db');
+const { validarConfiguracionToken } = require('./utils/token');
+validarConfiguracionToken();
+
 const db = require('./config/db');
 
 const authRoutes = require('./routes/auth.routes');
@@ -95,7 +97,7 @@ app.use('/api', analyticsRoutes);
 
 // ========== LIMPIEZA AUTOMÁTICA DE SESIONES INACTIVAS ==========
 // Cerrar sesiones abandonadas para mantener consistencia de estado en la base de datos
-setInterval(
+const limpiezaSesionesInterval = setInterval(
   () => {
     const query = `
       WITH sesiones_cerradas AS (
@@ -141,6 +143,49 @@ setInterval(
 // ========== ARRANQUE DEL SERVIDOR ==========
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });
+
+// ========== CIERRE ORDENADO ==========
+let cierreEnCurso = false;
+
+function cerrarServidor(signal) {
+  if (cierreEnCurso) {
+    return;
+  }
+
+  cierreEnCurso = true;
+  clearInterval(limpiezaSesionesInterval);
+  console.log(`🛠️ Señal ${signal} recibida. Cerrando Artify...`);
+
+  const cierreForzado = setTimeout(() => {
+    console.error('❌ El cierre ordenado superó 15 segundos');
+    server.closeAllConnections?.();
+    process.exit(1);
+  }, 15_000);
+  cierreForzado.unref();
+
+  server.close(async (errorServidor) => {
+    let codigoSalida = 0;
+
+    if (errorServidor) {
+      codigoSalida = 1;
+      console.error('❌ Error al cerrar el servidor HTTP:', errorServidor.message);
+    }
+
+    try {
+      await db.pool.end();
+      console.log('✅ Conexiones PostgreSQL cerradas correctamente');
+    } catch (errorDb) {
+      codigoSalida = 1;
+      console.error('❌ Error al cerrar PostgreSQL:', errorDb.message);
+    }
+
+    clearTimeout(cierreForzado);
+    process.exit(codigoSalida);
+  });
+}
+
+process.once('SIGTERM', () => cerrarServidor('SIGTERM'));
+process.once('SIGINT', () => cerrarServidor('SIGINT'));

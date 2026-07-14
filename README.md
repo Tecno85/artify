@@ -159,7 +159,7 @@ Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
 > La suite se bloquea si la base no termina en `_test` o si intenta usar un host
 > remoto sin autorización explícita; nunca debe apuntar a Neon ni a producción.
 
-GitHub Actions ejecuta automáticamente la validación y las 18 pruebas del backend en cada `push` a `main` y en los pull requests.
+GitHub Actions ejecuta automáticamente la validación y las 19 pruebas del backend en cada `push` a `main` y en los pull requests.
 
 ## Despliegue
 

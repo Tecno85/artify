@@ -154,11 +154,19 @@ Esta sección se realiza una sola vez, cuando todavía no existe el servicio bac
 
 ### 4.2 Configurar las variables
 
+Primero genero un secreto aleatorio de 64 caracteres desde una terminal con Node.js instalado:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+Copio el resultado completo y lo uso como `TOKEN_SECRET`; no copio literalmente el texto de ejemplo del bloque siguiente.
+
 En **Environment** configuro como mínimo:
 
 ```env
 DATABASE_URL=postgresql://usuario:contrasena@host/base?sslmode=require
-TOKEN_SECRET=secreto_largo_aleatorio_y_privado
+TOKEN_SECRET=PEGA_AQUI_LOS_64_CARACTERES_GENERADOS
 NODE_VERSION=22.13.0
 NODE_ENV=production
 CORS_ORIGIN=https://tecno85.github.io
@@ -167,6 +175,7 @@ CORS_ORIGIN=https://tecno85.github.io
 Reglas importantes:
 
 - `DATABASE_URL` y `TOKEN_SECRET` nunca se guardan en Git.
+- `TOKEN_SECRET` debe tener al menos 32 caracteres y no puede conservar un valor de ejemplo; el backend detiene el arranque si la configuración es insegura.
 - `CORS_ORIGIN` contiene el origen de Pages, sin `/artify/` y sin barra final.
 - Render asigna `PORT`; normalmente no lo configuro manualmente.
 - Si necesito varios orígenes autorizados, los separo con comas.

@@ -258,7 +258,7 @@ Cuando un valor contiene espacios o el carácter `#`, lo escribo entre comillas 
 | `DB_PASSWORD` | Contraseña del usuario de PostgreSQL. | `********` | Valor sensible. |
 | `DB_NAME` | Base de datos usada por el proyecto. | `artify_db` | Debe coincidir con el esquema importado. |
 | `DATABASE_URL` | Cadena completa de conexión PostgreSQL. | `postgresql://usuario:********@host:5432/artify_db` | Es la opción principal para despliegues como Render o Neon. |
-| `TOKEN_SECRET` | Secreto para firmar tokens. | `********` | Debe ser largo, aleatorio y privado. |
+| `TOKEN_SECRET` | Secreto para firmar tokens. | `********` | Debe ser aleatorio, privado y tener al menos 32 caracteres. |
 | `PORT` | Puerto del backend. | `3000` | Debe estar disponible. |
 | `NODE_ENV` | Tipo de entorno. | `development` | En producción debe configurarse como corresponda. |
 | `CORS_ORIGIN` | Orígenes autorizados para consumir la API. | `http://localhost:8080` | En producción debe coincidir con la URL pública del frontend. |

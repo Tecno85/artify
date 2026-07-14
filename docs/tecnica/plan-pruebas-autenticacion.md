@@ -404,7 +404,7 @@ Esta suite también se ejecuta en GitHub Actions mediante:
 .github/workflows/backend-tests.yml
 ```
 
-Actualmente ejecuto 18 pruebas automatizadas que cubren las siguientes validaciones:
+Actualmente ejecuto 19 pruebas automatizadas que cubren las siguientes validaciones:
 
 - Disponibilidad del proceso Express y de PostgreSQL mediante `/health` y `/ready`.
 - Respuesta del endpoint público de analíticas.
@@ -416,6 +416,7 @@ Actualmente ejecuto 18 pruebas automatizadas que cubren las siguientes validacio
 - Verificación en PostgreSQL de que la contraseña se guarda como hash bcrypt.
 - Login exitoso.
 - Generación de token.
+- Validación de `TOKEN_SECRET` según el entorno antes de iniciar el backend.
 - Actualización de `usr_ultimo_acceso` y `usr_sesion_activa` después del login.
 - Validación de preferencias, registro de descarga y analytics resultante.
 - Acceso a rutas protegidas con token.
@@ -430,6 +431,7 @@ Actualmente ejecuto 18 pruebas automatizadas que cubren las siguientes validacio
 - Autenticación de administrador.
 - Rechazo de login y revocación del token de una cuenta suspendida.
 - Limpieza del usuario temporal en la base de datos.
+- Cierre ordenado del servidor HTTP y del pool PostgreSQL al terminar la suite.
 
 Antes de ejecutar la suite creo una base local exclusiva cuyo nombre termine en
 `_test` y cargo allí el esquema y los datos iniciales:
@@ -472,8 +474,8 @@ NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 
 ```text
-18 pruebas ejecutadas
-18 pruebas aprobadas
+19 pruebas ejecutadas
+19 pruebas aprobadas
 0 pruebas fallidas
 ```
 

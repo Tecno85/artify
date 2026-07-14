@@ -4,26 +4,64 @@ const crypto = require('crypto');
 // ========== CONFIGURACIÓN ==========
 const TOKEN_EXPIRACION_SEGUNDOS = 8 * 60 * 60;
 const TOKEN_SECRET_DESARROLLO = crypto.randomBytes(32).toString('hex');
+const LONGITUD_MINIMA_SECRETO = 32;
+const VALORES_SECRETOS_DE_EJEMPLO = [
+  'cambia_este_valor',
+  'reemplazar_',
+  'pega_aqui_',
+  'secreto_largo_aleatorio_y_privado',
+  'change_me',
+  'changeme',
+  'your_secret',
+];
 let secretoTemporalAvisado = false;
 
 // ========== UTILIDADES BASE64 ==========
+function obtenerProblemaSecreto(secreto) {
+  if (!secreto) {
+    return 'TOKEN_SECRET no está configurado';
+  }
+
+  if (secreto.length < LONGITUD_MINIMA_SECRETO) {
+    return `TOKEN_SECRET debe tener al menos ${LONGITUD_MINIMA_SECRETO} caracteres`;
+  }
+
+  const secretoNormalizado = secreto.toLowerCase();
+  if (
+    VALORES_SECRETOS_DE_EJEMPLO.some((valor) =>
+      secretoNormalizado.includes(valor)
+    )
+  ) {
+    return 'TOKEN_SECRET conserva un valor de ejemplo y debe reemplazarse';
+  }
+
+  return null;
+}
+
 function obtenerSecreto() {
-  if (process.env.TOKEN_SECRET) {
-    return process.env.TOKEN_SECRET;
+  const secretoConfigurado = (process.env.TOKEN_SECRET || '').trim();
+  const problema = obtenerProblemaSecreto(secretoConfigurado);
+
+  if (!problema) {
+    return secretoConfigurado;
   }
 
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('TOKEN_SECRET no está configurado');
+    throw new Error(problema);
   }
 
   if (!secretoTemporalAvisado) {
     console.warn(
-      '⚠️ TOKEN_SECRET no está configurado. Usando secreto temporal de desarrollo.'
+      `⚠️ ${problema}. Usando secreto temporal de desarrollo.`
     );
     secretoTemporalAvisado = true;
   }
 
   return TOKEN_SECRET_DESARROLLO;
+}
+
+function validarConfiguracionToken() {
+  return obtenerSecreto();
 }
 
 function base64UrlEncode(valor) {
@@ -48,6 +86,16 @@ function firmar(valor) {
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/g, '');
+}
+
+function firmasCoinciden(firmaRecibida, firmaEsperada) {
+  const recibida = Buffer.from(firmaRecibida);
+  const esperada = Buffer.from(firmaEsperada);
+
+  return (
+    recibida.length === esperada.length &&
+    crypto.timingSafeEqual(recibida, esperada)
+  );
 }
 
 // ========== FIRMA Y VALIDACIÓN DE TOKEN ==========
@@ -80,7 +128,7 @@ function verificarToken(token) {
   const [header, body, firma] = partes;
   const firmaEsperada = firmar(`${header}.${body}`);
 
-  if (firma !== firmaEsperada) {
+  if (!firmasCoinciden(firma, firmaEsperada)) {
     throw new Error('TOKEN_INVALIDO');
   }
 
@@ -98,4 +146,5 @@ function verificarToken(token) {
 module.exports = {
   crearToken,
   verificarToken,
+  validarConfiguracionToken,
 };

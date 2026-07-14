@@ -83,6 +83,28 @@ async function esperarBackend() {
   throw ultimoError || new Error('El backend de prueba no respondió a tiempo');
 }
 
+async function detenerBackend() {
+  if (!serverProcess || serverProcess.exitCode !== null) {
+    return;
+  }
+
+  const salida = new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('El backend no terminó de forma ordenada en 10 segundos'));
+    }, 10_000);
+
+    serverProcess.once('exit', (code, signal) => {
+      clearTimeout(timeout);
+      resolve({ code, signal });
+    });
+  });
+
+  assert.equal(serverProcess.kill('SIGTERM'), true);
+  const resultado = await salida;
+  assert.equal(resultado.code, 0);
+  assert.equal(resultado.signal, null);
+}
+
 async function request(path, options = {}) {
   const response = await fetch(`${API}${path}`, options);
   let body;
@@ -222,10 +244,7 @@ before(async () => {
 
 after(async () => {
   await limpiarUsuarioTemporal();
-
-  if (serverProcess && !serverProcess.killed) {
-    serverProcess.kill('SIGTERM');
-  }
+  await detenerBackend();
 });
 
 test('health público responde sin consultar credenciales', async () => {

@@ -2,6 +2,10 @@
 const { Pool } = require('pg');
 
 const tablas = ['USUARIO', 'CONFIGURACION', 'IMAGEN', 'SESION_EDICION', 'OPERACION'];
+const MAXIMO_CONEXIONES_POOL = 10;
+const TIMEOUT_CONEXION_MS = 10_000;
+const TIMEOUT_CONSULTA_MS = 15_000;
+const TIMEOUT_CONEXION_INACTIVA_MS = 30_000;
 
 function convertirPlaceholdersEnSegmento(sql, siguientePlaceholder) {
   return sql.replace(/\?/g, () => `$${siguientePlaceholder()}`);
@@ -161,6 +165,16 @@ const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  max: MAXIMO_CONEXIONES_POOL,
+  connectionTimeoutMillis: TIMEOUT_CONEXION_MS,
+  idleTimeoutMillis: TIMEOUT_CONEXION_INACTIVA_MS,
+  query_timeout: TIMEOUT_CONSULTA_MS,
+  statement_timeout: TIMEOUT_CONSULTA_MS,
+  keepAlive: true,
+});
+
+pool.on('error', (err) => {
+  console.error('❌ Error inesperado en el pool PostgreSQL:', err.message);
 });
 
 // Verificar la conexión apenas inicia el backend
