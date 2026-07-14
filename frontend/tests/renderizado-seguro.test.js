@@ -10,7 +10,7 @@ const {
   evaluar,
 } = require('./helpers/frontend-vm');
 
-test('admin escapa caracteres HTML antes de renderizar datos de usuario', () => {
+test('admin escapa HTML y protege la cuenta administrativa actual', () => {
   const elementos = new Map();
   const document = {
     addEventListener() {},
@@ -32,6 +32,16 @@ test('admin escapa caracteres HTML antes de renderizar datos de usuario', () => 
     },
   };
   const contextoFrontend = crearContextoFrontend({ document });
+  contextoFrontend.sessionStorage.setItem(
+    'artifyUser',
+    JSON.stringify({
+      id: 7,
+      nombres: 'Admin',
+      apellidos: 'Artify',
+      correo: 'admin@artify.local',
+      rol: 'admin',
+    })
+  );
   contextoFrontend.contexto.API = 'http://api.artify.test';
   contextoFrontend.contexto.fetchAuth = async () => ({
     json: async () => ({ mensaje: 'ok', usuarios: [] }),
@@ -51,6 +61,35 @@ test('admin escapa caracteres HTML antes de renderizar datos de usuario', () => 
     resultado,
     '&lt;img src=x onerror=&quot;alert(1)&quot;&gt; &amp;&#39; ataque'
   );
+
+  evaluar(
+    contextoFrontend.contexto,
+    `renderizarTabla([
+      {
+        usr_id_usuario: 7,
+        usr_nombres: 'Admin',
+        usr_apellidos: 'Artify',
+        usr_cedula: '1234567',
+        usr_correo: 'admin@artify.local',
+        usr_estado_usuario: 'activo',
+        usr_rol: 'admin'
+      },
+      {
+        usr_id_usuario: 8,
+        usr_nombres: 'Usuario',
+        usr_apellidos: 'Prueba',
+        usr_cedula: '7654321',
+        usr_correo: 'usuario@artify.local',
+        usr_estado_usuario: 'activo',
+        usr_rol: 'usuario'
+      }
+    ])`
+  );
+
+  const tabla = elementos.get('tablaBody').innerHTML;
+  assert.match(tabla, /Cuenta actual/);
+  assert.doesNotMatch(tabla, /abrirEliminar\(7\)/);
+  assert.match(tabla, /abrirEliminar\(8\)/);
 });
 
 test('notificaciones muestran mensajes como texto y no como HTML ejecutable', () => {

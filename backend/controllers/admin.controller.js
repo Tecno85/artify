@@ -152,6 +152,12 @@ function editarUsuario(req, res) {
     return res.status(400).json({ mensaje: errorValidacion });
   }
 
+  if (id === req.auth?.id && estado !== 'activo') {
+    return res.status(400).json({
+      mensaje: 'No puedes desactivar tu propia cuenta de administrador',
+    });
+  }
+
   const query = `
     UPDATE USUARIO
     SET usr_nombres = ?,
@@ -202,6 +208,12 @@ async function eliminarUsuario(req, res) {
 
   if (id === null) {
     return res.status(400).json({ mensaje: 'Identificador de usuario inválido' });
+  }
+
+  if (id === req.auth?.id) {
+    return res.status(400).json({
+      mensaje: 'No puedes eliminar tu propia cuenta de administrador',
+    });
   }
 
   // Eliminar primero las tablas más dependientes para evitar errores de integridad referencial

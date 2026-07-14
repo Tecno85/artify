@@ -580,6 +580,16 @@ input[type='password'] {
   transform: translateY(-1px);
 }
 
+.btn-eliminar-row:disabled,
+.btn-eliminar-row:disabled:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  border-color: var(--border);
+  cursor: not-allowed;
+  opacity: 0.75;
+  transform: none;
+}
+
 .btn-editar svg,
 .btn-eliminar-row svg {
   width: 13px;

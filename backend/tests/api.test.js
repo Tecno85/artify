@@ -1031,6 +1031,45 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
     eliminarIdInvalido.body.mensaje,
     'Identificador de usuario inválido'
   );
+
+  const desactivarCuentaPropia = await request(
+    `/api/admin/usuario/${idUsuario}`,
+    {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${login.body.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombres: usuarioPrueba.nombres,
+        apellidos: usuarioPrueba.apellidos,
+        cedula: usuarioPrueba.cedula,
+        fechaNacimiento: usuarioPrueba.fechaNacimiento,
+        correo: usuarioPrueba.correo,
+        estado: 'suspendido',
+      }),
+    }
+  );
+
+  assert.equal(desactivarCuentaPropia.response.status, 400);
+  assert.equal(
+    desactivarCuentaPropia.body.mensaje,
+    'No puedes desactivar tu propia cuenta de administrador'
+  );
+
+  const eliminarCuentaPropia = await request(
+    `/api/admin/usuario/${idUsuario}`,
+    {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${login.body.token}` },
+    }
+  );
+
+  assert.equal(eliminarCuentaPropia.response.status, 400);
+  assert.equal(
+    eliminarCuentaPropia.body.mensaje,
+    'No puedes eliminar tu propia cuenta de administrador'
+  );
 });
 
 test('admin puede crear, consultar, editar y eliminar un usuario', async () => {

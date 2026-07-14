@@ -64,6 +64,17 @@ function obtenerUsuarioAdminActual() {
   }
 }
 
+function esAdministradorActual(idUsuario) {
+  const administrador = obtenerUsuarioAdminActual();
+  const idAdministrador = Number(administrador?.id);
+
+  return (
+    Number.isSafeInteger(idAdministrador) &&
+    idAdministrador > 0 &&
+    idAdministrador === Number(idUsuario)
+  );
+}
+
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
   const coincidencia = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -128,6 +139,28 @@ function renderizarTabla(usuarios) {
         const estado = escaparHtml(u.usr_estado_usuario);
         const estadoTexto = estado.charAt(0).toUpperCase() + estado.slice(1);
         const rolEsAdmin = u.usr_rol === 'admin';
+        const esCuentaActual = esAdministradorActual(idUsuario);
+        const botonEliminar = esCuentaActual
+          ? `
+          <button
+            type="button"
+            class="btn-eliminar-row"
+            disabled
+            title="No puedes eliminar tu propia cuenta administrativa"
+          >
+            Cuenta actual
+          </button>`
+          : `
+          <button class="btn-eliminar-row" onclick="abrirEliminar(${idUsuario})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+              <path d="M10 11v6"></path>
+              <path d="M14 11v6"></path>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+            </svg>
+            Eliminar
+          </button>`;
 
         return `
     <tr>
@@ -157,16 +190,7 @@ function renderizarTabla(usuarios) {
             </svg>
             Editar
           </button>
-          <button class="btn-eliminar-row" onclick="abrirEliminar(${idUsuario})">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="3 6 5 6 21 6"></polyline>
-              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-              <path d="M10 11v6"></path>
-              <path d="M14 11v6"></path>
-              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-            </svg>
-            Eliminar
-          </button>
+          ${botonEliminar}
         </div>
       </td>
     </tr>
@@ -225,6 +249,7 @@ window.abrirEditar = function (id) {
   document.getElementById('modalCedula').value = usuario.usr_cedula;
   document.getElementById('modalCorreo').value = usuario.usr_correo;
   document.getElementById('modalEstado').value = usuario.usr_estado_usuario;
+  document.getElementById('modalEstado').disabled = esAdministradorActual(id);
 
   if (usuario.usr_fecha_nacimiento) {
     document.getElementById('modalFechaNac').value = String(
@@ -333,6 +358,14 @@ document
 
 // ========== DELETE — ELIMINAR USUARIO ==========
 window.abrirEliminar = function (id) {
+  if (esAdministradorActual(id)) {
+    mostrarNotificacion(
+      'error',
+      'No puedes eliminar tu propia cuenta de administrador'
+    );
+    return;
+  }
+
   const usuario = todosLosUsuarios.find((u) => u.usr_id_usuario === id);
   const nombre = usuario
     ? `${usuario.usr_nombres} ${usuario.usr_apellidos}`
@@ -389,6 +422,7 @@ function limpiarModal() {
   document.getElementById('modalCorreo').value = '';
   document.getElementById('modalPassword').value = '';
   document.getElementById('modalEstado').value = 'activo';
+  document.getElementById('modalEstado').disabled = false;
   limpiarErrores();
 }
 

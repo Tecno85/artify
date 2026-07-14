@@ -227,6 +227,7 @@ El sistema debe permitir que el administrador actualice datos de usuarios existe
 **Criterios de aceptación:**
 
 - El administrador puede modificar datos personales y estado del usuario.
+- El administrador conserva activa su propia cuenta para evitar perder accidentalmente el acceso al panel.
 - El sistema valida los datos antes de guardar.
 - Los cambios se reflejan en la tabla `USUARIO`.
 
@@ -239,6 +240,7 @@ El sistema debe permitir que el administrador elimine usuarios.
 - El sistema solicita confirmación antes de eliminar.
 - El sistema elimina primero la información dependiente para conservar integridad referencial.
 - El usuario eliminado deja de aparecer en el listado administrativo.
+- El administrador no puede eliminar su propia cuenta autenticada.
 
 ### RF-19 API de analíticas
 
