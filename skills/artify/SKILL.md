@@ -1,6 +1,6 @@
 ---
 name: artify
-description: Usar cuando se trabaje en Artify: código, documentación, pruebas, base de datos, autenticación, panel administrativo, editor de imágenes, analytics, evidencias académicas o pulido general del proyecto.
+description: "Usar cuando se trabaje en Artify: código, documentación, pruebas, base de datos, autenticación, panel administrativo, editor de imágenes, analytics, evidencias académicas o pulido general del proyecto."
 ---
 
 # Artify
@@ -8,6 +8,8 @@ description: Usar cuando se trabaje en Artify: código, documentación, pruebas,
 ## Propósito
 
 Este skill guía cómo trabajar en Artify sin duplicar su documentación. Usar `CONTEXT.md` para estado actual y `README.md` para instalación, uso e índice documental principal.
+
+Resolver todas las rutas mencionadas en este skill desde la raíz del repositorio Artify, no desde el directorio donde esté instalada la copia del skill. Confirmar la raíz por la presencia conjunta de `CONTEXT.md`, `README.md`, `frontend/` y `backend/`; si no está disponible, pedir la ubicación del repositorio antes de modificar archivos.
 
 ## Lectura Inicial
 
@@ -20,6 +22,8 @@ Leer solo lo necesario para la tarea:
 - Analytics, despliegue, pruebas o evidencias: documento técnico correspondiente dentro de `docs/tecnica/`.
 
 Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo trabajo. Si se agregan o eliminan documentos relevantes, actualizar el índice documental del `README.md`; no depender de `docs/README.md` como índice principal.
+
+Tratar `skills/artify/` como fuente de verdad versionada del skill. Después de modificarla y validarla, sincronizar la copia instalada en `${CODEX_HOME:-$HOME/.codex}/skills/artify/` cuando exista y comprobar que ambas copias sean idénticas. Solicitar autorización si la ubicación instalada está fuera de las rutas editables.
 
 ## Reglas De Trabajo
 
@@ -38,6 +42,7 @@ Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo traba
 - No cambiar respuestas existentes sin revisar frontend y pruebas que dependan de campos como `mensaje`, `usuario`, `token`, `usuarios` o `estadisticas`.
 - Proteger invariantes: contraseñas con bcrypt, tokens firmados por backend, autorización por rol/propietario, rechazo de IDs malformados y payloads inválidos.
 - Mantener `.env` fuera del repositorio y actualizar `.env.example` si cambian variables requeridas.
+- Ejecutar pruebas de integración solo con `NODE_ENV=test`, confirmación explícita y una base cuyo nombre termine en `_test`; no desactivar las guardas de seguridad para apuntar a datos de desarrollo o producción.
 
 ## Frontend Y Base De Datos
 
@@ -46,7 +51,7 @@ Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo traba
 - Al tocar editor, considerar Canvas, historial deshacer/rehacer, zoom, filtros, recorte, redimensionamiento, conversión y registro de operaciones.
 - Escapar o renderizar de forma segura datos de usuario/base de datos antes de insertarlos en HTML; evitar valores crudos en `innerHTML` o parámetros inline.
 - En PostgreSQL, mantener tablas en mayúsculas y columnas con prefijos (`usr_`, `ses_`, `opr_`, `img_`, `cfg_`), usando comillas dobles en SQL directo cuando corresponda.
-- Recordar que `backend/config/db.js` conserva compatibilidad con consultas heredadas: adapta placeholders `?` a `$1`, `$2`, cita tablas en mayúscula y normaliza resultados como `insertId` y `affectedRows`.
+- Consultar `CONTEXT.md` antes de cambiar la capa de compatibilidad de `backend/config/db.js` y revisar todos los controladores y pruebas que dependan de su comportamiento.
 - Si cambia el esquema, actualizar juntos SQL, documentación, pruebas y controladores afectados.
 
 ## Documentación Y Evidencias
@@ -57,6 +62,7 @@ Si cambia el estado real del proyecto, actualizar `CONTEXT.md` en el mismo traba
 - Usar `docs/proyecto/` para material funcional/académico y `docs/tecnica/` para arquitectura, base de datos, despliegue, pruebas, analytics y estándares.
 - Crear o modificar evidencias en `docs/**/evidencias/` solo cuando el usuario lo pida o la entrega académica lo requiera.
 - Si cambian formatos admitidos por el editor, mantener coherentes `frontend/pages/editor.html`, `frontend/assets/js/editor.js`, `README.md` y documentación relacionada.
+- Al finalizar un cambio de comportamiento, contrastar código, pruebas, `CONTEXT.md`, `README.md` y el documento técnico afectado; actualizar solo los archivos cuya información haya cambiado realmente.
 
 ### Respuesta Al Instructor Para Evidencias
 
@@ -88,15 +94,17 @@ Elegir según el cambio:
 
 - Sintaxis backend: `cd backend && pnpm run check`.
 - Backend/auth/API/BD: `cd backend && pnpm test`.
+- Frontend automatizado: `cd backend && pnpm run test:frontend`.
+- Editor E2E en navegador: `cd backend && pnpm run test:e2e`.
 - Backend local: `cd backend && pnpm start` o `pnpm run dev`.
-- Frontend estático: servir `frontend/` con `npx http-server frontend` y revisar en navegador cuando aplique.
+- Frontend estático: ejecutar `python3 -m http.server 8080 --directory frontend` desde la raíz y revisar en navegador cuando aplique.
 - Base de datos: verificar contra `database/postgresql/schema.sql`, `database/postgresql/seed.sql` y PostgreSQL local `artify_db` cuando esté disponible.
 
 Si una validación no puede ejecutarse por PostgreSQL, variables de entorno o sandbox, decir exactamente qué faltó.
 
 ## Cierre Y Commits
 
-Cuando se hagan cambios relevantes de código, documentación, pruebas, base de datos, evidencias o funcionalidades, cerrar la respuesta con:
+Cuando la tarea deje cambios pendientes relevantes de código, documentación, pruebas, base de datos, evidencias o funcionalidades, cerrar la respuesta con:
 
 - resumen breve de cambios
 - validaciones ejecutadas
