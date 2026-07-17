@@ -570,6 +570,28 @@
               <span class="perfil-stat-label">Sesiones</span>
             </div>
           </div>
+
+          <section class="perfil-historial" aria-labelledby="perfilHistorialTitulo">
+            <h4 id="perfilHistorialTitulo">Historial de operaciones</h4>
+            <ul
+              id="perfilHistorialOperaciones"
+              class="perfil-historial-lista"
+              aria-live="polite"
+            >
+              <li class="perfil-historial-vacio">
+                Abre el perfil para consultar el historial.
+              </li>
+            </ul>
+            <div class="perfil-historial-paginacion">
+              <button type="button" id="historialAnterior" disabled>
+                Anterior
+              </button>
+              <span id="historialPagina">Sin páginas</span>
+              <button type="button" id="historialSiguiente" disabled>
+                Siguiente
+              </button>
+            </div>
+          </section>
         </div>
 
         <div class="modal-perfil-footer">
@@ -615,6 +637,9 @@
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/auth.js"></script>
     <script src="../assets/js/modal.js"></script>
+    <script src="../assets/js/editor-storage.js"></script>
+    <script src="../assets/js/editor-image.js"></script>
+    <script src="../assets/js/editor-history.js"></script>
     <script src="../assets/js/editor.js"></script>
   </body>
 </html>

@@ -48,104 +48,16 @@ let cropRatio = 'free'; // Proporción actual del recorte
 const RESOLUCION_MINIMA_ANCHO = 1024;
 const RESOLUCION_MINIMA_ALTO = 600;
 const LOCAL_STORAGE_KEY = 'artify_no_mostrar_modal_resolucion';
-const TAMANO_MAXIMO_ARCHIVO = 10 * 1024 * 1024;
-const MAXIMO_PIXELES_IMAGEN = 16_000_000;
-const MAXIMA_DIMENSION_IMAGEN = 8192;
-const RESPALDO_LOCAL_KEY = 'artify_backup_v1';
-const RESPALDO_EXPIRACION_MS = 7 * 24 * 60 * 60 * 1000;
-const RESPALDO_LEGACY_KEYS = [
-  'artify_backup_image',
-  'artify_backup_timestamp',
-];
-
-function eliminarRespaldoLocal() {
-  [RESPALDO_LOCAL_KEY, ...RESPALDO_LEGACY_KEYS].forEach((clave) => {
-    try {
-      localStorage.removeItem(clave);
-    } catch {}
-  });
-}
-
-function guardarRespaldoLocal({
-  dataUrl,
-  formato,
-  nombreOriginal,
-  tamanoBytes,
-}) {
-  try {
-    const usuario = JSON.parse(
-      sessionStorage.getItem('artifyUser') || 'null'
-    );
-    const idUsuario = Number(usuario?.id);
-    const formatoNormalizado = String(formato || '').toLowerCase();
-
-    if (
-      !Number.isSafeInteger(idUsuario) ||
-      idUsuario <= 0 ||
-      typeof dataUrl !== 'string' ||
-      !/^data:image\/(png|jpeg|webp);base64,/.test(dataUrl) ||
-      !['png', 'jpeg', 'webp'].includes(formatoNormalizado)
-    ) {
-      return false;
-    }
-
-    const respaldo = {
-      version: 1,
-      idUsuario,
-      timestamp: Date.now(),
-      dataUrl,
-      formato: formatoNormalizado,
-      nombreOriginal:
-        typeof nombreOriginal === 'string' && nombreOriginal.trim()
-          ? nombreOriginal.trim().slice(0, 255)
-          : `imagen-recuperada.${formatoNormalizado}`,
-      tamanoBytes:
-        Number.isSafeInteger(tamanoBytes) && tamanoBytes > 0
-          ? tamanoBytes
-          : 0,
-    };
-
-    localStorage.setItem(RESPALDO_LOCAL_KEY, JSON.stringify(respaldo));
-    RESPALDO_LEGACY_KEYS.forEach((clave) => localStorage.removeItem(clave));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function leerRespaldoLocalParaUsuario(idUsuario, ahora = Date.now()) {
-  RESPALDO_LEGACY_KEYS.forEach((clave) => {
-    try {
-      localStorage.removeItem(clave);
-    } catch {}
-  });
-
-  try {
-    const respaldo = JSON.parse(localStorage.getItem(RESPALDO_LOCAL_KEY));
-    const idNormalizado = Number(idUsuario);
-    const esValido =
-      respaldo?.version === 1 &&
-      Number.isSafeInteger(idNormalizado) &&
-      idNormalizado > 0 &&
-      respaldo.idUsuario === idNormalizado &&
-      Number.isFinite(respaldo.timestamp) &&
-      respaldo.timestamp <= ahora &&
-      ahora - respaldo.timestamp <= RESPALDO_EXPIRACION_MS &&
-      typeof respaldo.dataUrl === 'string' &&
-      /^data:image\/(png|jpeg|webp);base64,/.test(respaldo.dataUrl) &&
-      ['png', 'jpeg', 'webp'].includes(respaldo.formato);
-
-    if (!esValido) {
-      eliminarRespaldoLocal();
-      return null;
-    }
-
-    return respaldo;
-  } catch {
-    eliminarRespaldoLocal();
-    return null;
-  }
-}
+const {
+  eliminarRespaldoLocal,
+  guardarRespaldoLocal,
+  leerRespaldoLocalParaUsuario,
+} = window.ArtifyEditorStorage;
+const {
+  normalizarFormatoImagen,
+  validarArchivoImagen,
+  validarDimensionesImagen,
+} = window.ArtifyEditorImage;
 
 // ========== SESIÓN DE EDICIÓN EN SEGUNDO PLANO ==========
 function iniciarSesionEdicionEnSegundoPlano(usuario) {
@@ -585,17 +497,9 @@ window.addEventListener('DOMContentLoaded', () => {
   function cargarImagen(file) {
     cancelarVistaPreviaFiltro();
 
-    const tiposValidos = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!tiposValidos.includes(file.type)) {
-      mostrarNotificacion(
-        'error',
-        'Formato no válido. Solo JPG, PNG y WebP'
-      );
-      return;
-    }
-
-    if (file.size > TAMANO_MAXIMO_ARCHIVO) {
-      mostrarNotificacion('error', 'La imagen supera el límite de 10 MB');
+    const validacionArchivo = validarArchivoImagen(file);
+    if (!validacionArchivo.valido) {
+      mostrarNotificacion('error', validacionArchivo.mensaje);
       return;
     }
 
@@ -607,18 +511,10 @@ window.addEventListener('DOMContentLoaded', () => {
       img.onload = () => {
         const ancho = img.naturalWidth;
         const alto = img.naturalHeight;
-        const totalPixeles = ancho * alto;
 
-        if (
-          ancho > MAXIMA_DIMENSION_IMAGEN ||
-          alto > MAXIMA_DIMENSION_IMAGEN ||
-          totalPixeles > MAXIMO_PIXELES_IMAGEN
-        ) {
-          const megapixeles = (totalPixeles / 1_000_000).toFixed(1);
-          mostrarNotificacion(
-            'error',
-            `Imagen demasiado grande: ${ancho} × ${alto} px (${megapixeles} MP). Máximo: 16 MP y 8192 px por lado.`
-          );
+        const validacionDimensiones = validarDimensionesImagen(ancho, alto);
+        if (!validacionDimensiones.valido) {
+          mostrarNotificacion('error', validacionDimensiones.mensaje);
           actualizarEstado('Imagen demasiado grande', 'error');
           return;
         }
@@ -631,7 +527,7 @@ window.addEventListener('DOMContentLoaded', () => {
         currentImage = img;
         archivoActual = {
           nombreOriginal: file.name,
-          formatoOriginal: file.type.replace('image/', '').replace('jpg', 'jpeg'),
+          formatoOriginal: normalizarFormatoImagen(file.type),
         };
 
         // Resetear formato y calidad al cargar nueva imagen
@@ -756,13 +652,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const ancho = img.naturalWidth || img.width;
       const alto = img.naturalHeight || img.height;
 
-      if (
-        ancho <= 0 ||
-        alto <= 0 ||
-        ancho > MAXIMA_DIMENSION_IMAGEN ||
-        alto > MAXIMA_DIMENSION_IMAGEN ||
-        ancho * alto > MAXIMO_PIXELES_IMAGEN
-      ) {
+      if (!validarDimensionesImagen(ancho, alto).valido) {
         descartarRespaldo();
         mostrarNotificacion('error', 'El respaldo local no es válido');
         actualizarEstado('Error', 'error');
@@ -2384,6 +2274,12 @@ async function abrirModalPerfil(disparador) {
         if (imagenesEditadas)
           imagenesEditadas.textContent = data.estadisticas.imagenesEditadas;
       }
+
+      await window.ArtifyEditorHistory.abrir({
+        api: API,
+        solicitar: fetchAuth,
+        idUsuario: usuario.id,
+      });
     } catch {}
   }
 

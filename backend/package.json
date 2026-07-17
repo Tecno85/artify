@@ -9,6 +9,7 @@
     "check": "node --check server.js",
     "test": "node --test tests/*.test.js",
     "test:frontend": "node --test ../frontend/tests/*.test.js",
+    "test:frontend:coverage": "node --experimental-test-coverage --test ../frontend/tests/*.test.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {

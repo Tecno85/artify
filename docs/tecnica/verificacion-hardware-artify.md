@@ -233,7 +233,7 @@ Artify ya cuenta con una infraestructura real distribuida entre GitHub Pages, Re
 
 El resultado de capacidad continúa como `Por verificar`: faltan una prueba de carga con un objetivo medible y la consulta de límites efectivos de los planes. El 14 de julio de 2026 ejecuté 25 solicitudes de lectura a `/health` con concurrencia 5: todas respondieron correctamente, con promedio de 259 ms y percentil 95 de 558 ms. Esta muestra sirve como smoke técnico puntual, no como demostración de capacidad sostenida.
 
-También restauré un respaldo real de la base local en un destino temporal y comprobé cinco tablas funcionales, migraciones y permisos restringidos. Continúa pendiente verificar las políticas de retención y recuperación que ofrece el plan activo de Neon. Los valores de VPS definidos en este informe permanecen como referencia si en el futuro se adopta infraestructura autogestionada.
+También restauré un respaldo real de la base local en un destino temporal y comprobé cinco tablas funcionales, migraciones y permisos restringidos. La política operativa define RPO, RTO, retención externa y revisión trimestral del plan activo de Neon; la capacidad exacta ofrecida por el proveedor debe registrarse desde su panel sin presuponer características del plan. Los valores de VPS definidos en este informe permanecen como referencia si en el futuro se adopta infraestructura autogestionada.
 
 ---
 

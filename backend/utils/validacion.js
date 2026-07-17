@@ -91,6 +91,33 @@ function normalizarIdEntero(valor) {
   return null;
 }
 
+function normalizarPaginacion(
+  paginaValor,
+  limiteValor,
+  { limiteDefecto = 5, limiteMaximo = 20 } = {}
+) {
+  const pagina =
+    paginaValor === undefined ? 1 : normalizarIdEntero(paginaValor);
+  const limite =
+    limiteValor === undefined
+      ? limiteDefecto
+      : normalizarIdEntero(limiteValor);
+
+  if (
+    pagina === null ||
+    limite === null ||
+    limite > limiteMaximo
+  ) {
+    return null;
+  }
+
+  return {
+    pagina,
+    limite,
+    offset: (pagina - 1) * limite,
+  };
+}
+
 function validarCredenciales({ correo, password }) {
   if (!esCorreo(normalizarCorreo(correo))) {
     return 'Ingresa un correo válido';
@@ -211,6 +238,7 @@ module.exports = {
   normalizarCorreo,
   normalizarDatosUsuario,
   normalizarIdEntero,
+  normalizarPaginacion,
   validarConfiguracion,
   validarCredenciales,
   validarUsuario,

@@ -784,6 +784,30 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
   assert.equal(totalOperaciones.body.mensaje, 'ok');
   assert.ok(totalOperaciones.body.total >= 1);
 
+  const historialOperaciones = await request(
+    `/api/operacion/historial/${idUsuario}?pagina=1&limite=5`,
+    {
+      headers: { Authorization: `Bearer ${tokenUsuario}` },
+    }
+  );
+
+  assert.equal(historialOperaciones.response.status, 200);
+  assert.equal(historialOperaciones.body.mensaje, 'ok');
+  assert.ok(Array.isArray(historialOperaciones.body.operaciones));
+  assert.ok(historialOperaciones.body.operaciones.length >= 1);
+  assert.equal(historialOperaciones.body.paginacion.pagina, 1);
+  assert.equal(historialOperaciones.body.paginacion.limite, 5);
+  assert.ok(historialOperaciones.body.paginacion.total >= 1);
+
+  const paginacionInvalida = await request(
+    `/api/operacion/historial/${idUsuario}?pagina=0&limite=100`,
+    {
+      headers: { Authorization: `Bearer ${tokenUsuario}` },
+    }
+  );
+  assert.equal(paginacionInvalida.response.status, 400);
+  assert.equal(paginacionInvalida.body.mensaje, 'Paginación inválida');
+
   const cierre = await request('/api/sesion/cerrar', {
     method: 'POST',
     headers: authHeaders,

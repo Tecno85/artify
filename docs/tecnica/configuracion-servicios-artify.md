@@ -307,7 +307,7 @@ Esta salida confirma que Express está escuchando en el puerto configurado y que
 
 ![Dependencias y pruebas del backend verificadas](./evidencias/configuracion-servicios/dependencias-pruebas.svg)
 
-*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día y que la sintaxis y las pruebas automatizadas finalizaron correctamente. El estado reproducible actual conserva 28 pruebas backend y 14 frontend; adicionalmente, el workflow ejecuta una prueba E2E del editor en Chromium.
+*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día y que la sintaxis y las pruebas automatizadas finalizaron correctamente. El estado reproducible actual conserva 29 pruebas backend, 17 frontend y tres E2E en Chromium.
 
 #### Imagen 6. Backend conectado y API disponible
 
@@ -422,7 +422,7 @@ Desde `backend/` ejecuto la suite frontend, que no necesita PostgreSQL:
 pnpm run test:frontend
 ```
 
-El resultado actual es de 14 pruebas aprobadas y cero fallos. La suite comprueba sesión, respuestas `401`, validación del login, redirección por rol, inicio no bloqueante del editor, renderizado seguro y semántica accesible.
+El resultado actual es de 17 pruebas aprobadas y cero fallos. La suite comprueba sesión, respuestas `401`, validación del login, redirección por rol, inicio no bloqueante del editor, validaciones de imagen, historial paginado, renderizado seguro y semántica accesible.
 
 ### 11.4 Prueba E2E del editor
 
@@ -433,12 +433,13 @@ pnpm exec playwright install chromium
 pnpm run test:e2e
 ```
 
-La prueba abre el editor en una ventana de 1366 × 768, simula las respuestas de
+Las pruebas abren la aplicación en una ventana de 1366 × 768, simulan las respuestas de
 la API sin modificar PostgreSQL, carga una imagen PNG, mueve la intensidad de
-Blanco y Negro, confirma el filtro, verifica el historial y descarga el archivo.
+Blanco y Negro, confirma el filtro, verifica el historial paginado y descarga el archivo.
 También comprueba que el modal de configuración recibe el foco, cierra con
 Escape y devuelve el foco a su botón de origen. El mismo recorrido abre el
-formulario administrativo y repite esta comprobación sobre su modal.
+formulario administrativo y repite esta comprobación sobre su modal. Los otros
+dos recorridos validan el login y la redirección de usuarios y administradores.
 
 Compruebo la página inicial mediante el navegador y mediante una solicitud HTTP:
 
@@ -460,7 +461,7 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 | Variables de entorno | Archivo local completo y valores sensibles protegidos. | Evidencia 4 | Verificado |
 | Dependencias | Lockfile consistente y paquetes al día. | Evidencia 5 | Verificado |
 | Sintaxis del backend | `pnpm run check` finaliza sin errores. | Evidencia 5 | Verificado |
-| Pruebas automatizadas | 28 pruebas backend, 14 frontend y 1 E2E aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
+| Pruebas automatizadas | 29 pruebas backend, 17 frontend y 3 E2E aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
 | Servidor de aplicaciones | Express activo en el puerto `3000`. | Evidencia 6 | Verificado |
 | Conexión backend-PostgreSQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
 | Endpoint de salud | Respuesta HTTP `200` y JSON válido en `/health`. | Evidencia 6 | Verificado |

@@ -42,6 +42,7 @@ function crearListaClases() {
 function crearElemento(propiedades = {}) {
   const eventos = new Map();
   const atributos = new Map();
+  const hijos = [];
 
   return {
     value: '',
@@ -49,6 +50,7 @@ function crearElemento(propiedades = {}) {
     textContent: '',
     innerHTML: '',
     disabled: false,
+    children: hijos,
     classList: crearListaClases(),
     addEventListener(tipo, manejador) {
       eventos.set(tipo, manejador);
@@ -58,6 +60,12 @@ function crearElemento(propiedades = {}) {
     },
     getAttribute(nombre) {
       return atributos.get(nombre) || null;
+    },
+    append(...elementos) {
+      hijos.push(...elementos);
+    },
+    replaceChildren(...elementos) {
+      hijos.splice(0, hijos.length, ...elementos);
     },
     obtenerManejador(tipo) {
       return eventos.get(tipo);

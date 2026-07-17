@@ -192,6 +192,8 @@ El sistema debe registrar operaciones realizadas por el usuario durante la edici
 - La operación queda asociada al usuario y a la sesión correspondiente.
 - El sistema evita registrar operaciones sobre sesiones que no pertenecen al usuario.
 - Los filtros guardan su nombre como parámetro para permitir analíticas precisas.
+- El usuario puede consultar desde su perfil el historial persistente más reciente.
+- El historial se devuelve paginado, con un máximo de 20 registros por solicitud.
 
 ### RF-14 Configuración personalizada
 

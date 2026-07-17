@@ -31,6 +31,7 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 - Filtros de blanco y negro, sepia, brillo y contraste con vista previa y confirmación.
 - Conversión a PNG, JPEG y WebP con ajuste de calidad.
 - Historial de hasta 20 pasos para deshacer y rehacer.
+- Historial persistente de operaciones en el perfil, paginado de cinco en cinco.
 - Zoom entre 50 % y 200 %.
 - Autoguardado local opcional, aislado por usuario y recuperable durante 7 días.
 - Registro, inicio de sesión y autorización por roles.
@@ -118,7 +119,7 @@ pnpm start
 En otra terminal, desde la raíz del proyecto:
 
 ```bash
-npx http-server@14.1.1 frontend -p 8080 -c-1
+python3 -m http.server 8080 --directory frontend
 ```
 
 Después se abre [http://127.0.0.1:8080](http://127.0.0.1:8080). El backend utiliza el puerto `3000` y el frontend el `8080`.
@@ -165,6 +166,7 @@ Las pruebas del frontend no requieren PostgreSQL:
 ```bash
 cd backend
 pnpm run test:frontend
+pnpm run test:frontend:coverage
 ```
 
 La prueba real del editor usa Chromium. La primera vez instalo el navegador y
@@ -176,9 +178,9 @@ pnpm exec playwright install chromium
 pnpm run test:e2e
 ```
 
-GitHub Actions ejecuta automáticamente 28 pruebas del backend, 14 pruebas
-frontend con `node:test` y una prueba E2E del editor en cada `push` a `main` y
-en los pull requests. También carga el esquema y valida las migraciones
+GitHub Actions ejecuta automáticamente 29 pruebas del backend, 17 pruebas
+frontend con cobertura nativa y tres pruebas E2E en cada `push` a `main` y en
+los pull requests. También carga el esquema y valida las migraciones
 incrementales sobre PostgreSQL temporal.
 
 Comprobación pública de solo lectura:
@@ -190,6 +192,9 @@ node scripts/validar-despliegue.js
 La medición básica de `/health` se ejecuta con
 `node scripts/medir-rendimiento.js`. Es un smoke controlado y no sustituye una
 prueba formal de capacidad.
+
+El smoke público también se ejecuta cada día desde
+`.github/workflows/monitor-public.yml`.
 
 ## Despliegue
 
@@ -233,7 +238,7 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 
 Artify se encuentra activo y utiliza PostgreSQL como motor oficial de persistencia. El frontend, el backend, las pruebas y el despliegue están integrados en el repositorio principal.
 
-Entre las mejoras futuras se consideran ampliar la cobertura automatizada con navegador, incorporar más herramientas de edición y agregar paginación al historial de operaciones.
+Entre las mejoras futuras se consideran seguir ampliando la cobertura automatizada con navegador e incorporar más herramientas de edición.
 
 ## Autor
 

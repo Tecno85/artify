@@ -4,7 +4,7 @@
 > **Frontend:** GitHub Pages
 > **Backend:** Render
 > **Base de datos:** Neon PostgreSQL
-> **Última validación:** 14 de julio de 2026
+> **Última validación:** 17 de julio de 2026
 
 En esta guía documento cómo aprovisiono por primera vez y cómo vuelvo a desplegar la versión pública de Artify. La instalación en un equipo personal se explica por separado en [`plan-instalacion-artify.md`](./plan-instalacion-artify.md).
 
@@ -323,6 +323,13 @@ node scripts/validar-despliegue.js
 El script verifica Pages, la URL publicada del backend, salud, disponibilidad de
 PostgreSQL, analytics y CORS sin crear ni modificar usuarios.
 
+La misma comprobación se ejecuta diariamente a las 08:00 de Colombia mediante
+`.github/workflows/monitor-public.yml`. También puede iniciarse manualmente
+desde GitHub Actions. Si cualquiera de las nueve verificaciones falla, el job
+termina en estado fallido y conserva el detalle HTTP y el tiempo observado en
+sus registros. Este smoke detecta indisponibilidad; no reemplaza los registros
+de Render, las métricas de Neon ni una prueba funcional con usuario.
+
 ### 8.1 Servicios
 
 | Verificación | Resultado esperado |
@@ -384,7 +391,7 @@ Estas rutas buscarían recursos en la raíz de `tecno85.github.io`. Las formas c
 
 ## 11. Estado validado
 
-El 14 de julio de 2026 comprobé:
+El 14 de julio de 2026 realicé la validación funcional y operativa completa:
 
 - Workflow de Pages finalizado con `success`.
 - Frontend público con HTTP `200`.
@@ -393,6 +400,8 @@ El 14 de julio de 2026 comprobé:
 - Respuesta CORS de Render para `https://tecno85.github.io`.
 - Respuestas correctas de `/health`, `/ready` y los cuatro endpoints públicos de analytics mediante el smoke automatizado.
 - Repositorio local y remoto sincronizados después del despliegue.
+
+El 17 de julio de 2026 repetí `node scripts/validar-despliegue.js`: las nueve comprobaciones no destructivas de Pages, configuración pública, salud, disponibilidad de PostgreSQL, analytics y CORS respondieron correctamente.
 
 ## 12. Evidencia académica sin exponer secretos
 

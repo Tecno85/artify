@@ -24,6 +24,37 @@ test('carga, confirma un filtro, actualiza historial y descarga la imagen', asyn
           autoguardado: false,
         },
       };
+    } else if (url.pathname === '/api/estadisticas/7') {
+      body = {
+        mensaje: 'ok',
+        estadisticas: {
+          sesiones: 2,
+          operaciones: 6,
+          imagenesEditadas: 1,
+        },
+      };
+    } else if (url.pathname === '/api/operacion/historial/7') {
+      const pagina = Number(url.searchParams.get('pagina') || 1);
+      body = {
+        mensaje: 'ok',
+        operaciones: [
+          {
+            id: pagina,
+            tipo: pagina === 1 ? 'filtro' : 'descargar',
+            descripcion:
+              pagina === 1 ? 'Filtro aplicado: Sepia' : 'Descarga en PNG',
+            fecha: '2026-07-17T12:00:00.000Z',
+          },
+        ],
+        paginacion: {
+          pagina,
+          limite: 5,
+          total: 6,
+          totalPaginas: 2,
+          tieneAnterior: pagina > 1,
+          tieneSiguiente: pagina < 2,
+        },
+      };
     } else if (url.pathname === '/api/admin/usuarios') {
       body = { mensaje: 'ok', usuarios: [] };
     }
@@ -59,6 +90,18 @@ test('carga, confirma un filtro, actualiza historial y descarga la imagen', asyn
   await page.keyboard.press('Escape');
   await expect(page.locator('#modalConfiguracion')).toBeHidden();
   await expect(btnConfig).toBeFocused();
+
+  await page.locator('#btnPerfil').click();
+  await expect(page.locator('#perfilHistorialOperaciones')).toContainText(
+    'Filtro aplicado: Sepia'
+  );
+  await expect(page.locator('#historialPagina')).toHaveText('Página 1 de 2');
+  await page.locator('#historialSiguiente').click();
+  await expect(page.locator('#perfilHistorialOperaciones')).toContainText(
+    'Descarga en PNG'
+  );
+  await expect(page.locator('#historialPagina')).toHaveText('Página 2 de 2');
+  await page.locator('#btnCerrarPerfil').click();
 
   await page.locator('#fileInput').setInputFiles({
     name: 'prueba-e2e.png',

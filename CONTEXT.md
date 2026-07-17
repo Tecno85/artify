@@ -81,6 +81,9 @@ artify/
 │       │   ├── config.example.js
 │       │   ├── auth.js
 │       │   ├── editor.js
+│       │   ├── editor-history.js
+│       │   ├── editor-image.js
+│       │   ├── editor-storage.js
 │       │   ├── login.js
 │       │   ├── modal.js
 │       │   ├── registro.js
@@ -212,6 +215,7 @@ El login rechaza cuentas inactivas o suspendidas. En las rutas privadas, el back
 | POST | `/api/sesion/iniciar` | Inicia sesión de edición. |
 | POST | `/api/sesion/cerrar` | Cierra sesión de edición. |
 | POST | `/api/operacion` | Registra operación de edición. |
+| GET | `/api/operacion/historial/:id` | Consulta el historial paginado del usuario. |
 | GET | `/api/operacion/total/:id` | Consulta el total de operaciones del usuario. |
 | POST | `/api/imagen` | Registra imagen procesada. |
 | GET | `/api/estadisticas/:id` | Estadísticas del usuario. |
@@ -281,9 +285,10 @@ La versión PostgreSQL fue validada con:
 - `pnpm test` contra una instancia temporal de PostgreSQL.
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
-- Resultado de pruebas automatizadas backend: 28/28 correctas.
-- Suite frontend con `node:test`: 14/14 correctas para autenticación, login por rol, inicio de sesión del editor, renderizado seguro y semántica accesible.
-- Prueba E2E en Chromium para cargar una imagen, previsualizar y confirmar un filtro, actualizar el historial, descargar el resultado y comprobar foco y cierre con Escape en un modal.
+- Resultado de pruebas automatizadas backend: 29/29 correctas.
+- Suite frontend con `node:test`: 17/17 correctas para autenticación, login por rol, sesión del editor, historial paginado, validación de imágenes, renderizado seguro y semántica accesible.
+- Reporte nativo de cobertura frontend mediante `pnpm run test:frontend:coverage`, integrado en CI: 39,52 % en líneas y 62,98 % en funciones sobre los archivos instrumentados.
+- Tres pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, y flujo del editor para cargar una imagen, confirmar un filtro, actualizar el historial, descargar el resultado y comprobar foco y cierre con Escape en modales.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -297,9 +302,11 @@ La versión PostgreSQL fue validada con:
 - Autoguardado local recuperable durante 7 días, aislado por usuario y eliminado al desactivarlo, cerrar sesión o detectar un respaldo inválido.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
 - Flujo de GitHub Actions para ejecutar PostgreSQL, sintaxis y las suites backend y frontend en `push` o `pull_request`.
+- Monitoreo público diario mediante GitHub Actions para Pages, configuración, Render, PostgreSQL, analytics y CORS.
 - GitHub Actions también valida el ejecutor de migraciones incrementales sobre la base temporal de CI.
 - Smoke público reproducible de Pages, configuración, salud, disponibilidad, analytics y CORS mediante `scripts/validar-despliegue.js`.
 - Restauración local real verificada con cinco tablas funcionales, migraciones, rol restringido y limpieza automática mediante `scripts/verificar-respaldo-postgresql.js`.
+- Migración incremental e índice compuesto del historial verificados sobre PostgreSQL temporal.
 - Rol técnico reproducible de menor privilegio en `database/postgresql/app-role.sql` y migraciones versionadas en `database/postgresql/migrations/`.
 - Matriz manual aprobada en Chromium, Firefox y WebKit; login sin scroll en 1024 × 600, 1366 × 768 y 1920 × 1080.
 - Smoke de rendimiento del 14 de julio de 2026: 25/25 lecturas correctas a `/health`, concurrencia 5, promedio 259 ms y p95 558 ms; no representa capacidad para 250 usuarios.
@@ -327,7 +334,7 @@ Enfoque recomendado:
 
 ### Despliegue público validado
 
-Validación técnica realizada el 14 de julio de 2026:
+Última validación técnica automatizada realizada el 17 de julio de 2026:
 
 | Servicio | URL |
 | --- | --- |
@@ -343,6 +350,7 @@ Estado validado:
 - El CSS publicado conserva el ajuste reciente de fondo principal negro.
 - CORS permite el origen `https://tecno85.github.io`.
 - Cada `push` a `main` publica `frontend/` mediante `.github/workflows/deploy-pages.yml`.
+- El smoke público no destructivo aprobó sus nueve comprobaciones de Pages, configuración, salud, disponibilidad, analytics y CORS.
 
 Variables cruzadas requeridas:
 
@@ -413,6 +421,11 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Verificación real de respaldo y restauración local, rol PostgreSQL de menor privilegio y migraciones incrementales validadas por CI.
 - [2026-07-14] Medición controlada de salud pública con 25 solicitudes correctas y documentación explícita de sus límites.
 - [2026-07-14] Incorporación de prueba E2E del editor, gestión accesible de modales, limpieza del historial y unificación de las calidades de exportación.
+- [2026-07-17] Revalidación pública no destructiva de Pages, configuración, Render, PostgreSQL, analytics y CORS con nueve comprobaciones correctas.
+- [2026-07-17] Ampliación E2E del login para comprobar almacenamiento de sesión y redirección por rol hacia editor o panel administrativo.
+- [2026-07-17] Primer corte modular del editor con almacenamiento de respaldo separado y cobertura frontend nativa integrada en CI.
+- [2026-07-17] Extracción de validaciones de imagen y consulta paginada del historial persistente desde el perfil.
+- [2026-07-17] Incorporación de monitoreo público diario y formalización de RPO, RTO, retención y revisión trimestral de Neon.
 
 ---
 

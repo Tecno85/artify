@@ -112,6 +112,44 @@ No guardaria respaldos reales dentro del repositorio publico, porque podrian con
 | Mensuales | 3 meses |
 | Antes de migracion importante | Hasta validar que el cambio quedo estable |
 
+### Política operativa para Neon
+
+La recuperación ofrecida por el proveedor es una capa complementaria y no
+reemplaza las exportaciones controladas por el proyecto. Para la base pública
+de Neon aplico estos objetivos:
+
+| Control | Objetivo |
+| --- | --- |
+| RPO | Máximo 24 horas de datos entre respaldos lógicos programados |
+| RTO | Restaurar una base funcional y reconectar el backend en máximo 4 horas |
+| Copia diaria | `pg_dump` en formato personalizado hacia almacenamiento privado cifrado |
+| Copia previa a cambios | Obligatoria antes de migraciones o modificaciones de esquema |
+| Retención externa | 7 diarias, 4 semanales y 3 mensuales |
+| Prueba de restauración | Mensual sobre PostgreSQL temporal, nunca sobre producción |
+| Revisión del proveedor | Trimestral y después de cualquier cambio de plan de Neon |
+
+En la revisión trimestral registro, desde el panel vigente de Neon, si el plan
+activo ofrece restauración temporal, historial o retención administrada y por
+cuánto tiempo. No presupongo esas capacidades porque pueden cambiar según el
+plan contratado. Si la retención del proveedor es menor que el RPO definido,
+mantengo como control principal las exportaciones privadas externas.
+
+La verificación trimestral debe dejar estos campos sin incluir secretos:
+
+| Campo | Registro requerido |
+| --- | --- |
+| Fecha y responsable | Momento de la revisión y persona que la realizó |
+| Proyecto y entorno | Identificador no sensible y confirmación de producción |
+| Capacidad observada | Tipo de recuperación y ventana indicada por Neon |
+| Última exportación externa | Fecha, tamaño y checksum del archivo cifrado |
+| Última restauración probada | Fecha, base temporal y resultado |
+| Acción correctiva | Ajuste requerido o `No aplica` |
+
+No ejecuto `pg_dump` de producción desde CI porque el artefacto contendría datos
+personales y hashes de contraseña. La exportación se realiza desde un entorno
+administrativo autorizado, se cifra antes de salir de ese entorno y nunca se
+adjunta como artefacto de GitHub Actions.
+
 ### Proteccion del archivo de respaldo
 
 Cada backup debe quedar comprimido o cifrado cuando salga del entorno local. Para nombrarlo usaria una convencion estable:
@@ -256,11 +294,11 @@ servicio administrado de Neon:
 
 | Campo | Registro |
 | --- | --- |
-| Fecha de prueba | 2026-07-14 |
+| Fecha de prueba | 2026-07-17 |
 | Backup usado | Archivo temporal en formato personalizado generado por `pg_dump` |
 | Base destino | Base local temporal con nombre único `artify_restore_*` |
 | Responsable | Ivan Dario Madrid Daza |
-| Resultado tecnico | 23 552 bytes restaurados; cinco tablas funcionales encontradas; migración base aplicada |
+| Resultado tecnico | 22 616 bytes restaurados; cinco tablas funcionales encontradas; tres migraciones aplicadas, incluido el índice del historial |
 | Resultado funcional | Lectura y escritura transaccional correctas con rol restringido; creación/eliminación de objetos denegada |
 | Observaciones | Base, rol y archivo temporales eliminados automáticamente al finalizar |
 
@@ -273,7 +311,8 @@ node scripts/verificar-respaldo-postgresql.js
 El script solo acepta una conexión PostgreSQL local. Genera un respaldo, lo
 restaura en una base temporal, aplica las migraciones, comprueba el rol de menor
 privilegio y limpia todos los recursos creados. No reemplaza la verificación de
-las políticas de retención ni del mecanismo de copias propio de Neon.
+las capacidades del plan activo de Neon; esa comprobación queda registrada con
+la tabla de revisión trimestral anterior.
 
 ## Conclusiones
 

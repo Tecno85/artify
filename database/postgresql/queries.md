@@ -12,6 +12,7 @@ Resultado:
 - Vista creada: `v_usuarios_activos`.
 - Relaciones dependientes con `ON DELETE CASCADE`, `ON DELETE SET NULL` donde corresponde y checks para métricas no negativas.
 - Índices de apoyo para analytics sobre operaciones completadas, formatos activos y sesiones finalizadas.
+- Índice compuesto por usuario, fecha e identificador para el historial paginado de operaciones.
 - `seed.sql` insertó un usuario de referencia sin credenciales reales de acceso.
 - `promote-admin.sql` permite asignar `usr_rol = 'admin'` a un usuario registrado para acceder al CRUD desde el login principal.
 
@@ -36,7 +37,7 @@ Resultado:
 | `backend/server.js` | Migrado | Ajusta limpieza automática de sesiones, CORS configurable y cabeceras básicas de seguridad. |
 | `backend/controllers/auth.controller.js` | Migrado | Registro transaccional, login con mensaje genérico, actualización de acceso e inserts con `RETURNING`. |
 | `backend/controllers/sesion.controller.js` | Migrado | Inicio y cierre de sesiones con SQL compatible con PostgreSQL. |
-| `backend/controllers/actividad.controller.js` | Migrado | Registro transaccional de operaciones, orden secuencial por sesión, conteos numéricos e imágenes con `RETURNING`. |
+| `backend/controllers/actividad.controller.js` | Migrado | Registro transaccional, historial paginado por usuario, orden secuencial por sesión, conteos numéricos e imágenes con `RETURNING`. |
 | `backend/controllers/configuracion.controller.js` | Validado | Lectura y guardado de configuración JSON funcionan con `jsonb`. |
 | `backend/controllers/admin.controller.js` | Migrado | CRUD administrativo compatible con la capa PostgreSQL y creación transaccional de usuarios. |
 | `backend/controllers/analytics.controller.js` | Migrado | Agregaciones, funciones de fecha y casts para devolver conteos/porcentajes numéricos. |

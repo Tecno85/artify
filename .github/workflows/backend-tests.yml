@@ -70,9 +70,9 @@ jobs:
         working-directory: backend
         run: pnpm test
 
-      - name: Ejecutar pruebas frontend
+      - name: Ejecutar pruebas frontend con cobertura
         working-directory: backend
-        run: pnpm run test:frontend
+        run: pnpm run test:frontend:coverage
 
       - name: Instalar Chromium para pruebas E2E
         working-directory: backend

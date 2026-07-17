@@ -405,7 +405,7 @@ Esta suite también se ejecuta en GitHub Actions mediante:
 .github/workflows/backend-tests.yml
 ```
 
-Actualmente ejecuto 28 pruebas automatizadas que cubren las siguientes validaciones:
+Actualmente ejecuto 29 pruebas automatizadas que cubren las siguientes validaciones:
 
 - Disponibilidad del proceso Express y de PostgreSQL mediante `/health` y `/ready`, con respuestas sin caché.
 - Contrato de respuesta de los cuatro endpoints públicos de analytics.
@@ -443,20 +443,21 @@ Actualmente ejecuto 28 pruebas automatizadas que cubren las siguientes validacio
 - Normalización de `CORS_ORIGIN` y rechazo de una configuración vacía en producción.
 - Respuesta JSON uniforme con estado `404` para rutas inexistentes bajo `/api`.
 - Normalización y reglas personales comunes para registro, creación administrativa y edición de usuarios.
+- Paginación segura del historial de operaciones y rechazo de parámetros fuera de rango.
 
-También ejecuto 14 pruebas frontend sin dependencias adicionales mediante:
+También ejecuto 17 pruebas frontend sin dependencias adicionales mediante:
 
 ```bash
 cd backend
 pnpm run test:frontend
 ```
 
-Estas pruebas comprueban el almacenamiento y la limpieza de sesión, la incorporación del token en solicitudes protegidas, la reacción ante respuestas `401`, la validación previa del login, la redirección según el rol, el inicio no bloqueante de la sesión de edición, el tratamiento seguro de contenido dinámico y la semántica accesible de modales y mensajes.
+Estas pruebas comprueban el almacenamiento y la limpieza de sesión, la incorporación del token en solicitudes protegidas, la reacción ante respuestas `401`, la validación previa del login, la redirección según el rol, el inicio no bloqueante de la sesión de edición, las validaciones de imagen, el historial paginado, el tratamiento seguro de contenido dinámico y la semántica accesible de modales y mensajes.
 
 Como verificación complementaria del navegador ejecuto `pnpm run test:e2e`.
-Esta prueba no amplía los casos de autenticación del backend: comprueba en
-Chromium que una sesión simulada puede usar el flujo principal del editor y que
-los modales responden correctamente al teclado.
+Las tres pruebas no amplían los casos de autenticación del backend: comprueban
+en Chromium los ingresos y redirecciones por rol, el flujo principal del
+editor, la paginación del historial y la respuesta de los modales al teclado.
 
 Antes de ejecutar la suite creo una base local exclusiva cuyo nombre termine en
 `_test` y cargo allí el esquema y los datos iniciales:
@@ -499,10 +500,10 @@ NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 
 ```text
-Backend: 28 pruebas ejecutadas y aprobadas
-Frontend: 14 pruebas ejecutadas y aprobadas
-E2E del editor: 1 prueba ejecutada y aprobada
-Total: 43 pruebas automatizadas aprobadas
+Backend: 29 pruebas ejecutadas y aprobadas
+Frontend: 17 pruebas ejecutadas y aprobadas
+E2E: 3 pruebas ejecutadas y aprobadas
+Total: 49 pruebas automatizadas aprobadas
 0 pruebas fallidas
 ```
 

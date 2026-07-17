@@ -25,6 +25,8 @@ function crearEscenarioEditor(fetchAuth) {
   contextoFrontend.contexto.obtenerTokenAuth = () =>
     sessionStorage.getItem('artifyToken');
   contextoFrontend.contexto.limpiarSesionAuth = () => sessionStorage.clear();
+  ejecutarScript(contextoFrontend.contexto, 'editor-storage.js');
+  ejecutarScript(contextoFrontend.contexto, 'editor-image.js');
   ejecutarScript(contextoFrontend.contexto, 'editor.js');
 
   return { ...contextoFrontend, usuario };
