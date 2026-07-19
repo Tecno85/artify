@@ -3,7 +3,6 @@ const express = require('express');
 
 const {
   obtenerEstadisticas,
-  obtenerHistorialOperaciones,
   registrarOperacion,
   obtenerTotalOperaciones,
   registrarImagen,
@@ -22,12 +21,6 @@ router.get(
   autenticarToken,
   autorizarUsuarioPorParametro('id'),
   obtenerEstadisticas
-);
-router.get(
-  '/operacion/historial/:id',
-  autenticarToken,
-  autorizarUsuarioPorParametro('id'),
-  obtenerHistorialOperaciones
 );
 router.get(
   '/operacion/total/:id',

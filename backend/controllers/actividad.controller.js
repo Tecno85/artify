@@ -1,9 +1,6 @@
 // ========== DEPENDENCIAS ==========
 const db = require('../config/db');
-const {
-  normalizarIdEntero,
-  normalizarPaginacion,
-} = require('../utils/validacion');
+const { normalizarIdEntero } = require('../utils/validacion');
 
 const TAMANO_MAXIMO_IMAGEN_BYTES = 10 * 1024 * 1024;
 const DIMENSION_MAXIMA_IMAGEN_PX = 8192;
@@ -209,82 +206,6 @@ function obtenerTotalOperaciones(req, res) {
   });
 }
 
-async function obtenerHistorialOperaciones(req, res) {
-  const idUsuario = normalizarIdEntero(req.params.id);
-  const paginacion = normalizarPaginacion(
-    req.query.pagina,
-    req.query.limite
-  );
-
-  if (idUsuario === null) {
-    return res.status(400).json({ mensaje: 'Identificador de usuario inválido' });
-  }
-
-  if (paginacion === null) {
-    return res.status(400).json({ mensaje: 'Paginación inválida' });
-  }
-
-  const dbPromise = db.promise();
-
-  try {
-    const [conteo] = await dbPromise.query(
-      `
-        SELECT COUNT(*)::int AS total
-        FROM OPERACION
-        WHERE opr_usr_id_usuario = ?
-      `,
-      [idUsuario]
-    );
-    const total = obtenerTotal(conteo);
-
-    const [filas] = await dbPromise.query(
-      `
-        SELECT opr_id_operacion, opr_ses_id_sesion, opr_tipo_operacion,
-               opr_parametros, opr_fecha_hora, opr_orden_secuencial,
-               opr_estado_operacion
-        FROM OPERACION
-        WHERE opr_usr_id_usuario = ?
-        ORDER BY opr_fecha_hora DESC, opr_id_operacion DESC
-        LIMIT ? OFFSET ?
-      `,
-      [idUsuario, paginacion.limite, paginacion.offset]
-    );
-
-    const totalPaginas = Math.ceil(total / paginacion.limite);
-    const operaciones = filas.map((fila) => ({
-      id: fila.opr_id_operacion,
-      idSesion: fila.opr_ses_id_sesion,
-      tipo: fila.opr_tipo_operacion,
-      descripcion:
-        fila.opr_parametros &&
-        typeof fila.opr_parametros === 'object' &&
-        typeof fila.opr_parametros.descripcion === 'string'
-          ? fila.opr_parametros.descripcion
-          : '',
-      parametros: fila.opr_parametros,
-      fecha: fila.opr_fecha_hora,
-      orden: fila.opr_orden_secuencial,
-      estado: fila.opr_estado_operacion,
-    }));
-
-    return res.json({
-      mensaje: 'ok',
-      operaciones,
-      paginacion: {
-        pagina: paginacion.pagina,
-        limite: paginacion.limite,
-        total,
-        totalPaginas,
-        tieneAnterior: paginacion.pagina > 1,
-        tieneSiguiente: paginacion.pagina < totalPaginas,
-      },
-    });
-  } catch (error) {
-    console.error('❌ Error al obtener historial:', error.message);
-    return res.status(500).json({ mensaje: 'Error en el servidor' });
-  }
-}
-
 // ========== REGISTRO DE IMÁGENES ==========
 async function registrarImagen(req, res) {
   const {
@@ -410,7 +331,6 @@ async function registrarImagen(req, res) {
 // ========== EXPORTACIÓN ==========
 module.exports = {
   obtenerEstadisticas,
-  obtenerHistorialOperaciones,
   registrarOperacion,
   obtenerTotalOperaciones,
   registrarImagen,

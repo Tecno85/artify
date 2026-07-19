@@ -219,7 +219,6 @@ Esta vista se basa en `USUARIO`, `IMAGEN` y `SESION_EDICION`.
 - Los campos `usr_correo` y `usr_cedula` tienen restricciones únicas para evitar duplicados.
 - Las claves foráneas usan reglas explícitas de cascada o nulificación para mantener consistencia al eliminar usuarios, sesiones o imágenes.
 - Las operaciones protegidas se validan desde el backend antes de consultar o modificar la base de datos.
-- El historial usa un índice compuesto por usuario, fecha e identificador para ordenar páginas recientes sin recorrer operaciones de otros usuarios.
 - El correo se normaliza a minúsculas y el estado/rol vigentes se consultan al autorizar cada ruta privada.
 - El archivo `.env` debe permanecer fuera del repositorio porque contiene credenciales de conexión.
 - `app-role.sql` limita el usuario del backend a conexión, lectura, escritura y uso de secuencias; no concede creación de roles, bases ni objetos.

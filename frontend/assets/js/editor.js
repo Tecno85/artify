@@ -2274,12 +2274,6 @@ async function abrirModalPerfil(disparador) {
         if (imagenesEditadas)
           imagenesEditadas.textContent = data.estadisticas.imagenesEditadas;
       }
-
-      await window.ArtifyEditorHistory.abrir({
-        api: API,
-        solicitar: fetchAuth,
-        idUsuario: usuario.id,
-      });
     } catch {}
   }
 

@@ -106,7 +106,7 @@ El backend se encuentra en la carpeta `backend/` y está construido con Node.js 
 | Autenticación | `auth.routes.js` | Login principal, registro y emisión de token con rol. |
 | Configuración | `configuracion.routes.js` | Consulta y guardado de preferencias. |
 | Sesiones | `sesion.routes.js` | Inicio y cierre de sesiones de edición. |
-| Actividad | `actividad.routes.js` | Estadísticas, registro e historial paginado de operaciones e imágenes. |
+| Actividad | `actividad.routes.js` | Estadísticas, operaciones e imágenes. |
 | Administración | `admin.routes.js` | CRUD de usuarios. |
 | Analíticas | `analytics.routes.js` | Endpoints públicos de analíticas. |
 | Salud | `server.js` | `GET /health` para verificación de disponibilidad del proceso Express. |

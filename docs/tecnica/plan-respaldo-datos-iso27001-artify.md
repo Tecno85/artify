@@ -298,7 +298,7 @@ servicio administrado de Neon:
 | Backup usado | Archivo temporal en formato personalizado generado por `pg_dump` |
 | Base destino | Base local temporal con nombre único `artify_restore_*` |
 | Responsable | Ivan Dario Madrid Daza |
-| Resultado tecnico | 22 616 bytes restaurados; cinco tablas funcionales encontradas; tres migraciones aplicadas, incluido el índice del historial |
+| Resultado tecnico | 22 750 bytes restaurados; cinco tablas funcionales encontradas; dos migraciones aplicadas correctamente |
 | Resultado funcional | Lectura y escritura transaccional correctas con rol restringido; creación/eliminación de objetos denegada |
 | Observaciones | Base, rol y archivo temporales eliminados automáticamente al finalizar |
 

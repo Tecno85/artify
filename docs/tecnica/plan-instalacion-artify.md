@@ -366,11 +366,11 @@ Remove-Item Env:ALLOW_TEST_DB_MUTATIONS
 NODE_ENV=test DB_NAME=artify_test ALLOW_TEST_DB_MUTATIONS=true pnpm test
 ```
 
-La suite esperada contiene 29 pruebas. Si falla antes de iniciar, verifico que
+La suite esperada contiene 28 pruebas. Si falla antes de iniciar, verifico que
 PostgreSQL esté activo, que `artify_test` tenga el esquema cargado y que
 `DATABASE_URL` continúe comentada en `backend/.env`.
 
-Después ejecuto las 17 pruebas del frontend. Estas no usan PostgreSQL ni crean datos:
+Después ejecuto las 16 pruebas del frontend. Estas no usan PostgreSQL ni crean datos:
 
 ```bash
 pnpm run test:frontend

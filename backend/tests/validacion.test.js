@@ -3,7 +3,6 @@ const test = require('node:test');
 
 const {
   normalizarDatosUsuario,
-  normalizarPaginacion,
   validarCredenciales,
   validarEdicionUsuario,
   validarUsuario,
@@ -89,20 +88,4 @@ test('creación y edición comparten normalización y reglas personales', () => 
     assert.equal(validarUsuario(datosInvalidos), mensaje);
     assert.equal(validarEdicionUsuario(datosInvalidos), mensaje);
   }
-});
-
-test('paginación aplica valores seguros y rechaza límites excesivos', () => {
-  assert.deepEqual(normalizarPaginacion(undefined, undefined), {
-    pagina: 1,
-    limite: 5,
-    offset: 0,
-  });
-  assert.deepEqual(normalizarPaginacion('3', '10'), {
-    pagina: 3,
-    limite: 10,
-    offset: 20,
-  });
-  assert.equal(normalizarPaginacion('0', '5'), null);
-  assert.equal(normalizarPaginacion('1', '21'), null);
-  assert.equal(normalizarPaginacion('abc', '5'), null);
 });

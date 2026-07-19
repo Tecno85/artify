@@ -122,8 +122,6 @@ CREATE TABLE "OPERACION" (
 
 CREATE INDEX "idx_operacion_sesion" ON "OPERACION" ("opr_ses_id_sesion");
 CREATE INDEX "idx_operacion_usuario" ON "OPERACION" ("opr_usr_id_usuario");
-CREATE INDEX "idx_operacion_usuario_fecha"
-  ON "OPERACION" ("opr_usr_id_usuario", "opr_fecha_hora" DESC, "opr_id_operacion" DESC);
 CREATE INDEX "idx_operacion_estado_tipo" ON "OPERACION" ("opr_estado_operacion", "opr_tipo_operacion");
 CREATE INDEX "idx_operacion_estado_fecha" ON "OPERACION" ("opr_estado_operacion", "opr_fecha_hora");
 

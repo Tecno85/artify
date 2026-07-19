@@ -31,7 +31,6 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 - Filtros de blanco y negro, sepia, brillo y contraste con vista previa y confirmación.
 - Conversión a PNG, JPEG y WebP con ajuste de calidad.
 - Historial de hasta 20 pasos para deshacer y rehacer.
-- Historial persistente de operaciones en el perfil, paginado de cinco en cinco.
 - Zoom entre 50 % y 200 %.
 - Autoguardado local opcional, aislado por usuario y recuperable durante 7 días.
 - Registro, inicio de sesión y autorización por roles.
@@ -178,7 +177,7 @@ pnpm exec playwright install chromium
 pnpm run test:e2e
 ```
 
-GitHub Actions ejecuta automáticamente 29 pruebas del backend, 17 pruebas
+GitHub Actions ejecuta automáticamente 28 pruebas del backend, 16 pruebas
 frontend con cobertura nativa y tres pruebas E2E en cada `push` a `main` y en
 los pull requests. También carga el esquema y valida las migraciones
 incrementales sobre PostgreSQL temporal.
