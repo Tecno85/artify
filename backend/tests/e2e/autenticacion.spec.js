@@ -23,11 +23,14 @@ async function prepararApi(page, usuario) {
   });
 }
 
-async function iniciarSesion(page, usuario) {
+async function iniciarSesion(page, usuario, recordar = false) {
   await prepararApi(page, usuario);
   await page.goto('/pages/login.html');
   await page.locator('#email').fill(usuario.correo);
   await page.locator('#password').fill('ClaveSegura1');
+  if (recordar) {
+    await page.locator('#remember').check();
+  }
   await page.locator('#loginForm button[type="submit"]').click();
 }
 
@@ -74,4 +77,29 @@ test('administrador inicia sesión y entra al panel administrativo', async ({
   await expect
     .poll(() => page.evaluate(() => sessionStorage.getItem('artifyToken')))
     .toBe('token-admin');
+});
+
+test('recordar sesión mantiene el acceso al abrir el editor en otra pestaña', async ({
+  context,
+  page,
+}) => {
+  const usuario = {
+    id: 12,
+    nombres: 'Usuario',
+    apellidos: 'Recordado',
+    correo: 'recordado.e2e@artify.local',
+    rol: 'usuario',
+  };
+
+  await iniciarSesion(page, usuario, true);
+  await page.waitForURL('**/pages/editor.html');
+
+  const nuevaPagina = await context.newPage();
+  await prepararApi(nuevaPagina, usuario);
+  await nuevaPagina.goto('/pages/editor.html');
+
+  await expect(nuevaPagina.locator('#userName')).toHaveText(
+    'Usuario Recordado'
+  );
+  await nuevaPagina.close();
 });

@@ -87,7 +87,7 @@ El sistema debe redirigir al usuario según el rol asociado a su cuenta.
 
 - Un usuario con rol `usuario` accede al editor.
 - Un usuario con rol `admin` accede al panel administrativo.
-- La información de sesión se conserva durante la navegación mediante `sessionStorage` y token de autenticación.
+- La información de sesión se conserva con token de autenticación: temporalmente en `sessionStorage` o en `localStorage` cuando el usuario activa “Recordar sesión”.
 
 ### RF-04 Protección de rutas
 

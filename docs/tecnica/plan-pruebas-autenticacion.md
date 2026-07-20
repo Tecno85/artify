@@ -444,7 +444,7 @@ Actualmente ejecuto 28 pruebas automatizadas que cubren las siguientes validacio
 - Respuesta JSON uniforme con estado `404` para rutas inexistentes bajo `/api`.
 - Normalización y reglas personales comunes para registro, creación administrativa y edición de usuarios.
 
-También ejecuto 16 pruebas frontend sin dependencias adicionales mediante:
+También ejecuto 19 pruebas frontend sin dependencias adicionales mediante:
 
 ```bash
 cd backend
@@ -500,7 +500,7 @@ Resultado esperado y verificado por la suite automatizada y el workflow de CI:
 
 ```text
 Backend: 28 pruebas ejecutadas y aprobadas
-Frontend: 16 pruebas ejecutadas y aprobadas
+Frontend: 19 pruebas ejecutadas y aprobadas
 E2E: 3 pruebas ejecutadas y aprobadas
 Total: 47 pruebas automatizadas aprobadas
 0 pruebas fallidas

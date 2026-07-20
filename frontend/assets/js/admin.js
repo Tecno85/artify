@@ -40,17 +40,12 @@ function limpiarErrores() {
 }
 
 function redirigirAccesoNoAutorizado() {
-  const usuarioGuardado = sessionStorage.getItem('artifyUser');
+  const usuario = obtenerUsuarioAuth();
   const token = obtenerTokenAuth();
 
-  if (usuarioGuardado && token) {
-    try {
-      const usuario = JSON.parse(usuarioGuardado);
-      if (usuario.rol === 'usuario') {
-        window.location.href = './editor.html';
-        return;
-      }
-    } catch {}
+  if (usuario?.rol === 'usuario' && token) {
+    window.location.href = './editor.html';
+    return;
   }
 
   limpiarSesionAuth();
@@ -58,19 +53,10 @@ function redirigirAccesoNoAutorizado() {
 }
 
 function obtenerUsuarioAdminActual() {
-  const usuarioGuardado = sessionStorage.getItem('artifyUser');
+  const usuario = obtenerUsuarioAuth();
   const token = obtenerTokenAuth();
 
-  if (!usuarioGuardado || !token) {
-    return null;
-  }
-
-  try {
-    const usuario = JSON.parse(usuarioGuardado);
-    return usuario.rol === 'admin' ? usuario : null;
-  } catch {
-    return null;
-  }
+  return usuario?.rol === 'admin' && token ? usuario : null;
 }
 
 function esAdministradorActual(idUsuario) {

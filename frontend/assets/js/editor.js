@@ -86,9 +86,7 @@ function iniciarSesionEdicionEnSegundoPlano(usuario) {
         Number.isInteger(idSesion) &&
         idSesion > 0
       ) {
-        const usuarioActual = JSON.parse(
-          sessionStorage.getItem('artifyUser') || 'null'
-        );
+        const usuarioActual = obtenerUsuarioAuth();
 
         if (
           !obtenerTokenAuth() ||
@@ -181,11 +179,9 @@ function sincronizarImagenYCanvas(callback) {
 async function registrarOperacion(tipo, descripcion, parametros = {}) {
   try {
     const idSesion = await obtenerIdSesionEdicion();
-    const userData = sessionStorage.getItem('artifyUser');
+    const usuario = obtenerUsuarioAuth();
 
-    if (!userData || !idSesion) return;
-
-    const usuario = JSON.parse(userData);
+    if (!usuario || !idSesion) return;
 
     const response = await fetchAuth(`${API}/api/operacion`, {
       method: 'POST',
@@ -212,11 +208,9 @@ async function registrarOperacion(tipo, descripcion, parametros = {}) {
 async function registrarImagenDescargada(formato, blob) {
   try {
     const idSesion = await obtenerIdSesionEdicion();
-    const userData = sessionStorage.getItem('artifyUser');
+    const usuario = obtenerUsuarioAuth();
 
-    if (!userData || !idSesion || !archivoActual || !blob) return;
-
-    const usuario = JSON.parse(userData);
+    if (!usuario || !idSesion || !archivoActual || !blob) return;
     const response = await fetchAuth(`${API}/api/imagen`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -399,39 +393,35 @@ window.addEventListener('DOMContentLoaded', () => {
   verificarResolucion();
 
   // Cargar usuario e iniciar sesión de edición
-  const usuarioData = sessionStorage.getItem('artifyUser');
+  const usuarioActual = obtenerUsuarioAuth();
   const token = obtenerTokenAuth();
-  let usuarioActual = null;
 
-  if (!usuarioData || !token) {
+  if (!usuarioActual || !token) {
     limpiarSesionAuth();
     window.location.href = './login.html';
     return;
   }
 
-  if (usuarioData) {
-    try {
-      usuarioActual = JSON.parse(usuarioData);
-
-      if (usuarioActual.rol === 'admin') {
-        window.location.href = './admin.html';
-        return;
-      }
-
-      const userNameElement = document.getElementById('userName');
-      if (userNameElement) {
-        userNameElement.textContent =
-          `${usuarioActual.nombres} ${usuarioActual.apellidos}`;
-      }
-
-      // La sesión se crea en segundo plano para no bloquear los controles.
-      iniciarSesionEdicionEnSegundoPlano(usuarioActual);
-    } catch (error) {
-      limpiarSesionAuth();
-      window.location.href = './login.html';
+  try {
+    if (usuarioActual.rol === 'admin') {
+      window.location.href = './admin.html';
       return;
     }
+
+    const userNameElement = document.getElementById('userName');
+    if (userNameElement) {
+      userNameElement.textContent =
+        `${usuarioActual.nombres} ${usuarioActual.apellidos}`;
+    }
+
+    // La sesión se crea en segundo plano para no bloquear los controles.
+    iniciarSesionEdicionEnSegundoPlano(usuarioActual);
+  } catch (error) {
+    limpiarSesionAuth();
+    window.location.href = './login.html';
+    return;
   }
+
   // Inicializar elementos del DOM
   canvas = document.getElementById('mainCanvas');
   if (canvas) ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -2107,10 +2097,8 @@ const PREFERENCIAS_DEFAULT = {
 
 async function cargarPreferencias() {
   try {
-    const userData = sessionStorage.getItem('artifyUser');
-    if (!userData) return { ...PREFERENCIAS_DEFAULT };
-
-    const usuario = JSON.parse(userData);
+    const usuario = obtenerUsuarioAuth();
+    if (!usuario) return { ...PREFERENCIAS_DEFAULT };
     const res = await fetchAuth(`${API}/api/configuracion/${usuario.id}`);
     const data = await res.json();
 
@@ -2129,10 +2117,8 @@ async function cargarPreferencias() {
 
 async function guardarPreferencias(prefs) {
   try {
-    const userData = sessionStorage.getItem('artifyUser');
-    if (!userData) return false;
-
-    const usuario = JSON.parse(userData);
+    const usuario = obtenerUsuarioAuth();
+    if (!usuario) return false;
 
     const res = await fetchAuth(`${API}/api/configuracion`, {
       method: 'POST',
@@ -2176,11 +2162,10 @@ async function abrirModalConfiguracion(disparador) {
   const modal = document.getElementById('modalConfiguracion');
   if (!modal) return;
 
-  const userData = sessionStorage.getItem('artifyUser');
+  const usuario = obtenerUsuarioAuth();
 
-  if (userData) {
+  if (usuario) {
     try {
-      const usuario = JSON.parse(userData);
       const nombre = document.getElementById('configUserNombre');
       const email = document.getElementById('configUserEmail');
       const sesion = document.getElementById('configUserUltimaSesion');
@@ -2246,10 +2231,9 @@ async function abrirModalPerfil(disparador) {
   const modal = document.getElementById('modalPerfil');
   if (!modal) return;
 
-  const userData = sessionStorage.getItem('artifyUser');
-  if (userData) {
+  const usuario = obtenerUsuarioAuth();
+  if (usuario) {
     try {
-      const usuario = JSON.parse(userData);
       const nombre = document.getElementById('perfilNombre');
       const email = document.getElementById('perfilEmail');
 

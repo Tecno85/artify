@@ -14,6 +14,7 @@ function crearEscenarioLogin(respuestaFetch) {
   const emailError = crearElemento();
   const passwordError = crearElemento();
   const eyeIcon = crearElemento();
+  const remember = crearElemento({ checked: false });
   const togglePassword = crearElemento();
   const botonSubmit = crearElemento({ textContent: 'Iniciar Sesión' });
   const loginForm = crearElemento({
@@ -27,6 +28,7 @@ function crearEscenarioLogin(respuestaFetch) {
     'email-error': emailError,
     'password-error': passwordError,
     'eye-icon': eyeIcon,
+    remember,
     loginForm,
   };
   const solicitudes = [];
@@ -61,6 +63,7 @@ function crearEscenarioLogin(respuestaFetch) {
     loginForm,
     password,
     passwordError,
+    remember,
     solicitudes,
   };
 }
@@ -147,4 +150,36 @@ test('login dirige administradores al panel correspondiente', async () => {
 
   assert.equal(escenario.window.location.href, './admin.html');
   assert.equal(escenario.sessionStorage.getItem('artifyToken'), 'token-admin');
+});
+
+test('login conserva la sesión en el navegador cuando se solicita recordarla', async () => {
+  const usuario = {
+    id: 11,
+    nombres: 'Luis',
+    apellidos: 'Prueba',
+    correo: 'luis@artify.local',
+    rol: 'usuario',
+  };
+  const escenario = crearEscenarioLogin({
+    mensaje: 'Login exitoso',
+    usuario,
+    token: 'token-recordado',
+  });
+  escenario.email.value = usuario.correo;
+  escenario.password.value = 'Password123';
+  escenario.remember.checked = true;
+
+  enviarFormulario(escenario);
+  await esperarPromesas();
+
+  assert.equal(
+    escenario.localStorage.getItem('artifyToken'),
+    'token-recordado'
+  );
+  assert.deepEqual(
+    JSON.parse(escenario.localStorage.getItem('artifyUser')),
+    usuario
+  );
+  assert.equal(escenario.sessionStorage.getItem('artifyToken'), null);
+  assert.equal(escenario.window.location.href, './editor.html');
 });

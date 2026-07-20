@@ -76,7 +76,7 @@ El frontend se encuentra en la carpeta `frontend/` y está construido con HTML, 
 ### Responsabilidades
 
 - Mostrar formularios de registro e inicio de sesión.
-- Guardar información de sesión en `sessionStorage`.
+- Guardar información de sesión temporal en `sessionStorage` o recordada en `localStorage`, según la elección explícita del usuario.
 - Enviar el token de autenticación a rutas protegidas.
 - Manipular imágenes en el navegador mediante Canvas API.
 - Presentar el panel administrativo para usuarios con rol `admin`.

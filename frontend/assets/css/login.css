@@ -287,6 +287,14 @@ input[type='password']::-webkit-outer-spin-button {
   color: rgba(255, 255, 255, 0.8);
 }
 
+.checkbox-label small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+
 /* ========== BOTÓN PRIMARY ========== */
 .btn-primary {
   width: 100%;

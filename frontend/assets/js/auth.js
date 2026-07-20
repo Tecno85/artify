@@ -6,20 +6,65 @@ const API =
     : 'http://localhost:3000');
 
 // ========== TOKEN Y SESIÓN ==========
-function obtenerTokenAuth() {
-  return sessionStorage.getItem('artifyToken');
+const CLAVES_AUTH = ['artifyAdmin', 'artifyUser', 'artifyToken'];
+
+function obtenerValorAuth(clave) {
+  return sessionStorage.getItem(clave) || localStorage.getItem(clave);
 }
 
-function guardarTokenAuth(token) {
-  if (token) {
-    sessionStorage.setItem('artifyToken', token);
+function obtenerTokenAuth() {
+  return obtenerValorAuth('artifyToken');
+}
+
+function obtenerUsuarioAuth() {
+  const usuarioGuardado = obtenerValorAuth('artifyUser');
+
+  if (!usuarioGuardado) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(usuarioGuardado);
+  } catch {
+    sessionStorage.removeItem('artifyUser');
+    localStorage.removeItem('artifyUser');
+    return null;
   }
 }
 
-function limpiarSesionAuth() {
-  sessionStorage.removeItem('artifyAdmin');
-  sessionStorage.removeItem('artifyUser');
+function limpiarCredencialesAuth() {
+  CLAVES_AUTH.forEach((clave) => {
+    sessionStorage.removeItem(clave);
+    localStorage.removeItem(clave);
+  });
+}
+
+function guardarSesionAuth(token, usuario, recordar = false) {
+  if (!token || !usuario) {
+    return false;
+  }
+
+  limpiarCredencialesAuth();
+  const almacenamiento = recordar ? localStorage : sessionStorage;
+  almacenamiento.setItem('artifyToken', token);
+  almacenamiento.setItem('artifyUser', JSON.stringify(usuario));
+  return true;
+}
+
+function guardarTokenAuth(token, recordar = false) {
+  if (!token) {
+    return false;
+  }
+
   sessionStorage.removeItem('artifyToken');
+  localStorage.removeItem('artifyToken');
+  const almacenamiento = recordar ? localStorage : sessionStorage;
+  almacenamiento.setItem('artifyToken', token);
+  return true;
+}
+
+function limpiarSesionAuth() {
+  limpiarCredencialesAuth();
   sessionStorage.removeItem('artifyIdSesion');
   localStorage.removeItem('artify_backup_v1');
   localStorage.removeItem('artify_backup_image');

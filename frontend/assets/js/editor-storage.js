@@ -21,9 +21,7 @@ window.ArtifyEditorStorage = (() => {
     tamanoBytes,
   }) {
     try {
-      const usuario = JSON.parse(
-        sessionStorage.getItem('artifyUser') || 'null'
-      );
+      const usuario = obtenerUsuarioAuth();
       const idUsuario = Number(usuario?.id);
       const formatoNormalizado = String(formato || '').toLowerCase();
 

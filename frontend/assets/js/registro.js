@@ -349,9 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
           btnRegistrarse.textContent = 'Registrarse';
 
           if (data.mensaje === 'Registro exitoso') {
-            // Guardar datos en sessionStorage
-            sessionStorage.setItem('artifyUser', JSON.stringify(data.usuario));
-            guardarTokenAuth(data.token);
+            // El registro inicia una sesión temporal por defecto.
+            guardarSesionAuth(data.token, data.usuario);
 
             mostrarNotificacionRegistro(
               'success',

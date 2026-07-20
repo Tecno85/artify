@@ -26,6 +26,56 @@ test('auth guarda el token y construye headers sin modificar el objeto original'
   assert.deepEqual(headersOriginales, { 'Content-Type': 'application/json' });
 });
 
+test('auth guarda una sesión recordada en localStorage y permite recuperarla', () => {
+  const { contexto, localStorage, sessionStorage } = crearContextoFrontend();
+  ejecutarScript(contexto, 'auth.js');
+  contexto.usuario = {
+    id: 7,
+    correo: 'ana@artify.local',
+    rol: 'usuario',
+  };
+
+  const guardada = evaluar(
+    contexto,
+    "guardarSesionAuth('token-recordado', usuario, true)"
+  );
+
+  assert.equal(guardada, true);
+  assert.equal(localStorage.getItem('artifyToken'), 'token-recordado');
+  assert.deepEqual(
+    JSON.parse(localStorage.getItem('artifyUser')),
+    contexto.usuario
+  );
+  assert.equal(sessionStorage.getItem('artifyToken'), null);
+  assert.equal(evaluar(contexto, 'obtenerTokenAuth()'), 'token-recordado');
+  assert.deepEqual(
+    JSON.parse(JSON.stringify(evaluar(contexto, 'obtenerUsuarioAuth()'))),
+    contexto.usuario
+  );
+});
+
+test('auth reemplaza una sesión recordada por una sesión temporal sin mezclar datos', () => {
+  const localStorage = new AlmacenamientoSimulado({
+    artifyToken: 'token-anterior',
+    artifyUser: '{"id":1}',
+  });
+  const contextoFrontend = crearContextoFrontend({ localStorage });
+  ejecutarScript(contextoFrontend.contexto, 'auth.js');
+  contextoFrontend.contexto.usuario = { id: 2, rol: 'usuario' };
+
+  evaluar(
+    contextoFrontend.contexto,
+    "guardarSesionAuth('token-temporal', usuario, false)"
+  );
+
+  assert.equal(localStorage.getItem('artifyToken'), null);
+  assert.equal(localStorage.getItem('artifyUser'), null);
+  assert.equal(
+    contextoFrontend.sessionStorage.getItem('artifyToken'),
+    'token-temporal'
+  );
+});
+
 test('auth limpia todos los datos locales relacionados con la sesión', () => {
   const sessionStorage = new AlmacenamientoSimulado({
     artifyAdmin: '{}',
@@ -34,6 +84,9 @@ test('auth limpia todos los datos locales relacionados con la sesión', () => {
     artifyIdSesion: '25',
   });
   const localStorage = new AlmacenamientoSimulado({
+    artifyAdmin: '{}',
+    artifyUser: '{"id":7}',
+    artifyToken: 'token-recordado',
     artify_backup_v1: '{"version":1}',
     artify_backup_image: 'imagen',
     artify_backup_timestamp: '123',
@@ -51,6 +104,9 @@ test('auth limpia todos los datos locales relacionados con la sesión', () => {
   assert.equal(sessionStorage.getItem('artifyUser'), null);
   assert.equal(sessionStorage.getItem('artifyToken'), null);
   assert.equal(sessionStorage.getItem('artifyIdSesion'), null);
+  assert.equal(localStorage.getItem('artifyAdmin'), null);
+  assert.equal(localStorage.getItem('artifyUser'), null);
+  assert.equal(localStorage.getItem('artifyToken'), null);
   assert.equal(localStorage.getItem('artify_backup_v1'), null);
   assert.equal(localStorage.getItem('artify_backup_image'), null);
   assert.equal(localStorage.getItem('artify_backup_timestamp'), null);

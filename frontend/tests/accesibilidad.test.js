@@ -43,14 +43,19 @@ test('los modales principales exponen semántica accesible', () => {
   assert.match(modal, /focoPrevio\.focus\(\)/);
 });
 
-test('errores y notificaciones dinámicas se anuncian sin enlaces falsos', () => {
+test('errores y notificaciones dinámicas se anuncian sin controles engañosos', () => {
   const login = leerPagina('login.html');
+  const registro = leerPagina('registro.html');
   const admin = leerPagina('admin.html');
 
   assert.match(login, /id="email-error"[\s\S]*?aria-live="polite"/);
   assert.match(login, /id="password-error"[\s\S]*?aria-live="polite"/);
-  assert.match(login, /Recuperación de contraseña no disponible/);
-  assert.doesNotMatch(login, /href="#"[^>]*>\s*¿Olvidaste tu contraseña/);
+  assert.doesNotMatch(login, /Recuperación de contraseña no disponible/);
+  assert.match(
+    registro,
+    /href="\.\/terminos\.html"[\s\S]*?target="_blank"[\s\S]*?rel="noopener noreferrer"/
+  );
+  assert.doesNotMatch(registro, /href="#"[^>]*>términos y condiciones/);
   assert.match(
     admin,
     /id="adminNotificacion"[\s\S]*?role="status"[\s\S]*?aria-live="polite"/

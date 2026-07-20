@@ -109,9 +109,9 @@ loginForm.addEventListener('submit', (e) => {
         btnLogin.textContent = 'Iniciar Sesión';
 
         if (data.mensaje === 'Login exitoso') {
-          // Guardar datos del usuario en sessionStorage
-          sessionStorage.setItem('artifyUser', JSON.stringify(data.usuario));
-          guardarTokenAuth(data.token);
+          const recordarSesion =
+            document.getElementById('remember')?.checked === true;
+          guardarSesionAuth(data.token, data.usuario, recordarSesion);
 
           // Redirigir según el rol del usuario
           if (data.usuario.rol === 'admin') {

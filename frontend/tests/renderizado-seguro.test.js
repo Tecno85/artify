@@ -47,6 +47,8 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
     json: async () => ({ mensaje: 'ok', usuarios: [] }),
   });
   contextoFrontend.contexto.obtenerTokenAuth = () => 'token-admin';
+  contextoFrontend.contexto.obtenerUsuarioAuth = () =>
+    JSON.parse(contextoFrontend.sessionStorage.getItem('artifyUser'));
   contextoFrontend.contexto.limpiarSesionAuth = () => {};
   contextoFrontend.contexto.fechaMenorEdad = `${new Date().getFullYear() - 17}-01-01`;
   ejecutarScript(contextoFrontend.contexto, 'admin.js');

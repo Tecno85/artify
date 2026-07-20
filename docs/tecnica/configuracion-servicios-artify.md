@@ -307,7 +307,7 @@ Esta salida confirma que Express está escuchando en el puerto configurado y que
 
 ![Dependencias y pruebas del backend verificadas](./evidencias/configuracion-servicios/dependencias-pruebas.svg)
 
-*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día y que la sintaxis y las pruebas automatizadas finalizaron correctamente. El estado reproducible actual conserva 28 pruebas backend, 16 frontend y tres E2E en Chromium.
+*Descripción:* En esta evidencia muestro que el lockfile y las dependencias se encuentran al día y que la sintaxis y las pruebas automatizadas finalizaron correctamente. El estado reproducible actual conserva 28 pruebas backend, 19 frontend y tres E2E en Chromium.
 
 #### Imagen 6. Backend conectado y API disponible
 
@@ -422,7 +422,7 @@ Desde `backend/` ejecuto la suite frontend, que no necesita PostgreSQL:
 pnpm run test:frontend
 ```
 
-El resultado actual es de 16 pruebas aprobadas y cero fallos. La suite comprueba sesión, respuestas `401`, validación del login, redirección por rol, inicio no bloqueante del editor, validaciones de imagen, renderizado seguro y semántica accesible.
+El resultado actual es de 19 pruebas aprobadas y cero fallos. La suite comprueba sesión temporal y recordada, respuestas `401`, validación del login, redirección por rol, inicio no bloqueante del editor, validaciones de imagen, renderizado seguro y semántica accesible.
 
 ### 11.4 Prueba E2E del editor
 
@@ -461,7 +461,7 @@ El frontend respondió con estado HTTP `200` y mostró correctamente la interfaz
 | Variables de entorno | Archivo local completo y valores sensibles protegidos. | Evidencia 4 | Verificado |
 | Dependencias | Lockfile consistente y paquetes al día. | Evidencia 5 | Verificado |
 | Sintaxis del backend | `pnpm run check` finaliza sin errores. | Evidencia 5 | Verificado |
-| Pruebas automatizadas | 28 pruebas backend, 16 frontend y 3 E2E aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
+| Pruebas automatizadas | 28 pruebas backend, 19 frontend y 3 E2E aprobadas, con cero fallos. | Evidencia 5 y resultado reproducible | Verificado |
 | Servidor de aplicaciones | Express activo en el puerto `3000`. | Evidencia 6 | Verificado |
 | Conexión backend-PostgreSQL | Mensaje de conexión correcta al iniciar. | Evidencia 6 | Verificado |
 | Endpoint de salud | Respuesta HTTP `200` y JSON válido en `/health`. | Evidencia 6 | Verificado |
