@@ -112,6 +112,7 @@ function crearContextoFrontend(opciones = {}) {
     setTimeout,
     clearTimeout,
     requestAnimationFrame: (callback) => callback(),
+    atob: (valor) => Buffer.from(valor, 'base64').toString('binary'),
     URL,
     JSON,
     Number,

@@ -8,6 +8,11 @@ const {
   evaluar,
 } = require('./helpers/frontend-vm');
 
+function crearTokenPrueba(payload) {
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  return `e30.${body}.firma-prueba`;
+}
+
 test('auth guarda el token y construye headers sin modificar el objeto original', () => {
   const { contexto, sessionStorage } = crearContextoFrontend();
   ejecutarScript(contexto, 'auth.js');
@@ -74,6 +79,82 @@ test('auth reemplaza una sesión recordada por una sesión temporal sin mezclar 
     contextoFrontend.sessionStorage.getItem('artifyToken'),
     'token-temporal'
   );
+});
+
+test('auth redirige desde el inicio al editor con una sesión vigente', () => {
+  const usuario = { id: 7, rol: 'usuario' };
+  const token = crearTokenPrueba({
+    id: usuario.id,
+    rol: usuario.rol,
+    exp: Math.floor(Date.now() / 1000) + 3600,
+  });
+  const localStorage = new AlmacenamientoSimulado({
+    artifyUser: JSON.stringify(usuario),
+    artifyToken: token,
+  });
+  const contextoFrontend = crearContextoFrontend({
+    localStorage,
+    location: { pathname: '/index.html' },
+  });
+  ejecutarScript(contextoFrontend.contexto, 'auth.js');
+
+  const redirigida = evaluar(
+    contextoFrontend.contexto,
+    'redirigirSesionAuth()'
+  );
+
+  assert.equal(redirigida, true);
+  assert.deepEqual(contextoFrontend.reemplazos, ['./pages/editor.html']);
+});
+
+test('auth redirige desde el login al panel cuando la sesión es administrativa', () => {
+  const usuario = { id: 1, rol: 'admin' };
+  const token = crearTokenPrueba({
+    id: usuario.id,
+    rol: usuario.rol,
+    exp: Math.floor(Date.now() / 1000) + 3600,
+  });
+  const localStorage = new AlmacenamientoSimulado({
+    artifyUser: JSON.stringify(usuario),
+    artifyToken: token,
+  });
+  const contextoFrontend = crearContextoFrontend({
+    localStorage,
+    location: { pathname: '/pages/login.html' },
+  });
+  ejecutarScript(contextoFrontend.contexto, 'auth.js');
+
+  evaluar(contextoFrontend.contexto, 'redirigirSesionAuth()');
+
+  assert.deepEqual(contextoFrontend.reemplazos, ['./admin.html']);
+});
+
+test('auth descarta una sesión recordada cuando el token expiró', () => {
+  const usuario = { id: 7, rol: 'usuario' };
+  const token = crearTokenPrueba({
+    id: usuario.id,
+    rol: usuario.rol,
+    exp: Math.floor(Date.now() / 1000) - 60,
+  });
+  const localStorage = new AlmacenamientoSimulado({
+    artifyUser: JSON.stringify(usuario),
+    artifyToken: token,
+  });
+  const contextoFrontend = crearContextoFrontend({
+    localStorage,
+    location: { pathname: '/index.html' },
+  });
+  ejecutarScript(contextoFrontend.contexto, 'auth.js');
+
+  const redirigida = evaluar(
+    contextoFrontend.contexto,
+    'redirigirSesionAuth()'
+  );
+
+  assert.equal(redirigida, false);
+  assert.equal(localStorage.getItem('artifyUser'), null);
+  assert.equal(localStorage.getItem('artifyToken'), null);
+  assert.deepEqual(contextoFrontend.reemplazos, []);
 });
 
 test('auth limpia todos los datos locales relacionados con la sesión', () => {

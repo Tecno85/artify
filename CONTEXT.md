@@ -23,6 +23,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 - HTML5, CSS3, JavaScript Vanilla.
 - Canvas API para manipulación de imágenes.
 - Sesión temporal en `sessionStorage` o persistente en `localStorage` cuando el usuario activa “Recordar sesión”.
+- El inicio y el login detectan tokens vigentes y redirigen automáticamente al editor o al panel administrativo; los tokens expirados se eliminan antes de permanecer en el acceso.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
 - Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva scroll vertical por la extensión del formulario.
 - El editor habilita sus controles sin esperar el arranque del backend; la sesión de edición y las preferencias se inicializan en segundo plano.
@@ -81,6 +82,7 @@ artify/
 │       │   ├── config.js
 │       │   ├── config.example.js
 │       │   ├── auth.js
+│       │   ├── inicio.js
 │       │   ├── editor.js
 │       │   ├── editor-image.js
 │       │   ├── editor-storage.js
@@ -285,9 +287,9 @@ La versión PostgreSQL fue validada con:
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas backend: 28/28 correctas.
-- Suite frontend con `node:test`: 19/19 correctas para autenticación temporal y recordada, login por rol, sesión del editor, validación de imágenes, renderizado seguro y semántica accesible.
-- Reporte nativo de cobertura frontend mediante `pnpm run test:frontend:coverage`, integrado en CI: 38,85 % en líneas y 61,14 % en funciones sobre los archivos instrumentados.
-- Tres pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, y flujo del editor para cargar una imagen, confirmar un filtro, actualizar el historial, descargar el resultado y comprobar foco y cierre con Escape en modales.
+- Suite frontend con `node:test`: 22/22 correctas para autenticación temporal y recordada, redirección automática por rol, expiración de tokens, sesión del editor, validación de imágenes, renderizado seguro y semántica accesible.
+- Reporte nativo de cobertura frontend mediante `pnpm run test:frontend:coverage`, integrado en CI: 40,70 % en líneas y 63,04 % en funciones sobre los archivos instrumentados.
+- Cuatro pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, persistencia de la sesión recordada en otra pestaña y flujo del editor para cargar una imagen, confirmar un filtro, actualizar el historial, descargar el resultado y comprobar foco y cierre con Escape en modales.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -425,7 +427,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-17] Extracción de validaciones de imagen a un módulo independiente.
 - [2026-07-17] Incorporación de monitoreo público diario y formalización de RPO, RTO, retención y revisión trimestral de Neon.
 - [2026-07-19] Retiro del historial persistente del perfil; se conserva el contador de operaciones y el historial local de deshacer y rehacer.
-- [2026-07-20] Implementación funcional de “Recordar sesión”, términos consultables y mensajes públicos más precisos sobre el procesamiento local de imágenes.
+- [2026-07-20] Implementación completa de “Recordar sesión” con redirección automática por rol, descarte de tokens expirados, términos consultables y mensajes públicos más precisos sobre el procesamiento local de imágenes.
 
 ---
 

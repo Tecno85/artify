@@ -32,6 +32,29 @@ function obtenerUsuarioAuth() {
   }
 }
 
+function obtenerPayloadTokenAuth(token) {
+  try {
+    const partes = String(token || '').split('.');
+    if (partes.length !== 3) {
+      return null;
+    }
+
+    const payloadBase64 = partes[1].replace(/-/g, '+').replace(/_/g, '/');
+    const relleno = '='.repeat((4 - (payloadBase64.length % 4)) % 4);
+    return JSON.parse(atob(payloadBase64 + relleno));
+  } catch {
+    return null;
+  }
+}
+
+function esTokenAuthVigente(token = obtenerTokenAuth()) {
+  const payload = obtenerPayloadTokenAuth(token);
+  const expiracion = Number(payload?.exp);
+  const ahora = Math.floor(Date.now() / 1000);
+
+  return Number.isFinite(expiracion) && expiracion > ahora;
+}
+
 function limpiarCredencialesAuth() {
   CLAVES_AUTH.forEach((clave) => {
     sessionStorage.removeItem(clave);
@@ -69,6 +92,45 @@ function limpiarSesionAuth() {
   localStorage.removeItem('artify_backup_v1');
   localStorage.removeItem('artify_backup_image');
   localStorage.removeItem('artify_backup_timestamp');
+}
+
+function obtenerRutaSesionAuth(usuario) {
+  const paginaInterna = window.location.pathname.includes('/pages/');
+  const archivo =
+    usuario.rol === 'admin'
+      ? 'admin.html'
+      : usuario.rol === 'usuario'
+        ? 'editor.html'
+        : null;
+
+  if (!archivo) {
+    return null;
+  }
+
+  return paginaInterna ? `./${archivo}` : `./pages/${archivo}`;
+}
+
+function redirigirSesionAuth() {
+  const token = obtenerTokenAuth();
+  const usuario = obtenerUsuarioAuth();
+
+  if (!token && !usuario) {
+    return false;
+  }
+
+  if (!token || !usuario || !esTokenAuthVigente(token)) {
+    limpiarSesionAuth();
+    return false;
+  }
+
+  const destino = obtenerRutaSesionAuth(usuario);
+  if (!destino) {
+    limpiarSesionAuth();
+    return false;
+  }
+
+  window.location.replace(destino);
+  return true;
 }
 
 // ========== HEADERS DE AUTENTICACIÓN ==========

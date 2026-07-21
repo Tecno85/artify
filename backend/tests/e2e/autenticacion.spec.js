@@ -1,5 +1,17 @@
 const { expect, test } = require('@playwright/test');
 
+function crearTokenPrueba(usuario) {
+  const payload = Buffer.from(
+    JSON.stringify({
+      id: usuario.id,
+      rol: usuario.rol,
+      exp: 4_102_444_800,
+    })
+  ).toString('base64url');
+
+  return `e30.${payload}.firma-prueba`;
+}
+
 async function prepararApi(page, usuario) {
   await page.route('http://127.0.0.1:3000/**', async (route) => {
     const url = new URL(route.request().url());
@@ -8,7 +20,7 @@ async function prepararApi(page, usuario) {
     if (url.pathname === '/api/login') {
       body = {
         mensaje: 'Login exitoso',
-        token: `token-${usuario.rol}`,
+        token: crearTokenPrueba(usuario),
         usuario,
       };
     } else if (url.pathname === '/api/sesion/iniciar') {
@@ -56,7 +68,7 @@ test('usuario inicia sesión, conserva el token y entra al editor', async ({
         usuario: JSON.parse(sessionStorage.getItem('artifyUser')),
       }))
     )
-    .toEqual({ token: 'token-usuario', usuario });
+    .toEqual({ token: crearTokenPrueba(usuario), usuario });
 });
 
 test('administrador inicia sesión y entra al panel administrativo', async ({
@@ -76,7 +88,7 @@ test('administrador inicia sesión y entra al panel administrativo', async ({
   await expect(page.locator('#adminName')).toContainText('Administrador');
   await expect
     .poll(() => page.evaluate(() => sessionStorage.getItem('artifyToken')))
-    .toBe('token-admin');
+    .toBe(crearTokenPrueba(usuario));
 });
 
 test('recordar sesión mantiene el acceso al abrir el editor en otra pestaña', async ({
@@ -96,7 +108,8 @@ test('recordar sesión mantiene el acceso al abrir el editor en otra pestaña', 
 
   const nuevaPagina = await context.newPage();
   await prepararApi(nuevaPagina, usuario);
-  await nuevaPagina.goto('/pages/editor.html');
+  await nuevaPagina.goto('/');
+  await nuevaPagina.waitForURL('**/pages/editor.html');
 
   await expect(nuevaPagina.locator('#userName')).toHaveText(
     'Usuario Recordado'

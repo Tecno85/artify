@@ -33,7 +33,7 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 - Historial de hasta 20 pasos para deshacer y rehacer.
 - Zoom entre 50 % y 200 %.
 - Autoguardado local opcional, aislado por usuario y recuperable durante 7 días.
-- Registro, inicio de sesión temporal o recordada y autorización por roles.
+- Registro, inicio de sesión temporal o recordada, redirección automática por rol y autorización de rutas.
 - Términos y condiciones consultables antes de crear una cuenta.
 - Panel administrativo con gestión de usuarios y analíticas.
 - Persistencia de configuraciones, sesiones y operaciones en PostgreSQL.
@@ -178,8 +178,8 @@ pnpm exec playwright install chromium
 pnpm run test:e2e
 ```
 
-GitHub Actions ejecuta automáticamente 28 pruebas del backend, 19 pruebas
-frontend con cobertura nativa y tres pruebas E2E en cada `push` a `main` y en
+GitHub Actions ejecuta automáticamente 28 pruebas del backend, 22 pruebas
+frontend con cobertura nativa y cuatro pruebas E2E en cada `push` a `main` y en
 los pull requests. También carga el esquema y valida las migraciones
 incrementales sobre PostgreSQL temporal.
 

@@ -77,6 +77,7 @@ El frontend se encuentra en la carpeta `frontend/` y está construido con HTML, 
 
 - Mostrar formularios de registro e inicio de sesión.
 - Guardar información de sesión temporal en `sessionStorage` o recordada en `localStorage`, según la elección explícita del usuario.
+- Detectar sesiones vigentes en las páginas públicas y redirigir por rol, eliminando credenciales locales cuando el token haya expirado.
 - Enviar el token de autenticación a rutas protegidas.
 - Manipular imágenes en el navegador mediante Canvas API.
 - Presentar el panel administrativo para usuarios con rol `admin`.

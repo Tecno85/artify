@@ -1,4 +1,6 @@
 // ========== FUNCIONES DE VALIDACIÓN ==========
+redirigirSesionAuth();
+
 function mostrarError(inputId, mensaje) {
   const input = document.getElementById(inputId);
   const errorSpan = document.getElementById(`${inputId}-error`);

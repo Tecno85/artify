@@ -370,7 +370,7 @@ La suite esperada contiene 28 pruebas. Si falla antes de iniciar, verifico que
 PostgreSQL esté activo, que `artify_test` tenga el esquema cargado y que
 `DATABASE_URL` continúe comentada en `backend/.env`.
 
-Después ejecuto las 19 pruebas del frontend. Estas no usan PostgreSQL ni crean datos:
+Después ejecuto las 22 pruebas del frontend. Estas no usan PostgreSQL ni crean datos:
 
 ```bash
 pnpm run test:frontend
