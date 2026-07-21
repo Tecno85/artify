@@ -260,6 +260,12 @@ header {
   color: var(--secondary);
 }
 
+.submenu-btn:focus-visible,
+.btn-apply:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
 /* ========== CANVAS CENTRAL ========== */
 .canvas-container {
   display: flex;
@@ -563,6 +569,50 @@ header {
   box-shadow: none;
 }
 
+.filter-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: 10px;
+}
+
+.btn-filter-cancel {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-light);
+  font-family: 'Inconsolata', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-filter-cancel:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--secondary);
+  transform: translateY(-2px);
+}
+
+.btn-filter-cancel:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-filter-cancel:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+.filter-status {
+  min-height: 18px;
+  margin: 0 0 10px;
+  color: var(--secondary);
+  font-size: 0.85rem;
+  line-height: 1.25;
+}
+
 .rotate-buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -597,6 +647,11 @@ header {
   outline: none;
   -webkit-appearance: none;
   appearance: none;
+}
+
+.slider-input:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 5px;
 }
 
 .slider-input::-webkit-slider-thumb {

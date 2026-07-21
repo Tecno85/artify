@@ -47,6 +47,8 @@ test('errores y notificaciones dinámicas se anuncian sin controles engañosos',
   const login = leerPagina('login.html');
   const registro = leerPagina('registro.html');
   const admin = leerPagina('admin.html');
+  const editor = leerPagina('editor.html');
+  const editorScript = fs.readFileSync(path.join(scripts, 'editor.js'), 'utf8');
 
   assert.match(login, /id="email-error"[\s\S]*?aria-live="polite"/);
   assert.match(login, /id="password-error"[\s\S]*?aria-live="polite"/);
@@ -60,4 +62,17 @@ test('errores y notificaciones dinámicas se anuncian sin controles engañosos',
     admin,
     /id="adminNotificacion"[\s\S]*?role="status"[\s\S]*?aria-live="polite"/
   );
+  assert.match(
+    editor,
+    /<output[\s\S]*?id="filterIntensityValue"[\s\S]*?for="filterIntensity"/
+  );
+  assert.match(
+    editor,
+    /id="filterStatus"[\s\S]*?role="status"[\s\S]*?aria-live="polite"/
+  );
+  assert.match(
+    editor,
+    /id="operationsCount"[\s\S]*?role="status"[\s\S]*?aria-live="polite"/
+  );
+  assert.match(editorScript, /container\.setAttribute\('role', 'status'\)/);
 });

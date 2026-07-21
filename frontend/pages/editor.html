@@ -300,11 +300,37 @@
                 max="100"
                 value="0"
               />
-              <span class="slider-value" id="filterIntensityValue">0%</span>
+              <output
+                class="slider-value"
+                id="filterIntensityValue"
+                for="filterIntensity"
+                >0%</output
+              >
             </div>
-            <button class="btn-apply" id="btnAplicarFiltro" disabled>
-              Aplicar Filtro
-            </button>
+            <p
+              class="filter-status"
+              id="filterStatus"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            ></p>
+            <div class="filter-actions">
+              <button
+                type="button"
+                class="btn-filter-cancel"
+                id="btnCancelarFiltro"
+              >
+                Cerrar
+              </button>
+              <button
+                type="button"
+                class="btn-apply"
+                id="btnAplicarFiltro"
+                disabled
+              >
+                Aplicar cambios
+              </button>
+            </div>
           </div>
 
           <!-- Controles de Convertir -->
@@ -335,8 +361,14 @@
       <!-- ========== BARRA INFERIOR ========== -->
       <footer class="status-bar" role="contentinfo">
         <div class="status-item">
-          <img src="../assets/icons/layers.svg" alt="Operaciones" />
-          <span id="operationsCount">0 operaciones</span>
+          <img src="../assets/icons/layers.svg" alt="" />
+          <span
+            id="operationsCount"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            >Sin cambios</span
+          >
         </div>
 
         <div class="status-item" id="transformInfo" style="display: none">
@@ -563,7 +595,9 @@
             </div>
             <div class="perfil-stat">
               <span class="perfil-stat-value" id="perfilOperaciones">0</span>
-              <span class="perfil-stat-label">Operaciones</span>
+              <span class="perfil-stat-label" id="perfilOperacionesLabel"
+                >Operaciones registradas</span
+              >
             </div>
             <div class="perfil-stat">
               <span class="perfil-stat-value" id="perfilSesiones">1</span>

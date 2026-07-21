@@ -28,9 +28,9 @@ La aplicación incluye autenticación por roles, persistencia de preferencias y 
 - Carga de imágenes JPG, PNG y WebP mediante selector o arrastrar y soltar, con límites de 10 MB, 16 MP y 8192 px por lado.
 - Recorte libre o con proporciones predefinidas.
 - Redimensionamiento y rotación.
-- Filtros de blanco y negro, sepia, brillo y contraste con vista previa y confirmación.
+- Filtros de blanco y negro, sepia, brillo y contraste con vista previa, reajuste continuo, cancelación y confirmación explícitas.
 - Conversión a PNG, JPEG y WebP con ajuste de calidad.
-- Historial de hasta 20 pasos para deshacer y rehacer.
+- Historial de hasta 20 pasos para deshacer y rehacer, con un contador de cambios aplicados independiente de las operaciones registradas en la cuenta.
 - Zoom entre 50 % y 200 %.
 - Autoguardado local opcional, aislado por usuario y recuperable durante 7 días.
 - Registro, inicio de sesión temporal o recordada, redirección automática por rol y autorización de rutas.

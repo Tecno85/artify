@@ -7,12 +7,15 @@ let historyIndex = -1;
 let currentTool = null;
 let zoomLevel = 100;
 let currentFilter = null;
-let filterPreviewBaseImageData = null;
+let filterSessionBaseImageData = null;
+let filterCommittedImageData = null;
 let filterPreviewImageData = null;
 let filterPreviewFrameId = null;
 let filterPreviewActive = false;
 let filterPreviewIntensity = 0;
 let filterApplyInProgress = false;
+let filterLastAppliedIntensity = 0;
+let filterHasAppliedChanges = false;
 let formatoActual = null; // Formato actual de la imagen después de conversión
 let calidadActual = null; // Calidad actual de la imagen después de conversión
 let archivoActual = null;
@@ -284,7 +287,10 @@ async function autoguardarImagen() {
 }
 
 // ========== FUNCIÓN PARA GUARDAR ESTADO EN HISTORIAL ==========
-function guardarEstadoEnHistorial(descripcion) {
+function guardarEstadoEnHistorial(
+  descripcion,
+  { esEstadoInicial = false } = {}
+) {
   // Si estamos en medio del historial, eliminar los estados futuros
   if (historyIndex < operationsHistory.length - 1) {
     const estadosDescartados = operationsHistory.splice(historyIndex + 1);
@@ -292,6 +298,11 @@ function guardarEstadoEnHistorial(descripcion) {
       URL.revokeObjectURL(estado.imageUrl);
     });
   }
+
+  const estadoAnterior = operationsHistory[historyIndex];
+  const cambiosAplicados = esEstadoInicial
+    ? 0
+    : (estadoAnterior?.cambiosAplicados || 0) + 1;
 
   // Guardar el estado actual del canvas como imagen
   canvas.toBlob(
@@ -308,6 +319,7 @@ function guardarEstadoEnHistorial(descripcion) {
         timestamp: Date.now(),
         width: canvas.width,
         height: canvas.height,
+        cambiosAplicados,
       });
 
       historyIndex++;
@@ -334,7 +346,17 @@ function actualizarBotonesHistorial() {
 }
 
 function actualizarContadorOperaciones() {
-  operationsCount.textContent = `${operationsHistory.length} operaciones`;
+  const cambiosAplicados =
+    operationsHistory[historyIndex]?.cambiosAplicados || 0;
+
+  if (cambiosAplicados === 0) {
+    operationsCount.textContent = 'Sin cambios';
+    return;
+  }
+
+  const etiqueta =
+    cambiosAplicados === 1 ? 'cambio aplicado' : 'cambios aplicados';
+  operationsCount.textContent = `${cambiosAplicados} ${etiqueta}`;
 }
 
 // ========== FUNCIONES DE RESOLUCIÓN ==========
@@ -485,7 +507,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ========== FUNCIÓN CARGAR IMAGEN ==========
   function cargarImagen(file) {
-    cancelarVistaPreviaFiltro();
+    cerrarSesionFiltro();
 
     const validacionArchivo = validarArchivoImagen(file);
     if (!validacionArchivo.valido) {
@@ -534,7 +556,7 @@ window.addEventListener('DOMContentLoaded', () => {
         operationsHistory.forEach((op) => URL.revokeObjectURL(op.imageUrl));
         operationsHistory = [];
         historyIndex = -1;
-        guardarEstadoEnHistorial('Imagen cargada');
+        guardarEstadoEnHistorial('Imagen cargada', { esEstadoInicial: true });
       };
       img.onerror = () => {
         mostrarNotificacion('error', 'Error al cargar la imagen');
@@ -649,7 +671,7 @@ window.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      cancelarVistaPreviaFiltro();
+      cerrarSesionFiltro();
       cancelarRecortePendiente(true);
       canvas.width = ancho;
       canvas.height = alto;
@@ -681,7 +703,9 @@ window.addEventListener('DOMContentLoaded', () => {
       eliminarRespaldoLocal();
       respaldoPendiente = null;
       cerrarModalRecuperacion();
-      guardarEstadoEnHistorial('Respaldo recuperado');
+      guardarEstadoEnHistorial('Respaldo recuperado', {
+        esEstadoInicial: true,
+      });
       mostrarNotificacion('success', 'Trabajo recuperado correctamente');
     };
 
@@ -801,7 +825,6 @@ window.addEventListener('DOMContentLoaded', () => {
           'success',
           `Imagen descargada en ${formato.toUpperCase()} - Calidad: ${calidad} (${tamanoKB} KB)`
         );
-        guardarEstadoEnHistorial('Imagen descargada');
       },
       mimeType,
       calidadNumero
@@ -964,6 +987,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const filterIntensityLabel = document.querySelector(
     'label[for="filterIntensity"]'
   );
+  const filterControls = document.getElementById('filterControls');
+  const filterStatus = document.getElementById('filterStatus');
+  const toolControlsPanel = document.getElementById('toolControls');
+  const btnCancelarFiltro = document.getElementById('btnCancelarFiltro');
   const btnAplicarFiltro = document.getElementById('btnAplicarFiltro');
   const configuracionFiltros = {
     grayscale: {
@@ -995,16 +1022,27 @@ window.addEventListener('DOMContentLoaded', () => {
       unidad: 'ajuste',
     },
   };
+  const nombresFiltros = {
+    grayscale: 'Blanco y Negro',
+    sepia: 'Sepia',
+    brightness: 'Brillo',
+    contrast: 'Contraste',
+  };
 
   filtrosButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       if (filterApplyInProgress) return;
 
       const filter = btn.dataset.filter;
+      if (
+        currentFilter === filter &&
+        filterControls?.style.display !== 'none'
+      ) {
+        return;
+      }
+
       mostrarControlesFiltro();
-      currentFilter = filter;
-      configurarControlFiltro(filter);
-      actualizarFiltroActivo(filter);
+      iniciarSesionFiltro(filter);
     });
   });
 
@@ -1022,15 +1060,14 @@ window.addEventListener('DOMContentLoaded', () => {
       if (!currentFilter || filterApplyInProgress) return;
 
       const valor = Number(e.target.value);
-      const configuracion = configuracionFiltros[currentFilter];
       filterIntensityValue.textContent = formatearValorFiltro(
         currentFilter,
         valor
       );
 
-      if (valor === configuracion.neutral) {
-        restaurarVistaPreviaFiltro();
-        btnAplicarFiltro.disabled = true;
+      if (valor === filterLastAppliedIntensity) {
+        restaurarUltimoFiltroAplicado();
+        actualizarAccionesFiltro();
         return;
       }
 
@@ -1039,8 +1076,35 @@ window.addEventListener('DOMContentLoaded', () => {
       }
 
       programarVistaPreviaFiltro(valor);
-      btnAplicarFiltro.disabled = false;
+      actualizarAccionesFiltro({ cambiosPendientes: true });
     });
+  }
+
+  function copiarDatosImagen(datosImagen) {
+    if (!datosImagen) return null;
+
+    const copia = ctx.createImageData(datosImagen.width, datosImagen.height);
+    copia.data.set(datosImagen.data);
+    return copia;
+  }
+
+  function iniciarSesionFiltro(filter) {
+    const configuracion = configuracionFiltros[filter];
+    if (!configuracion || !currentImage) return;
+
+    currentFilter = filter;
+    filterSessionBaseImageData = ctx.getImageData(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+    filterCommittedImageData = copiarDatosImagen(filterSessionBaseImageData);
+    filterLastAppliedIntensity = configuracion.neutral;
+    filterHasAppliedChanges = false;
+    configurarControlFiltro(filter);
+    actualizarFiltroActivo(filter);
+    actualizarAccionesFiltro();
   }
 
   function configurarControlFiltro(filter) {
@@ -1056,7 +1120,6 @@ window.addEventListener('DOMContentLoaded', () => {
       configuracion.neutral
     );
     filterIntensityLabel.textContent = configuracion.etiqueta;
-    btnAplicarFiltro.disabled = true;
   }
 
   function formatearValorFiltro(filter, valor) {
@@ -1073,30 +1136,75 @@ window.addEventListener('DOMContentLoaded', () => {
       cancelAnimationFrame(filterPreviewFrameId);
     }
 
-    filterPreviewBaseImageData = null;
     filterPreviewImageData = null;
     filterPreviewFrameId = null;
     filterPreviewActive = false;
   }
 
-  function restaurarVistaPreviaFiltro() {
+  function restaurarUltimoFiltroAplicado() {
     if (
       filterPreviewActive &&
-      filterPreviewBaseImageData &&
-      filterPreviewBaseImageData.width === canvas.width &&
-      filterPreviewBaseImageData.height === canvas.height
+      filterCommittedImageData &&
+      filterCommittedImageData.width === canvas.width &&
+      filterCommittedImageData.height === canvas.height
     ) {
-      ctx.putImageData(filterPreviewBaseImageData, 0, 0);
+      ctx.putImageData(filterCommittedImageData, 0, 0);
     }
 
     limpiarEstadoVistaPreviaFiltro();
   }
 
-  function cancelarVistaPreviaFiltro() {
-    restaurarVistaPreviaFiltro();
+  function obtenerMensajeFiltroAplicado() {
+    if (!currentFilter || !filterHasAppliedChanges) return '';
+
+    const valor = formatearValorFiltro(
+      currentFilter,
+      filterLastAppliedIntensity
+    );
+    return `${nombresFiltros[currentFilter]} aplicado al ${valor}`;
+  }
+
+  function actualizarAccionesFiltro({ cambiosPendientes = false } = {}) {
+    btnAplicarFiltro.disabled = !cambiosPendientes || filterApplyInProgress;
+    btnCancelarFiltro.disabled = filterApplyInProgress;
+    btnCancelarFiltro.textContent = cambiosPendientes
+      ? 'Cancelar cambios'
+      : 'Cerrar';
+
+    if (filterStatus) {
+      filterStatus.textContent = cambiosPendientes
+        ? 'Vista previa pendiente'
+        : obtenerMensajeFiltroAplicado();
+    }
+  }
+
+  function cerrarSesionFiltro({ ocultarControles = true } = {}) {
+    restaurarUltimoFiltroAplicado();
+    filterIntensitySlider.value = 0;
+    filterIntensityValue.textContent = '0%';
+    filterIntensityLabel.textContent = 'Intensidad:';
+    filterIntensitySlider.disabled = false;
     currentFilter = null;
+    filterSessionBaseImageData = null;
+    filterCommittedImageData = null;
+    filterLastAppliedIntensity = 0;
+    filterHasAppliedChanges = false;
     actualizarFiltroActivo();
-    if (btnAplicarFiltro) btnAplicarFiltro.disabled = true;
+    actualizarAccionesFiltro();
+    if (ocultarControles && filterControls) {
+      filterControls.style.display = 'none';
+    }
+    if (toolControlsPanel) toolControlsPanel.style.display = 'block';
+  }
+
+  function cancelarCambiosFiltro() {
+    restaurarUltimoFiltroAplicado();
+    filterIntensitySlider.value = filterLastAppliedIntensity;
+    filterIntensityValue.textContent = formatearValorFiltro(
+      currentFilter,
+      filterLastAppliedIntensity
+    );
+    actualizarAccionesFiltro();
   }
 
   function aplicarFiltroADatos(data, filter, valor) {
@@ -1121,14 +1229,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (
       !filterPreviewActive ||
-      !filterPreviewBaseImageData ||
+      !filterSessionBaseImageData ||
       !filterPreviewImageData ||
       !currentFilter
     ) {
       return;
     }
 
-    filterPreviewImageData.data.set(filterPreviewBaseImageData.data);
+    filterPreviewImageData.data.set(filterSessionBaseImageData.data);
     aplicarFiltroADatos(
       filterPreviewImageData.data,
       currentFilter,
@@ -1147,25 +1255,37 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function iniciarVistaPreviaFiltro() {
-    if (!currentImage || !currentFilter || filterApplyInProgress) return;
+    if (
+      !currentImage ||
+      !currentFilter ||
+      !filterSessionBaseImageData ||
+      filterApplyInProgress
+    ) {
+      return;
+    }
 
-    filterPreviewBaseImageData = ctx.getImageData(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    );
     filterPreviewImageData = ctx.createImageData(canvas.width, canvas.height);
     filterPreviewActive = true;
   }
 
   function mostrarControlesFiltro() {
     ocultarTodosLosControles();
-    const filterControls = document.getElementById('filterControls');
     if (filterControls) {
       filterControls.style.display = 'block';
     }
+    if (toolControlsPanel) toolControlsPanel.style.display = 'none';
   }
+
+  btnCancelarFiltro.addEventListener('click', () => {
+    if (filterApplyInProgress) return;
+
+    if (filterPreviewActive) {
+      cancelarCambiosFiltro();
+      return;
+    }
+
+    cerrarSesionFiltro();
+  });
 
   btnAplicarFiltro.addEventListener('click', () => {
     if (!currentImage || !currentFilter || !filterPreviewActive) {
@@ -1180,13 +1300,7 @@ window.addEventListener('DOMContentLoaded', () => {
       valorFiltro
     );
     const configuracion = configuracionFiltros[filtroAplicado];
-    const filtrosNombres = {
-      grayscale: 'Blanco y Negro',
-      sepia: 'Sepia',
-      brightness: 'Brillo',
-      contrast: 'Contraste',
-    };
-    const nombreFiltro = filtrosNombres[filtroAplicado] || filtroAplicado;
+    const nombreFiltro = nombresFiltros[filtroAplicado] || filtroAplicado;
 
     console.log(
       '🎨 Aplicando filtro:',
@@ -1205,7 +1319,8 @@ window.addEventListener('DOMContentLoaded', () => {
     limpiarEstadoVistaPreviaFiltro();
     filterApplyInProgress = true;
     filterIntensitySlider.disabled = true;
-    btnAplicarFiltro.disabled = true;
+    actualizarAccionesFiltro();
+    if (filterStatus) filterStatus.textContent = 'Aplicando cambios...';
 
     sincronizarImagenYCanvas(() => {
       // Notificación removida
@@ -1221,12 +1336,16 @@ window.addEventListener('DOMContentLoaded', () => {
           unidad: configuracion.unidad,
         }
       );
-      // Resetear la selección del filtro para poder aplicar múltiples veces
-      currentFilter = null;
-      actualizarFiltroActivo();
       filterApplyInProgress = false;
-      filterIntensitySlider.disabled = false;
-      btnAplicarFiltro.disabled = true;
+      if (currentFilter === filtroAplicado) {
+        filterCommittedImageData = copiarDatosImagen(
+          ctx.getImageData(0, 0, canvas.width, canvas.height)
+        );
+        filterLastAppliedIntensity = valorFiltro;
+        filterHasAppliedChanges = true;
+        filterIntensitySlider.disabled = false;
+        actualizarAccionesFiltro();
+      }
     });
   });
 
@@ -1804,7 +1923,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ========== HISTORIAL (DESHACER/REHACER) ==========
   btnDeshacer.addEventListener('click', () => {
-    cancelarVistaPreviaFiltro();
+    cerrarSesionFiltro();
     cancelarRecortePendiente(true);
     if (historyIndex <= 0) return;
 
@@ -1824,6 +1943,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
       actualizarDimensionesDisplay();
       actualizarBotonesHistorial();
+      actualizarContadorOperaciones();
       // Notificación removida
       actualizarEstado('Listo', 'success');
     };
@@ -1831,7 +1951,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   btnRehacer.addEventListener('click', () => {
-    cancelarVistaPreviaFiltro();
+    cerrarSesionFiltro();
     cancelarRecortePendiente(true);
     if (historyIndex >= operationsHistory.length - 1) return;
 
@@ -1851,6 +1971,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
       actualizarDimensionesDisplay();
       actualizarBotonesHistorial();
+      actualizarContadorOperaciones();
       // Notificación removida
       actualizarEstado('Listo', 'success');
     };
@@ -1875,7 +1996,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ========== UTILIDADES ==========
   function ocultarTodosLosControles() {
-    cancelarVistaPreviaFiltro();
+    cerrarSesionFiltro();
     desactivarModoRecorte();
 
     const cropControls = document.getElementById('cropControls');
@@ -1896,6 +2017,7 @@ window.addEventListener('DOMContentLoaded', () => {
       .querySelectorAll('.tool-btn')
       .forEach((btn) => btn.classList.remove('active'));
     boton.classList.add('active');
+    if (toolControlsPanel) toolControlsPanel.style.display = 'none';
   }
 
   function actualizarEstado(texto, tipo = 'success') {
@@ -1924,6 +2046,9 @@ window.addEventListener('DOMContentLoaded', () => {
       // Crear el contenedor si no existe
       container = document.createElement('div');
       container.id = 'statusNotifications';
+      container.setAttribute('role', 'status');
+      container.setAttribute('aria-live', 'polite');
+      container.setAttribute('aria-atomic', 'true');
       container.style.display = 'flex';
       container.style.alignItems = 'center';
       container.style.gap = '10px';
@@ -2248,13 +2373,24 @@ async function abrirModalPerfil(disparador) {
       if (data.mensaje === 'ok') {
         const sesiones = document.getElementById('perfilSesiones');
         const operaciones = document.getElementById('perfilOperaciones');
+        const operacionesLabel = document.getElementById(
+          'perfilOperacionesLabel'
+        );
         const imagenesEditadas = document.getElementById(
           'perfilImagenesEditadas'
         );
 
         if (sesiones) sesiones.textContent = data.estadisticas.sesiones;
-        if (operaciones)
-          operaciones.textContent = data.estadisticas.operaciones;
+        if (operaciones) {
+          const totalOperaciones = Number(data.estadisticas.operaciones) || 0;
+          operaciones.textContent = totalOperaciones;
+          if (operacionesLabel) {
+            operacionesLabel.textContent =
+              totalOperaciones === 1
+                ? 'Operación registrada'
+                : 'Operaciones registradas';
+          }
+        }
         if (imagenesEditadas)
           imagenesEditadas.textContent = data.estadisticas.imagenesEditadas;
       }

@@ -289,7 +289,7 @@ La versión PostgreSQL fue validada con:
 - Resultado de pruebas automatizadas backend: 28/28 correctas.
 - Suite frontend con `node:test`: 22/22 correctas para autenticación temporal y recordada, redirección automática por rol, expiración de tokens, sesión del editor, validación de imágenes, renderizado seguro y semántica accesible.
 - Reporte nativo de cobertura frontend mediante `pnpm run test:frontend:coverage`, integrado en CI: 40,70 % en líneas y 63,04 % en funciones sobre los archivos instrumentados.
-- Cuatro pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, persistencia de la sesión recordada en otra pestaña y flujo del editor para cargar una imagen, confirmar un filtro, actualizar el historial, descargar el resultado y comprobar foco y cierre con Escape en modales.
+- Cuatro pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, persistencia de la sesión recordada en otra pestaña y flujo del editor para cargar una imagen, cancelar, confirmar y reajustar filtros sin salir de la herramienta, reflejar los cambios aplicados al deshacer y rehacer, descargar sin alterar el historial y comprobar foco y cierre con Escape en modales.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
 - Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
@@ -428,6 +428,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-17] Incorporación de monitoreo público diario y formalización de RPO, RTO, retención y revisión trimestral de Neon.
 - [2026-07-19] Retiro del historial persistente del perfil; se conserva el contador de operaciones y el historial local de deshacer y rehacer.
 - [2026-07-20] Implementación completa de “Recordar sesión” con redirección automática por rol, descarte de tokens expirados, términos consultables y mensajes públicos más precisos sobre el procesamiento local de imágenes.
+- [2026-07-21] Incorporación de una sesión continua para filtros con reajustes absolutos, cancelación de vistas previas, confirmaciones accesibles y permanencia en la herramienta después de aplicar; diferenciación entre cambios locales del editor y operaciones registradas en el perfil.
 
 ---
 
