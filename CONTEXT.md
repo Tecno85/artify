@@ -26,6 +26,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 - El inicio y el login detectan tokens vigentes y redirigen automáticamente al editor o al panel administrativo; los tokens expirados se eliminan antes de permanecer en el acceso.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
 - Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva scroll vertical por la extensión del formulario.
+- Los botones principales con texto blanco usan un azul de acción de contraste AA; enlaces, contornos de foco y la identidad cian conservan sus colores más luminosos.
 - El editor habilita sus controles sin esperar el arranque del backend; la sesión de edición y las preferencias se inicializan en segundo plano.
 - La carga admite JPG, PNG y WebP de hasta 10 MB, 16 MP y 8192 px por lado para proteger la memoria usada por Canvas y los filtros.
 

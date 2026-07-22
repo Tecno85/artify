@@ -14,6 +14,7 @@
 /* Variables CSS */
 :root {
   --primary: #007bff;
+  --action-primary: #006bd6;
   --secondary: #28edff;
   --background-dark: #161616;
   --background-darker: #0a0a0a;
@@ -184,7 +185,7 @@ header {
 }
 
 .tool-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -327,7 +328,7 @@ header {
 
 .drop-info {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.65);
   padding: 6px 12px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
@@ -545,7 +546,7 @@ header {
 .btn-apply {
   width: 100%;
   padding: 12px;
-  background: var(--primary);
+  background: var(--action-primary);
   color: white;
   font-family: 'Inconsolata', sans-serif;
   font-size: 1rem;
@@ -559,11 +560,12 @@ header {
 .btn-apply:hover:not(:disabled) {
   background: #0056b3;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 107, 214, 0.4);
 }
 
 .btn-apply:disabled {
-  opacity: 0.45;
+  background: #343434;
+  color: rgba(255, 255, 255, 0.68);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -595,7 +597,7 @@ header {
 }
 
 .btn-filter-cancel:disabled {
-  opacity: 0.45;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
@@ -2988,7 +2990,7 @@ header {
 
   .drop-info {
     padding: 4px 9px;
-    font-size: 0.76rem;
+    font-size: 0.85rem;
   }
 
   .canvas-wrapper {

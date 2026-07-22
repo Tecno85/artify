@@ -14,11 +14,12 @@
 /* Variables CSS */
 :root {
   --primary: #007bff;
+  --action-primary: #006bd6;
   --secondary: #28ffce;
   --background-dark: #000000;
   --text-light: #f5f5f5;
   --border: rgba(255, 255, 255, 0.1);
-  --error: #e34800;
+  --error: #ef4444;
   --success: #10b981;
   --warning: #f59e0b;
 }
@@ -166,7 +167,7 @@ form {
 /* Asterisco rojo para campos obligatorios */
 .label-required::after {
   content: '*';
-  color: #e34800;
+  color: var(--error);
   margin-left: 5px;
   font-size: 1rem;
 }
@@ -343,8 +344,8 @@ input[type='password']::-webkit-textfield-decoration-container {
 
 /* Helper Text */
 .helper-text {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.65);
   margin-top: 5px;
 }
 
@@ -405,7 +406,7 @@ input[type='password']::-webkit-textfield-decoration-container {
 .btn-primary {
   width: 100%;
   padding: 16px;
-  background: var(--primary);
+  background: var(--action-primary);
   color: white;
   font-family: 'Inconsolata', sans-serif;
   font-size: 1.1rem;
@@ -425,7 +426,8 @@ input[type='password']::-webkit-textfield-decoration-container {
 }
 
 .btn-primary:disabled {
-  background: rgba(0, 123, 255, 0.5);
+  background: #343434;
+  color: rgba(255, 255, 255, 0.68);
   cursor: not-allowed;
 }
 
@@ -631,12 +633,12 @@ p b {
   }
 
   .helper-text {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     margin-top: 4px;
   }
 
   .error-message {
-    font-size: 0.83rem;
+    font-size: 0.85rem;
   }
 
   .form-options {
@@ -821,12 +823,12 @@ p b {
   }
 
   .helper-text {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     margin-top: 4px;
   }
 
   .error-message {
-    font-size: 0.83rem;
+    font-size: 0.85rem;
   }
 
   .form-options {
@@ -1008,12 +1010,12 @@ p b {
   }
 
   .helper-text {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     margin-top: 4px;
   }
 
   .error-message {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .form-options {
@@ -1129,7 +1131,8 @@ p b {
 
 /* Spinner en botón de registro */
 button[type='submit']:disabled {
-  background: rgba(0, 123, 255, 0.6);
+  background: #343434;
+  color: rgba(255, 255, 255, 0.68);
   cursor: not-allowed;
   position: relative;
 }

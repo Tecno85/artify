@@ -5,8 +5,8 @@
   --card2: #1e1e1e;
   --border: rgba(255, 255, 255, 0.08);
   --primary: #4ae3f4;
-  --primary-dark: #0378f4;
-  --primary-darker: #036bdb;
+  --primary-dark: #006bd6;
+  --primary-darker: #0056b3;
   --accent: #28ffce;
   --text: #f5f5f5;
   --text-muted: #acabab;
@@ -112,7 +112,7 @@ input[type='password'] {
 .error-message {
   display: none;
   color: var(--error);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   margin-top: 6px;
 }
 
@@ -123,7 +123,7 @@ input[type='password'] {
 .helper-text {
   display: block;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   line-height: 1.35;
   margin-top: 6px;
 }
@@ -321,7 +321,7 @@ input[type='password'] {
 
 .nav-badge {
   margin-left: auto;
-  background: cornflowerblue;
+  background: var(--primary-dark);
   color: white;
   border-radius: 2px;
   padding: 2px 7px;
@@ -528,7 +528,7 @@ input[type='password'] {
   gap: 5px;
   padding: 3px 9px;
   border-radius: 20px;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -559,7 +559,7 @@ input[type='password'] {
   padding: 5px 10px;
   border-radius: 6px;
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
@@ -600,8 +600,8 @@ input[type='password'] {
 
 .btn-editar svg,
 .btn-eliminar-row svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
 }
 
 /* ========== MODALES ========== */
