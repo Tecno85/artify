@@ -11,7 +11,7 @@ Artify es una aplicación web de edición de imágenes con backend Node.js + Exp
 
 PostgreSQL es el motor oficial de persistencia de esta versión.
 
-**Estudiante:** Ivan Dario Madrid Daza
+**Estudiante:** Iván Darío Madrid Daza
 **GitHub:** https://github.com/Tecno85/artify
 
 ---
@@ -25,7 +25,8 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 - Sesión temporal en `sessionStorage` o persistente en `localStorage` cuando el usuario activa “Recordar sesión”.
 - El inicio y el login detectan tokens vigentes y redirigen automáticamente al editor o al panel administrativo; los tokens expirados se eliminan antes de permanecer en el acceso.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
-- Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva scroll vertical por la extensión del formulario.
+- Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva una composición vertical con desplazamiento por la extensión del formulario.
+- El registro público solicita únicamente nombres, apellidos, correo, contraseña, confirmación y aceptación de términos; cédula y fecha de nacimiento no se recopilan en ese flujo.
 - Los botones principales con texto blanco usan un azul de acción de contraste AA; enlaces, contornos de foco y la identidad cian conservan sus colores más luminosos.
 - El editor habilita sus controles sin esperar el arranque del backend; la sesión de edición y las preferencias se inicializan en segundo plano.
 - La carga admite JPG, PNG y WebP de hasta 10 MB, 16 MP y 8192 px por lado para proteger la memoria usada por Canvas y los filtros.
@@ -189,7 +190,7 @@ v_usuarios_activos
 | Método | Ruta | Descripción |
 | --- | --- | --- |
 | POST | `/api/login` | Login con bcrypt. Devuelve usuario autenticado y token. |
-| POST | `/api/registro` | Registro con bcrypt. |
+| POST | `/api/registro` | Registro simplificado con bcrypt; no solicita cédula ni fecha de nacimiento. |
 
 ### Panel de Administración
 
@@ -292,14 +293,14 @@ La versión PostgreSQL fue validada con:
 - Reporte nativo de cobertura frontend mediante `pnpm run test:frontend:coverage`, integrado en CI: 40,70 % en líneas y 63,04 % en funciones sobre los archivos instrumentados.
 - Cuatro pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, persistencia de la sesión recordada en otra pestaña y flujo del editor para cargar una imagen, cancelar, confirmar y reajustar filtros sin salir de la herramienta, reflejar los cambios aplicados al deshacer y rehacer, descargar sin alterar el historial y comprobar foco y cierre con Escape en modales.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
-- Normalización y reglas personales compartidas entre registro, creación administrativa y edición de usuarios.
+- Normalización compartida de usuarios y validaciones ajustadas al contexto: registro público mínimo y datos de identificación opcionales en administración.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Validación backend de identificadores en consultas de actividad y de metadatos de imagen con los límites de 10 MB y 8192 px del editor.
 - Bloqueo transaccional de la sesión al registrar operaciones o imágenes para conservar el orden y el estado ante solicitudes concurrentes.
 - Protección de la cuenta administrativa autenticada frente a eliminación o desactivación accidental desde el panel.
 - Política uniforme para contraseñas nuevas en el registro público, el panel administrativo y el backend, sin bloquear el acceso de cuentas existentes.
-- Validación coherente de cédulas de 6 a 20 dígitos y mayoría de edad para cuentas nuevas, conservando la edición de datos históricos.
+- Validación de cédulas de 6 a 20 dígitos y fechas válidas cuando esos datos opcionales se suministran desde administración.
 - Guardado de configuración mediante UPSERT para conservar una sola fila por usuario y responder correctamente ante IDs inválidos o inexistentes.
 - Autoguardado local recuperable durante 7 días, aislado por usuario y eliminado al desactivarlo, cerrar sesión o detectar un respaldo inválido.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
@@ -430,8 +431,9 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-19] Retiro del historial persistente del perfil; se conserva el contador de operaciones y el historial local de deshacer y rehacer.
 - [2026-07-20] Implementación completa de “Recordar sesión” con redirección automática por rol, descarte de tokens expirados, términos consultables y mensajes públicos más precisos sobre el procesamiento local de imágenes.
 - [2026-07-21] Incorporación de una sesión continua para filtros con reajustes absolutos, cancelación de vistas previas, confirmaciones accesibles y permanencia en la herramienta después de aplicar; diferenciación entre cambios locales del editor y operaciones registradas en el perfil.
+- [2026-07-21] Simplificación del registro público a los datos necesarios para crear la cuenta; cédula y fecha de nacimiento dejan de recopilarse y pasan a ser datos administrativos opcionales.
 
 ---
 
 *Proyecto Artify — Análisis y Desarrollo de Software — SENA 2026*
-*Estudiante: Ivan Dario Madrid Daza*
+*Estudiante: Iván Darío Madrid Daza*

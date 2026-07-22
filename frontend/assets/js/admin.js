@@ -207,7 +207,7 @@ function renderizarTabla(usuarios) {
       <td>${idUsuario}</td>
       <td>${escaparHtml(u.usr_nombres)}</td>
       <td>${escaparHtml(u.usr_apellidos)}</td>
-      <td>${escaparHtml(u.usr_cedula)}</td>
+      <td>${escaparHtml(u.usr_cedula || '—')}</td>
       <td>${escaparHtml(u.usr_correo)}</td>
       <td>${escaparHtml(formatearFecha(u.usr_fecha_nacimiento))}</td>
       <td>${escaparHtml(formatearFecha(u.usr_fecha_registro))}</td>
@@ -259,7 +259,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
       u.usr_nombres.toLowerCase().includes(termino) ||
       u.usr_apellidos.toLowerCase().includes(termino) ||
       u.usr_correo.toLowerCase().includes(termino) ||
-      u.usr_cedula.includes(termino)
+      String(u.usr_cedula || '').includes(termino)
   );
   renderizarTabla(filtrados);
 });
@@ -288,7 +288,7 @@ window.abrirEditar = function (id) {
   document.getElementById('usuarioId').value = usuario.usr_id_usuario;
   document.getElementById('modalNombres').value = usuario.usr_nombres;
   document.getElementById('modalApellidos').value = usuario.usr_apellidos;
-  document.getElementById('modalCedula').value = usuario.usr_cedula;
+  document.getElementById('modalCedula').value = usuario.usr_cedula || '';
   document.getElementById('modalCorreo').value = usuario.usr_correo;
   document.getElementById('modalEstado').value = usuario.usr_estado_usuario;
   document.getElementById('modalEstado').disabled = esAdministradorActual(id);
@@ -330,14 +330,14 @@ document
       mostrarError('modalApellidos', 'Ingresa apellidos válidos');
       valido = false;
     }
-    if (!esCedulaValida(cedula)) {
+    if (cedula && !esCedulaValida(cedula)) {
       mostrarError('modalCedula', 'Cédula inválida (6-20 dígitos)');
       valido = false;
     }
-    if (!esFechaNacimientoValida(fechaNac)) {
+    if (fechaNac && !esFechaNacimientoValida(fechaNac)) {
       mostrarError('modalFechaNac', 'Ingresa una fecha de nacimiento válida');
       valido = false;
-    } else if (!modoEdicion && !cumpleEdadMinima(fechaNac)) {
+    } else if (fechaNac && !modoEdicion && !cumpleEdadMinima(fechaNac)) {
       mostrarError('modalFechaNac', 'Debes tener al menos 18 años');
       valido = false;
     }

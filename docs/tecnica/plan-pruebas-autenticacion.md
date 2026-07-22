@@ -137,16 +137,13 @@ Luego, el valor que se guarda en la base de datos es `hash`, no la contraseña o
 ```javascript
 const [resultadoUsuario] = await dbPromise.query(
   `INSERT INTO USUARIO (
-    usr_nombres, usr_apellidos, usr_cedula,
-    usr_fecha_nacimiento, usr_correo, usr_contrasena,
+    usr_nombres, usr_apellidos, usr_correo, usr_contrasena,
     usr_fecha_registro, usr_estado_usuario
-  ) VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
+  ) VALUES (?, ?, ?, ?, NOW(), 'activo')
   RETURNING usr_id_usuario`,
   [
     nombresNormalizados,
     apellidosNormalizados,
-    cedulaNormalizada,
-    fechaNacimiento,
     correoNormalizado,
     hash,
   ]
@@ -170,8 +167,8 @@ Esto me permite concluir que la contraseña original no se recupera desde la bas
 | Campo | Detalle |
 | --- | --- |
 | Objetivo | Verificar que el sistema permita crear un usuario válido. |
-| Precondición | El correo y la cédula no deben existir previamente en la tabla `USUARIO`. |
-| Datos de entrada | Nombres, apellidos, cédula, fecha de nacimiento, correo y contraseña válida. |
+| Precondición | El correo no debe existir previamente en la tabla `USUARIO`. |
+| Datos de entrada | Nombres, apellidos, correo y contraseña válida. |
 | Pasos | Enviar solicitud de registro desde el formulario o API. |
 | Resultado esperado | El sistema responde `Registro exitoso` y crea el usuario en la base de datos. |
 | Validación en BD | Debe existir un nuevo registro en `USUARIO`. |

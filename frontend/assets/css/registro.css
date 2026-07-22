@@ -208,23 +208,6 @@ form {
   color: rgba(255, 255, 255, 0.4);
 }
 
-/* Cambiar color del icono del calendario a blanco */
-input[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-input[type='date']::-webkit-calendar-picker-indicator:hover {
-  transform: scale(1.3);
-}
-
-/* Para Firefox */
-input[type='date']::-moz-calendar-picker-indicator {
-  filter: invert(1);
-  cursor: pointer;
-}
-
 /* Form Row (2 columnas) */
 .form-row {
   display: grid;
@@ -431,31 +414,6 @@ input[type='password']::-webkit-textfield-decoration-container {
   cursor: not-allowed;
 }
 
-.buttons-row {
-  display: flex;
-  gap: 15px;
-  margin-top: 10px;
-}
-
-.btn-secondary {
-  flex: 1;
-  padding: 14px;
-  background: transparent;
-  color: var(--text-light);
-  font-family: 'Inconsolata', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--text-light);
-}
-
 /* ========== LINK LOGIN ========== */
 .login-link {
   text-align: center;
@@ -660,16 +618,6 @@ p b {
     margin-top: 8px;
   }
 
-  .buttons-row {
-    gap: 13px;
-    margin-top: 8px;
-  }
-
-  .btn-secondary {
-    padding: 13px;
-    font-size: 0.98rem;
-  }
-
   .login-link {
     margin-top: 18px;
   }
@@ -850,16 +798,6 @@ p b {
     margin-top: 8px;
   }
 
-  .buttons-row {
-    gap: 13px;
-    margin-top: 8px;
-  }
-
-  .btn-secondary {
-    padding: 13px;
-    font-size: 0.98rem;
-  }
-
   .login-link {
     margin-top: 18px;
   }
@@ -1035,16 +973,6 @@ p b {
     padding: 11px;
     font-size: 1rem;
     margin-top: 6px;
-  }
-
-  .buttons-row {
-    gap: 12px;
-    margin-top: 6px;
-  }
-
-  .btn-secondary {
-    padding: 11px;
-    font-size: 0.95rem;
   }
 
   .login-link {

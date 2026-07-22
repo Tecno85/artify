@@ -81,7 +81,7 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
         usr_id_usuario: 8,
         usr_nombres: 'Usuario',
         usr_apellidos: 'Prueba',
-        usr_cedula: '7654321',
+        usr_cedula: null,
         usr_correo: 'usuario@artify.local',
         usr_estado_usuario: 'activo',
         usr_rol: 'usuario'

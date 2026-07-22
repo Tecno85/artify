@@ -214,11 +214,13 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 - [Guía de despliegue público](./docs/tecnica/despliegue.md)
 - [Descripción del proyecto](./docs/proyecto/descripcion-proyecto.md)
 - [Requerimientos funcionales](./docs/proyecto/requerimientos-funcionales.md)
+- [Modelo conceptual y lógico](./docs/proyecto/modelo-conceptual-logico-artify.md)
 
 ### Desarrollo y operación
 
 - [Arquitectura técnica](./docs/tecnica/arquitectura.md)
 - [Base de datos](./docs/tecnica/base-datos.md)
+- [Normalización y modelo relacional](./docs/tecnica/normalizacion-modelo-relacional-artify.md)
 - [API de analíticas](./docs/tecnica/api-analytics.md)
 - [Pruebas de autenticación](./docs/tecnica/plan-pruebas-autenticacion.md)
 - [Matriz de validación del frontend](./docs/tecnica/matriz-validacion-frontend.md)
@@ -233,6 +235,7 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 - [Respaldo de datos e ISO 27001](./docs/tecnica/plan-respaldo-datos-iso27001-artify.md)
 - [Verificación de hardware](./docs/tecnica/verificacion-hardware-artify.md)
 - [Alta disponibilidad y clústeres](./docs/tecnica/alta-disponibilidad-clusteres.md)
+- [Manual técnico GA10-220501097-AA10-EV01](./docs/tecnica/manual-tecnico-artify.md)
 
 ## Estado del proyecto
 
@@ -242,7 +245,7 @@ Entre las mejoras futuras se consideran seguir ampliando la cobertura automatiza
 
 ## Autor
 
-**Ivan Dario Madrid Daza**<br>
+**Iván Darío Madrid Daza**<br>
 Análisis y Desarrollo de Software — SENA<br>
 GitHub: [@Tecno85](https://github.com/Tecno85)
 

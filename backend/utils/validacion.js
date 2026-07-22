@@ -19,12 +19,17 @@ function normalizarTexto(valor) {
   return typeof valor === 'string' ? valor.trim() : valor;
 }
 
+function normalizarDatoOpcional(valor) {
+  const datoNormalizado = normalizarTexto(valor);
+  return datoNormalizado || null;
+}
+
 function normalizarDatosUsuario(datos = {}) {
   return {
     nombres: normalizarTexto(datos.nombres),
     apellidos: normalizarTexto(datos.apellidos),
-    cedula: normalizarTexto(datos.cedula),
-    fechaNacimiento: datos.fechaNacimiento,
+    cedula: normalizarDatoOpcional(datos.cedula),
+    fechaNacimiento: normalizarDatoOpcional(datos.fechaNacimiento),
     correo: normalizarCorreo(datos.correo),
     password: datos.password,
     estado: datos.estado,
@@ -115,15 +120,19 @@ function validarDatosPersonales(
     return 'Ingresa apellidos válidos';
   }
 
-  if (!esCedula(cedula)) {
+  if (cedula != null && !esCedula(cedula)) {
     return 'Ingresa una cédula válida';
   }
 
-  if (!esFecha(fechaNacimiento)) {
+  if (fechaNacimiento != null && !esFecha(fechaNacimiento)) {
     return 'Ingresa una fecha de nacimiento válida';
   }
 
-  if (opciones.exigirMayoriaEdad && !cumpleEdadMinima(fechaNacimiento)) {
+  if (
+    fechaNacimiento != null &&
+    opciones.exigirMayoriaEdad &&
+    !cumpleEdadMinima(fechaNacimiento)
+  ) {
     return 'Debes tener al menos 18 años';
   }
 

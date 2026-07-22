@@ -20,8 +20,6 @@ const stamp = Date.now().toString().slice(-10);
 const usuarioPrueba = {
   nombres: 'Usuario',
   apellidos: 'Prueba Artify',
-  cedula: stamp,
-  fechaNacimiento: '1995-05-12',
   correo: `test.${stamp}@artify.local`,
   password: 'PruebaArtify123!',
 };
@@ -529,44 +527,12 @@ test('login bloquea temporalmente después de diez fallos equivalentes', async (
   assert.ok(esperaSegundos >= 1 && esperaSegundos <= 15 * 60);
 });
 
-test('registro rechaza fechas inexistentes y contraseñas nuevas débiles', async () => {
-  const { response, body } = await request('/api/registro', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...usuarioPrueba,
-      cedula: `${stamp}99`.slice(-10),
-      correo: `fecha.${stamp}@artify.local`,
-      fechaNacimiento: '2026-02-31',
-    }),
-  });
-
-  assert.equal(response.status, 400);
-  assert.equal(body.mensaje, 'Ingresa una fecha de nacimiento válida');
-
-  const registroMenorEdad = await request('/api/registro', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      ...usuarioPrueba,
-      cedula: `${stamp}97`.slice(-10),
-      correo: `menor.edad.${stamp}@artify.local`,
-      fechaNacimiento: `${new Date().getFullYear() - 17}-01-01`,
-    }),
-  });
-
-  assert.equal(registroMenorEdad.response.status, 400);
-  assert.equal(
-    registroMenorEdad.body.mensaje,
-    'Debes tener al menos 18 años'
-  );
-
+test('registro rechaza contraseñas nuevas débiles', async () => {
   const passwordDebil = await request('/api/registro', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       ...usuarioPrueba,
-      cedula: `${stamp}98`.slice(-10),
       correo: `password.debil.${stamp}@artify.local`,
       password: 'solominusculas',
     }),
@@ -597,6 +563,8 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
 
   const usuarioRegistrado = await obtenerUsuarioTemporal();
   assert.equal(usuarioRegistrado.usr_correo, usuarioPrueba.correo);
+  assert.equal(usuarioRegistrado.usr_cedula, null);
+  assert.equal(usuarioRegistrado.usr_fecha_nacimiento, null);
   assert.notEqual(usuarioRegistrado.usr_contrasena, usuarioPrueba.password);
   assert.match(usuarioRegistrado.usr_contrasena, /^\$2[ab]\$10\$/);
 
@@ -807,7 +775,7 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
   assert.ok(conversion.body.data.conversionData.sesiones_exitosas >= 1);
 });
 
-test('registro rechaza correo o cédula duplicados', async () => {
+test('registro público rechaza correos duplicados', async () => {
   assert.ok(idUsuario);
 
   const { response, body } = await request('/api/registro', {
@@ -817,7 +785,7 @@ test('registro rechaza correo o cédula duplicados', async () => {
   });
 
   assert.equal(response.status, 400);
-  assert.equal(body.mensaje, 'El correo o cédula ya está registrado');
+  assert.equal(body.mensaje, 'El correo ya está registrado');
 });
 
 test('login rechaza contraseña incorrecta', async () => {
@@ -1161,8 +1129,6 @@ test('admin puede autenticarse desde el login principal y listar usuarios', asyn
       body: JSON.stringify({
         nombres: usuarioPrueba.nombres,
         apellidos: usuarioPrueba.apellidos,
-        cedula: usuarioPrueba.cedula,
-        fechaNacimiento: usuarioPrueba.fechaNacimiento,
         correo: usuarioPrueba.correo,
         estado: 'suspendido',
       }),

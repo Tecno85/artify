@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980" role="img" aria-labelledby="title desc">
+  <title id="title">Modelo entidad-relación de Artify</title>
+  <desc id="desc">Cinco tablas PostgreSQL con sus claves principales y relaciones.</desc>
+  <defs><style>
+    .bg{fill:#111827}.panel{fill:#1c2838;stroke:#607289;stroke-width:2}.head{fill:#2d3e51}.line{fill:none;stroke:#8093a8;stroke-width:2}.title{fill:#e8edf3;font:700 30px Arial,sans-serif}.sub{fill:#adbbc9;font:16px Arial,sans-serif}.name{fill:#e8edf3;font:700 18px Arial,sans-serif}.field{fill:#cbd5df;font:14px Consolas,monospace}.key{fill:#83c8bc;font:700 14px Consolas,monospace}.card{fill:#202e3f;stroke-width:2}.teal{stroke:#6fbfb4}.blue{stroke:#7fadd1}.violet{stroke:#9d91c6}.label{fill:#bac6d2;font:600 14px Arial,sans-serif}
+  </style></defs>
+  <rect class="bg" width="1500" height="980" rx="24"/>
+  <text class="title" x="750" y="52" text-anchor="middle">Modelo entidad-relación de Artify</text>
+  <text class="sub" x="750" y="80" text-anchor="middle">PostgreSQL · cinco tablas principales · cardinalidades implementadas</text>
+
+  <!-- Las relaciones quedan detrás de las entidades para no invadir sus textos. -->
+  <g class="line">
+    <path d="M555 260H260V450"/>
+    <path d="M750 370V500"/>
+    <path d="M945 260H1240V440"/>
+    <path d="M945 330H1000V770H1075V790"/>
+    <path d="M930 625H1060"/>
+    <path d="M1240 710V790"/>
+  </g>
+
+  <g transform="translate(555 120)"><rect class="card teal" width="390" height="250" rx="18"/><path class="head" d="M18 0h354a18 18 0 0 1 18 18v44H0V18A18 18 0 0 1 18 0"/><text class="name" x="195" y="39" text-anchor="middle">USUARIO</text><text class="key" x="24" y="91">PK  usr_id_usuario</text><text class="field" x="24" y="121">usr_nombres</text><text class="field" x="24" y="147">usr_apellidos</text><text class="field" x="24" y="173">UK  usr_correo</text><text class="field" x="24" y="199">usr_estado_usuario</text><text class="field" x="24" y="225">usr_rol</text></g>
+  <g transform="translate(80 450)"><rect class="card blue" width="360" height="230" rx="18"/><path class="head" d="M18 0h324a18 18 0 0 1 18 18v44H0V18A18 18 0 0 1 18 0"/><text class="name" x="180" y="39" text-anchor="middle">CONFIGURACION</text><text class="key" x="24" y="91">PK  cfg_id_configuracion</text><text class="key" x="24" y="121">FK  cfg_usr_id_usuario</text><text class="field" x="24" y="151">cfg_tema</text><text class="field" x="24" y="177">cfg_idioma</text><text class="field" x="24" y="203">cfg_calidad_exportacion</text></g>
+  <g transform="translate(570 500)"><rect class="card blue" width="360" height="250" rx="18"/><path class="head" d="M18 0h324a18 18 0 0 1 18 18v44H0V18A18 18 0 0 1 18 0"/><text class="name" x="180" y="39" text-anchor="middle">IMAGEN</text><text class="key" x="24" y="91">PK  img_id_imagen</text><text class="key" x="24" y="121">FK  img_usr_id_usuario</text><text class="field" x="24" y="151">img_nombre_original</text><text class="field" x="24" y="177">img_formato</text><text class="field" x="24" y="203">img_tamano_bytes</text><text class="field" x="24" y="229">img_estado_imagen</text></g>
+  <g transform="translate(1060 440)"><rect class="card violet" width="360" height="270" rx="18"/><path class="head" d="M18 0h324a18 18 0 0 1 18 18v44H0V18A18 18 0 0 1 18 0"/><text class="name" x="180" y="39" text-anchor="middle">SESION_EDICION</text><text class="key" x="24" y="91">PK  ses_id_sesion</text><text class="key" x="24" y="121">FK  ses_usr_id_usuario</text><text class="key" x="24" y="151">FK  ses_img_id_imagen</text><text class="field" x="24" y="181">ses_fecha_inicio</text><text class="field" x="24" y="207">ses_estado_sesion</text><text class="field" x="24" y="233">ses_numero_operaciones</text></g>
+  <g transform="translate(870 790)"><rect class="card violet" width="410" height="160" rx="18"/><path class="head" d="M18 0h374a18 18 0 0 1 18 18v44H0V18A18 18 0 0 1 18 0"/><text class="name" x="205" y="39" text-anchor="middle">OPERACION</text><text class="key" x="24" y="91">PK opr_id_operacion</text><text class="key" x="24" y="121">FK opr_ses_id_sesion · opr_usr_id_usuario</text><text class="field" x="24" y="147">opr_tipo_operacion · opr_orden_secuencial</text></g>
+
+  <g class="label"><text x="275" y="286">1</text><text x="275" y="436">0..1</text><text x="765" y="396">1</text><text x="765" y="486">0..N</text><text x="1215" y="286">1</text><text x="1215" y="426">0..N</text><text x="985" y="396">1</text><text x="985" y="775">0..N</text><text x="943" y="610">0..1</text><text x="1030" y="610">0..N</text><text x="1255" y="738">1</text><text x="1255" y="777">0..N</text></g>
+</svg>

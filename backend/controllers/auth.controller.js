@@ -108,8 +108,6 @@ async function registro(req, res) {
   const {
     nombres: nombresNormalizados,
     apellidos: apellidosNormalizados,
-    cedula: cedulaNormalizada,
-    fechaNacimiento,
     correo: correoNormalizado,
     password,
   } = normalizarDatosUsuario(req.body);
@@ -117,8 +115,6 @@ async function registro(req, res) {
   const errorValidacion = validarUsuario({
     nombres: nombresNormalizados,
     apellidos: apellidosNormalizados,
-    cedula: cedulaNormalizada,
-    fechaNacimiento,
     correo: correoNormalizado,
     password,
   });
@@ -133,15 +129,15 @@ async function registro(req, res) {
     await dbPromise.beginTransaction();
 
     const [usuariosExistentes] = await dbPromise.query(
-      'SELECT usr_id_usuario FROM USUARIO WHERE LOWER(usr_correo) = ? OR usr_cedula = ?',
-      [correoNormalizado, cedulaNormalizada]
+      'SELECT usr_id_usuario FROM USUARIO WHERE LOWER(usr_correo) = ?',
+      [correoNormalizado]
     );
 
     if (usuariosExistentes.length > 0) {
       await dbPromise.rollback();
       return res
         .status(400)
-        .json({ mensaje: 'El correo o cédula ya está registrado' });
+        .json({ mensaje: 'El correo ya está registrado' });
     }
 
     // Encriptar la contraseña antes de persistir el nuevo usuario
@@ -150,16 +146,14 @@ async function registro(req, res) {
     const [resultadoUsuario] = await dbPromise.query(
       `
         INSERT INTO USUARIO
-          (usr_nombres, usr_apellidos, usr_cedula, usr_fecha_nacimiento,
-           usr_correo, usr_contrasena, usr_fecha_registro, usr_estado_usuario)
-        VALUES (?, ?, ?, ?, ?, ?, NOW(), 'activo')
+          (usr_nombres, usr_apellidos, usr_correo, usr_contrasena,
+           usr_fecha_registro, usr_estado_usuario)
+        VALUES (?, ?, ?, ?, NOW(), 'activo')
         RETURNING usr_id_usuario
       `,
       [
         nombresNormalizados,
         apellidosNormalizados,
-        cedulaNormalizada,
-        fechaNacimiento,
         correoNormalizado,
         hash,
       ]
@@ -208,7 +202,7 @@ async function registro(req, res) {
     if (esErrorDuplicado(error)) {
       return res
         .status(400)
-        .json({ mensaje: 'El correo o cédula ya está registrado' });
+        .json({ mensaje: 'El correo ya está registrado' });
     }
 
     console.error('❌ Error al registrar usuario:', error.message);

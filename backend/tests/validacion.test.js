@@ -30,6 +30,27 @@ test('creación y edición comparten normalización y reglas personales', () => 
   });
   assert.equal(validarUsuario(datosNormalizados), null);
   assert.equal(validarEdicionUsuario(datosNormalizados), null);
+
+  const datosSinIdentificacion = normalizarDatosUsuario({
+    nombres: 'Ana María',
+    apellidos: 'Pérez Díaz',
+    correo: 'ana.perez@example.com',
+    password: 'ClaveSegura123!',
+    estado: 'activo',
+  });
+  assert.equal(datosSinIdentificacion.cedula, null);
+  assert.equal(datosSinIdentificacion.fechaNacimiento, null);
+  assert.equal(validarUsuario(datosSinIdentificacion), null);
+  assert.equal(validarEdicionUsuario(datosSinIdentificacion), null);
+  assert.equal(
+    validarUsuario({
+      nombres: 'Ana María',
+      apellidos: 'Pérez Díaz',
+      correo: 'ana.perez@example.com',
+      password: 'ClaveSegura123!',
+    }),
+    null
+  );
   assert.equal(
     validarCredenciales({
       correo: datosNormalizados.correo,

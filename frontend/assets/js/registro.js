@@ -6,22 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const confirmPasswordInput = document.getElementById('confirmPassword');
   const strengthFill = document.getElementById('strength-fill');
   const strengthText = document.getElementById('strength-text');
-  const fechaNacimientoInput = document.getElementById('fechaNacimiento');
 
   // Verificar que existan los elementos
   if (!registroForm) {
     console.error('❌ No se encontró el formulario de registro');
     return;
   }
-
-  // Establecer fecha máxima (18 años atrás desde hoy)
-  const today = new Date();
-  const maxDate = new Date(
-    today.getFullYear() - 18,
-    today.getMonth(),
-    today.getDate()
-  );
-  fechaNacimientoInput.max = maxDate.toISOString().split('T')[0];
 
   // ========== TOGGLE MOSTRAR/OCULTAR CONTRASEÑA ==========
   const toggleButtons = document.querySelectorAll('.toggle-password');
@@ -125,8 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = [
       'nombres',
       'apellidos',
-      'cedula',
-      'fechaNacimiento',
       'email',
       'password',
       'confirmPassword',
@@ -138,24 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function validarSoloLetras(input) {
     const regex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
     return regex.test(input.value) && input.value.length >= 2;
-  }
-
-  function validarCedula(input) {
-    const regex = /^[0-9]{6,20}$/;
-    return regex.test(input.value);
-  }
-
-  function validarEdad(input) {
-    const fechaNac = new Date(input.value);
-    const hoy = new Date();
-    let edad = hoy.getFullYear() - fechaNac.getFullYear();
-    const mes = hoy.getMonth() - fechaNac.getMonth();
-
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-      edad--;
-    }
-
-    return edad >= 18;
   }
 
   function validarEmail(input) {
@@ -196,29 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('cedula').addEventListener('blur', function () {
-    if (!validarCedula(this)) {
-      mostrarError('cedula', 'Cédula debe tener entre 6 y 20 dígitos');
-    } else {
-      limpiarError('cedula');
-    }
-  });
-
-  document
-    .getElementById('fechaNacimiento')
-    .addEventListener('blur', function () {
-      if (!this.value) {
-        mostrarError(
-          'fechaNacimiento',
-          'Debes ingresar tu fecha de nacimiento'
-        );
-      } else if (!validarEdad(this)) {
-        mostrarError('fechaNacimiento', 'Debes tener al menos 18 años');
-      } else {
-        limpiarError('fechaNacimiento');
-      }
-    });
-
   document.getElementById('email').addEventListener('blur', function () {
     if (!validarEmail(this)) {
       mostrarError('email', 'Formato de correo inválido');
@@ -254,10 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
     capitalizarPalabras(this);
   });
 
-  document.getElementById('cedula').addEventListener('input', function () {
-    this.value = this.value.replace(/\s/g, '');
-  });
-
   // ========== SUBMIT DEL FORMULARIO ==========
   registroForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -274,21 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const apellidos = document.getElementById('apellidos');
     if (!validarSoloLetras(apellidos)) {
       mostrarError('apellidos', 'Solo letras, mínimo 2 caracteres');
-      isValid = false;
-    }
-
-    const cedula = document.getElementById('cedula');
-    if (!validarCedula(cedula)) {
-      mostrarError('cedula', 'Cédula debe tener entre 6 y 20 dígitos');
-      isValid = false;
-    }
-
-    const fechaNacimiento = document.getElementById('fechaNacimiento');
-    if (!fechaNacimiento.value) {
-      mostrarError('fechaNacimiento', 'Debes ingresar tu fecha de nacimiento');
-      isValid = false;
-    } else if (!validarEdad(fechaNacimiento)) {
-      mostrarError('fechaNacimiento', 'Debes tener al menos 18 años');
       isValid = false;
     }
 
@@ -337,8 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({
           nombres: nombres.value,
           apellidos: apellidos.value,
-          cedula: cedula.value,
-          fechaNacimiento: fechaNacimiento.value,
           correo: email.value,
           password: password.value,
         }),
@@ -375,13 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (primerError) {
         primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }
-  });
-
-  // ========== BOTÓN CANCELAR ==========
-  document.getElementById('btnCancelar').addEventListener('click', () => {
-    if (confirm('¿Estás seguro de que deseas cancelar el registro?')) {
-      window.location.href = '../index.html';
     }
   });
 
