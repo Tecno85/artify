@@ -229,6 +229,8 @@ Cada `push` a `main` publica el contenido de `frontend/` mediante GitHub Actions
 
 ### Documentación académica
 
+- [Guía del usuario operativo GA10-220501097-AA11-EV01](./docs/proyecto/guia-usuario-operativo-artify.md)
+- [Guía del usuario administrador GA10-220501097-AA11-EV01](./docs/proyecto/guia-usuario-administrador-artify.md)
 - [Hardware, software y redes](./docs/proyecto/hardware-software-redes.md)
 - [Configuración de servicios](./docs/tecnica/configuracion-servicios-artify.md)
 - [Migración a PostgreSQL](./docs/tecnica/plan-migracion-postgresql.md)
