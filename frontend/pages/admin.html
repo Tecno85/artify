@@ -134,11 +134,8 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Nombres</th>
-                  <th>Apellidos</th>
-                  <th>Cédula</th>
+                  <th>Nombre completo</th>
                   <th>Correo</th>
-                  <th>F. Nacimiento</th>
                   <th>F. Registro</th>
                   <th>Estado</th>
                   <th>Rol</th>
@@ -147,7 +144,7 @@
               </thead>
               <tbody id="tablaBody">
                 <tr class="loading-row">
-                  <td colspan="10">Cargando usuarios...</td>
+                  <td colspan="7">Cargando usuarios...</td>
                 </tr>
               </tbody>
             </table>
@@ -216,25 +213,6 @@
                 maxlength="100"
               />
               <span class="error-message" id="modalApellidos-error"></span>
-            </div>
-
-            <div class="form-group">
-              <label for="modalCedula">Cédula (opcional)</label>
-              <input
-                type="text"
-                id="modalCedula"
-                placeholder="1234567890"
-                minlength="6"
-                maxlength="20"
-                inputmode="numeric"
-              />
-              <span class="error-message" id="modalCedula-error"></span>
-            </div>
-
-            <div class="form-group">
-              <label for="modalFechaNac">Fecha de nacimiento (opcional)</label>
-              <input type="date" id="modalFechaNac" />
-              <span class="error-message" id="modalFechaNac-error"></span>
             </div>
 
             <div class="form-group">

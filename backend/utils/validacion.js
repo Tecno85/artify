@@ -19,17 +19,10 @@ function normalizarTexto(valor) {
   return typeof valor === 'string' ? valor.trim() : valor;
 }
 
-function normalizarDatoOpcional(valor) {
-  const datoNormalizado = normalizarTexto(valor);
-  return datoNormalizado || null;
-}
-
 function normalizarDatosUsuario(datos = {}) {
   return {
     nombres: normalizarTexto(datos.nombres),
     apellidos: normalizarTexto(datos.apellidos),
-    cedula: normalizarDatoOpcional(datos.cedula),
-    fechaNacimiento: normalizarDatoOpcional(datos.fechaNacimiento),
     correo: normalizarCorreo(datos.correo),
     password: datos.password,
     estado: datos.estado,
@@ -47,40 +40,6 @@ function esPasswordNuevaSegura(valor) {
     /[A-Z]/.test(valor) &&
     /[0-9]/.test(valor)
   );
-}
-
-function esCedula(valor) {
-  return esTexto(valor, 6, 20) && /^[0-9]+$/.test(valor);
-}
-
-function esFecha(valor) {
-  if (typeof valor !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(valor)) {
-    return false;
-  }
-
-  const fecha = new Date(`${valor}T00:00:00.000Z`);
-  return (
-    !Number.isNaN(fecha.getTime()) &&
-    fecha.toISOString().slice(0, 10) === valor &&
-    fecha <= new Date()
-  );
-}
-
-function cumpleEdadMinima(fechaNacimiento, edadMinima = 18) {
-  if (!esFecha(fechaNacimiento)) {
-    return false;
-  }
-
-  const [anio, mes, dia] = fechaNacimiento.split('-').map(Number);
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - anio;
-  const diferenciaMes = hoy.getMonth() + 1 - mes;
-
-  if (diferenciaMes < 0 || (diferenciaMes === 0 && hoy.getDate() < dia)) {
-    edad -= 1;
-  }
-
-  return edad >= edadMinima;
 }
 
 function normalizarIdEntero(valor) {
@@ -108,10 +67,7 @@ function validarCredenciales({ correo, password }) {
   return null;
 }
 
-function validarDatosPersonales(
-  { nombres, apellidos, cedula, fechaNacimiento },
-  opciones = {}
-) {
+function validarDatosPersonales({ nombres, apellidos }) {
   if (!esTexto(nombres, 2, 100)) {
     return 'Ingresa nombres válidos';
   }
@@ -120,37 +76,16 @@ function validarDatosPersonales(
     return 'Ingresa apellidos válidos';
   }
 
-  if (cedula != null && !esCedula(cedula)) {
-    return 'Ingresa una cédula válida';
-  }
-
-  if (fechaNacimiento != null && !esFecha(fechaNacimiento)) {
-    return 'Ingresa una fecha de nacimiento válida';
-  }
-
-  if (
-    fechaNacimiento != null &&
-    opciones.exigirMayoriaEdad &&
-    !cumpleEdadMinima(fechaNacimiento)
-  ) {
-    return 'Debes tener al menos 18 años';
-  }
-
   return null;
 }
 
 function validarUsuario({
   nombres,
   apellidos,
-  cedula,
-  fechaNacimiento,
   correo,
   password,
 }) {
-  const errorDatosPersonales = validarDatosPersonales(
-    { nombres, apellidos, cedula, fechaNacimiento },
-    { exigirMayoriaEdad: true }
-  );
+  const errorDatosPersonales = validarDatosPersonales({ nombres, apellidos });
   if (errorDatosPersonales) {
     return errorDatosPersonales;
   }
@@ -169,16 +104,12 @@ function validarUsuario({
 function validarEdicionUsuario({
   nombres,
   apellidos,
-  cedula,
-  fechaNacimiento,
   correo,
   estado,
 }) {
   const errorDatosPersonales = validarDatosPersonales({
     nombres,
     apellidos,
-    cedula,
-    fechaNacimiento,
   });
   if (errorDatosPersonales) {
     return errorDatosPersonales;

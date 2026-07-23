@@ -154,10 +154,9 @@ function main() {
         `
           BEGIN;
           INSERT INTO "USUARIO" (
-            "usr_nombres", "usr_apellidos", "usr_cedula",
-            "usr_fecha_nacimiento", "usr_correo", "usr_contrasena"
+            "usr_nombres", "usr_apellidos", "usr_correo", "usr_contrasena"
           ) VALUES (
-            'Prueba', 'Permisos', '999999${process.pid}', '1990-01-01',
+            'Prueba', 'Permisos',
             'permisos.${process.pid}@artify.local', 'hash-temporal'
           );
           ROLLBACK;

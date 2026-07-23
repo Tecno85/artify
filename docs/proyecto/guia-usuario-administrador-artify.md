@@ -72,9 +72,9 @@ El usuario administrador es una cuenta activa cuyo rol ha sido establecido como 
 
 - Acceder al panel administrativo mediante el inicio de sesión general.
 - Consultar la lista y los indicadores de usuarios.
-- Buscar cuentas por nombre, apellido, correo o cédula.
+- Buscar cuentas por nombre, apellido o correo.
 - Crear nuevas cuentas operativas.
-- Editar datos personales y el estado de una cuenta.
+- Editar los datos básicos y el estado de una cuenta.
 - Eliminar cuentas diferentes de la propia.
 - Cerrar la sesión administrativa.
 
@@ -94,7 +94,7 @@ La autorización no depende solamente de que la página sea visible. El backend 
 
 - Consultar y modificar solamente la información necesaria.
 - Confirmar la identidad del usuario antes de cambiar su estado.
-- Evitar cuentas duplicadas por correo o cédula.
+- Evitar cuentas duplicadas por correo.
 - No compartir la sesión ni las credenciales administrativas.
 - Verificar cuidadosamente una eliminación, ya que también afecta datos dependientes.
 - Cerrar sesión al terminar.
@@ -141,7 +141,7 @@ Si la cuenta está inactiva o suspendida, las credenciales son incorrectas o el 
 | Barra lateral | Activos e inactivos | Resume cuentas activas y cuentas con estado diferente de activo. |
 | Barra de herramientas | Buscar usuario | Filtra el listado en tiempo real. |
 | Barra de herramientas | Agregar Usuario | Abre el formulario de creación. |
-| Tabla | Datos del usuario | Presenta ID, nombres, apellidos, cédula, correo, fechas, estado y rol. |
+| Tabla | Datos del usuario | Presenta ID, nombre completo, correo, fecha de registro, estado y rol. |
 | Tabla | Acciones | Permite editar o eliminar cuando la protección de la cuenta lo admite. |
 
 ### 7.1 Interpretar los estados
@@ -161,7 +161,7 @@ El indicador **Inactivos** agrupa todas las cuentas cuyo estado no es `activo`; 
 1. Inicie sesión con la cuenta administrativa.
 2. Espere la carga de la tabla.
 3. Revise el total de usuarios y los indicadores de estado.
-4. Use el desplazamiento horizontal o vertical si la pantalla no muestra todas las columnas.
+4. Use el desplazamiento vertical cuando el listado tenga muchos registros.
 5. Compruebe los datos antes de seleccionar una acción.
 
 Si aparece **Cargando usuarios...** de forma prolongada o una notificación de error, compruebe la conexión con el backend antes de realizar cambios.
@@ -169,7 +169,7 @@ Si aparece **Cargando usuarios...** de forma prolongada o una notificación de e
 ### 8.2 Buscar un usuario
 
 1. Seleccione el campo **Buscar usuario...**.
-2. Escriba parte del nombre, apellido, correo o cédula.
+2. Escriba parte del nombre, apellido o correo.
 3. Observe cómo la tabla se filtra mientras escribe.
 4. Borre el contenido del campo para recuperar el listado completo.
 
@@ -179,12 +179,10 @@ La búsqueda actúa sobre los usuarios ya cargados en el panel y no modifica nin
 
 1. Seleccione **Agregar Usuario**.
 2. Escriba nombres y apellidos de al menos dos caracteres válidos.
-3. Ingrese opcionalmente una cédula de 6 a 20 dígitos.
-4. Ingrese opcionalmente la fecha de nacimiento. Cuando se proporciona, debe corresponder a una persona mayor de edad.
-5. Escriba un correo válido y no registrado.
-6. Defina una contraseña de 8 a 128 caracteres con al menos una mayúscula, una minúscula y un número.
-7. Seleccione **Guardar**.
-8. Espere el mensaje de confirmación y verifique el nuevo registro en la tabla.
+3. Escriba un correo válido y no registrado.
+4. Defina una contraseña de 8 a 128 caracteres con al menos una mayúscula, una minúscula y un número.
+5. Seleccione **Guardar**.
+6. Espere el mensaje de confirmación y verifique el nuevo registro en la tabla.
 
 **Figura 3**<br>
 *Formulario para agregar un usuario*
@@ -201,7 +199,7 @@ Los campos marcados con asterisco son obligatorios. El panel crea una cuenta ope
 
 1. Localice el registro mediante la tabla o la búsqueda.
 2. Seleccione **Editar** en su fila.
-3. Modifique nombres, apellidos, cédula, fecha de nacimiento o correo según sea necesario.
+3. Modifique nombres, apellidos o correo según sea necesario.
 4. Seleccione el estado **Activo**, **Inactivo** o **Suspendido**.
 5. Revise la información completa.
 6. Seleccione **Guardar**.
@@ -274,9 +272,8 @@ Para una restricción temporal, es preferible cambiar el estado a **Suspendido**
 | Acceso denegado | La cuenta no es `admin`, está restringida o el token venció | Vuelva a iniciar sesión y solicite revisión técnica si persiste. |
 | Error al cargar usuarios | Backend o base de datos no disponibles | Verifique conectividad y disponibilidad antes de operar. |
 | No se encontraron usuarios | El filtro no coincide con los datos | Borre o modifique el texto de búsqueda. |
-| Correo o cédula duplicados | Ya existe un registro con el mismo valor | Busque la cuenta existente y corrija los datos. |
+| Correo duplicado | Ya existe una cuenta con el mismo correo | Busque la cuenta existente y corrija el dato. |
 | Contraseña rechazada al crear | No cumple la política | Use 8 a 128 caracteres, mayúscula, minúscula y número. |
-| Fecha rechazada | Fecha inválida, futura o persona menor de edad | Corrija la fecha o deje el campo opcional vacío. |
 | Estado deshabilitado al editar | Es la propia cuenta administrativa | La protección evita perder el acceso accidentalmente. |
 | Eliminar deshabilitado | Es la cuenta actualmente autenticada | Gestione la cuenta desde un procedimiento técnico autorizado si fuera indispensable. |
 | Cambios no reflejados | La solicitud falló o el listado no se actualizó | Lea la notificación, recargue y verifique antes de repetir. |
@@ -285,7 +282,7 @@ Para una restricción temporal, es preferible cambiar el estado a **Suspendido**
 
 - Use una cuenta administrativa individual y una contraseña exclusiva.
 - No habilite **Recordar sesión** en equipos compartidos.
-- No comparta capturas con correos, cédulas o fechas de nacimiento reales sin autorización.
+- No comparta capturas con nombres o correos reales sin autorización.
 - Prefiera suspender temporalmente antes de eliminar cuando la decisión no sea definitiva.
 - Verifique al menos dos datos de identidad antes de editar o eliminar.
 - No intente cambiar roles mediante herramientas del navegador o solicitudes manuales.

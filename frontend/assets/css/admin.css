@@ -706,8 +706,10 @@ input[type='password'] {
   gap: 16px;
 }
 
-.modal-grid .form-group:nth-child(5) {
-  grid-column: 1 / -1;
+@media (max-width: 640px) {
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .delete-warning {

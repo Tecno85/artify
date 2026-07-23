@@ -1,3 +1,4 @@
-display_name: Artify
-short_description: Guía operativa para trabajar con seguridad en Artify.
-default_prompt: Trabaja en Artify conservando su arquitectura actual y mejorando código, documentación, pruebas o evidencias académicas según el contexto.
+interface:
+  display_name: "Artify"
+  short_description: "Guía operativa para mantener Artify con seguridad"
+  default_prompt: "Usa $artify para trabajar en Artify conservando su arquitectura, sus cambios existentes y la coherencia entre código, pruebas y documentación."

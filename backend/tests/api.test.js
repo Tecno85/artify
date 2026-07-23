@@ -26,8 +26,6 @@ const usuarioPrueba = {
 const usuarioAdministrado = {
   nombres: 'Usuario',
   apellidos: 'Gestionado por Admin',
-  cedula: `${stamp}2`,
-  fechaNacimiento: '1992-08-20',
   correo: `admin.creado.${stamp}@artify.local`,
   password: 'AdminCrea123!',
 };
@@ -134,7 +132,6 @@ async function obtenerUsuarioTemporal() {
   try {
     const { rows } = await db.query(
       `SELECT usr_id_usuario, usr_correo, usr_contrasena,
-              usr_cedula, usr_fecha_nacimiento,
               usr_ultimo_acceso, usr_sesion_activa
        FROM "USUARIO"
        WHERE usr_id_usuario = $1`,
@@ -152,8 +149,8 @@ async function obtenerUsuarioPorCorreo(correo) {
 
   try {
     const { rows } = await db.query(
-      `SELECT usr_id_usuario, usr_nombres, usr_apellidos, usr_cedula,
-              usr_fecha_nacimiento, usr_correo, usr_contrasena,
+      `SELECT usr_id_usuario, usr_nombres, usr_apellidos,
+              usr_correo, usr_contrasena,
               usr_estado_usuario, usr_rol
        FROM "USUARIO"
        WHERE usr_correo = $1`,
@@ -564,8 +561,6 @@ test('registro, login y flujo básico de usuario funcionan', async () => {
 
   const usuarioRegistrado = await obtenerUsuarioTemporal();
   assert.equal(usuarioRegistrado.usr_correo, usuarioPrueba.correo);
-  assert.equal(usuarioRegistrado.usr_cedula, null);
-  assert.equal(usuarioRegistrado.usr_fecha_nacimiento, null);
   assert.notEqual(usuarioRegistrado.usr_contrasena, usuarioPrueba.password);
   assert.match(usuarioRegistrado.usr_contrasena, /^\$2[ab]\$10\$/);
 
@@ -1215,7 +1210,7 @@ test('admin puede crear, consultar, editar y eliminar un usuario', async () => {
   assert.equal(duplicado.response.status, 400);
   assert.equal(
     duplicado.body.mensaje,
-    'El correo o cédula ya está registrado'
+    'El correo ya está registrado'
   );
 
   const edicion = await request(
@@ -1226,8 +1221,6 @@ test('admin puede crear, consultar, editar y eliminar un usuario', async () => {
       body: JSON.stringify({
         nombres: 'Usuario Editado',
         apellidos: usuarioAdministrado.apellidos,
-        cedula: usuarioAdministrado.cedula,
-        fechaNacimiento: usuarioAdministrado.fechaNacimiento,
         correo: correoUsuarioAdministradoEditado,
         estado: 'suspendido',
       }),

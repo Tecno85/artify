@@ -61,7 +61,7 @@ El sistema debe permitir que un visitante cree una cuenta ingresando nombres, ap
 **Criterios de aceptación:**
 
 - El sistema valida que los datos obligatorios estén completos.
-- El registro público no solicita cédula ni fecha de nacimiento.
+- El sistema solicita solamente los datos necesarios para crear y autenticar la cuenta.
 - El sistema rechaza correos duplicados.
 - La confirmación debe coincidir con la contraseña y el visitante debe aceptar los términos.
 - Las contraseñas nuevas tienen entre 8 y 128 caracteres e incluyen, como mínimo, una mayúscula, una minúscula y un número.
@@ -226,9 +226,8 @@ El sistema debe permitir que el administrador cree usuarios desde el panel admin
 **Criterios de aceptación:**
 
 - El formulario valida los datos requeridos.
-- El administrador puede registrar cédula y fecha de nacimiento como datos opcionales.
-- Si se suministra, la cédula contiene entre 6 y 20 dígitos; si se suministra la fecha de nacimiento, corresponde a una persona mayor de edad.
-- El sistema evita crear registros duplicados por correo o cédula.
+- El administrador registra nombres, apellidos, correo y contraseña.
+- El sistema evita crear registros duplicados por correo.
 - La contraseña nueva cumple la misma política aplicada en el registro público.
 - La contraseña se almacena protegida mediante hash.
 

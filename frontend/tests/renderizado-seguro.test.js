@@ -50,7 +50,6 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
   contextoFrontend.contexto.obtenerUsuarioAuth = () =>
     JSON.parse(contextoFrontend.sessionStorage.getItem('artifyUser'));
   contextoFrontend.contexto.limpiarSesionAuth = () => {};
-  contextoFrontend.contexto.fechaMenorEdad = `${new Date().getFullYear() - 17}-01-01`;
   ejecutarScript(contextoFrontend.contexto, 'admin.js');
   contextoFrontend.contexto.valorMalicioso =
     '<img src=x onerror="alert(1)"> &\' ataque';
@@ -72,7 +71,6 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
         usr_id_usuario: 7,
         usr_nombres: 'Admin',
         usr_apellidos: 'Artify',
-        usr_cedula: '1234567',
         usr_correo: 'admin@artify.local',
         usr_estado_usuario: 'activo',
         usr_rol: 'admin'
@@ -81,7 +79,6 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
         usr_id_usuario: 8,
         usr_nombres: 'Usuario',
         usr_apellidos: 'Prueba',
-        usr_cedula: null,
         usr_correo: 'usuario@artify.local',
         usr_estado_usuario: 'activo',
         usr_rol: 'usuario'
@@ -91,6 +88,8 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
 
   const tabla = elementos.get('tablaBody').innerHTML;
   assert.match(tabla, /Cuenta actual/);
+  assert.match(tabla, /Admin Artify/);
+  assert.match(tabla, /Usuario Prueba/);
   assert.doesNotMatch(tabla, /abrirEliminar\(7\)/);
   assert.match(tabla, /abrirEliminar\(8\)/);
   assert.equal(
@@ -114,27 +113,8 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
     ),
     false
   );
-  assert.equal(
-    evaluar(
-      contextoFrontend.contexto,
-      "esCedulaValida('12345678901234567890')"
-    ),
-    true
-  );
-  assert.equal(
-    evaluar(
-      contextoFrontend.contexto,
-      "esCedulaValida('123456789012345678901')"
-    ),
-    false
-  );
-  assert.equal(
-    evaluar(contextoFrontend.contexto, 'cumpleEdadMinima(fechaMenorEdad)'),
-    false
-  );
-
   evaluar(contextoFrontend.contexto, 'renderizarTabla([])');
-  assert.match(elementos.get('tablaBody').innerHTML, /colspan="10"/);
+  assert.match(elementos.get('tablaBody').innerHTML, /colspan="7"/);
 });
 
 test('notificaciones muestran mensajes como texto y no como HTML ejecutable', () => {

@@ -400,7 +400,7 @@ La suite comprobó:
 - Respuesta del endpoint público de analítica.
 - Validación de correos.
 - Registro y login de usuario.
-- Rechazo de correos o cédulas duplicados.
+- Rechazo de correos duplicados.
 - Rechazo de contraseñas incorrectas.
 - Protección de rutas con token.
 - Rechazo de tokens inválidos o expirados.

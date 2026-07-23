@@ -47,7 +47,7 @@ Los campos `jsonb` se usan para preferencias o parámetros variables que se cons
 
 ### 6.1 `USUARIO`
 
-Cumple 1FN porque cada campo representa un dato individual; 2FN porque todos los datos personales, de acceso y de estado dependen de `usr_id_usuario`; y 3FN porque no se usa un atributo no clave para determinar otro. El correo y la cédula opcional tienen unicidad, pero no reemplazan la clave primaria.
+Cumple 1FN porque cada campo representa un dato individual; 2FN porque todos los datos personales, de acceso y de estado dependen de `usr_id_usuario`; y 3FN porque no se usa un atributo no clave para determinar otro. El correo tiene unicidad, pero no reemplaza la clave primaria.
 
 ### 6.2 `CONFIGURACION`
 

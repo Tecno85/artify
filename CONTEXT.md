@@ -26,7 +26,7 @@ PostgreSQL es el motor oficial de persistencia de esta versión.
 - El inicio y el login detectan tokens vigentes y redirigen automáticamente al editor o al panel administrativo; los tokens expirados se eliminan antes de permanecer en el acceso.
 - `frontend/assets/js/config.js` para configurar la URL pública del backend en despliegues.
 - Layout de escritorio con modos verticales compactos en inicio, login y editor para ventanas desde 1024 x 600 px; registro conserva una composición vertical con desplazamiento por la extensión del formulario.
-- El registro público solicita únicamente nombres, apellidos, correo, contraseña, confirmación y aceptación de términos; cédula y fecha de nacimiento no se recopilan en ese flujo.
+- La gestión de cuentas solicita únicamente nombres, apellidos, correo y contraseña; el registro público también exige confirmación y aceptación de términos.
 - Los botones principales con texto blanco usan un azul de acción de contraste AA; enlaces, contornos de foco y la identidad cian conservan sus colores más luminosos.
 - El editor habilita sus controles sin esperar el arranque del backend; la sesión de edición y las preferencias se inicializan en segundo plano.
 - La carga admite JPG, PNG y WebP de hasta 10 MB, 16 MP y 8192 px por lado para proteger la memoria usada por Canvas y los filtros.
@@ -190,7 +190,7 @@ v_usuarios_activos
 | Método | Ruta | Descripción |
 | --- | --- | --- |
 | POST | `/api/login` | Login con bcrypt. Devuelve usuario autenticado y token. |
-| POST | `/api/registro` | Registro simplificado con bcrypt; no solicita cédula ni fecha de nacimiento. |
+| POST | `/api/registro` | Registro simplificado con los datos necesarios y contraseña protegida con bcrypt. |
 
 ### Panel de Administración
 
@@ -289,18 +289,17 @@ La versión PostgreSQL fue validada con:
 - Guardia previa a las pruebas: exige `NODE_ENV=test`, confirmación explícita,
   base terminada en `_test` y autorización adicional para hosts remotos.
 - Resultado de pruebas automatizadas backend: 28/28 correctas.
-- Suite frontend con `node:test`: 22/22 correctas para autenticación temporal y recordada, redirección automática por rol, expiración de tokens, sesión del editor, validación de imágenes, renderizado seguro y semántica accesible.
+- Suite frontend con `node:test`: 26/26 correctas para autenticación temporal y recordada, redirección automática por rol, expiración de tokens, sesión del editor, validación de imágenes, renderizado seguro y semántica accesible.
 - Reporte nativo de cobertura frontend mediante `pnpm run test:frontend:coverage`, integrado en CI: 40,70 % en líneas y 63,04 % en funciones sobre los archivos instrumentados.
 - Cuatro pruebas E2E en Chromium: login y redirección de usuario al editor, login y redirección de administrador al panel, persistencia de la sesión recordada en otra pestaña y flujo del editor para cargar una imagen, cancelar, confirmar y reajustar filtros sin salir de la herramienta, reflejar los cambios aplicados al deshacer y rehacer, descargar sin alterar el historial y comprobar foco y cierre con Escape en modales.
 - Validación temprana de `TOKEN_SECRET` y cierre ordenado del proceso backend.
-- Normalización compartida de usuarios y validaciones ajustadas al contexto: registro público mínimo y datos de identificación opcionales en administración.
+- Normalización compartida de los datos mínimos usados al crear y editar cuentas.
 - Cobertura de autorización por rol, CRUD administrativo completo y contratos de los cuatro endpoints públicos de analytics.
 - Validación previa de tamaño, megapíxeles y dimensiones antes de asignar una imagen al Canvas.
 - Validación backend de identificadores en consultas de actividad y de metadatos de imagen con los límites de 10 MB y 8192 px del editor.
 - Bloqueo transaccional de la sesión al registrar operaciones o imágenes para conservar el orden y el estado ante solicitudes concurrentes.
 - Protección de la cuenta administrativa autenticada frente a eliminación o desactivación accidental desde el panel.
 - Política uniforme para contraseñas nuevas en el registro público, el panel administrativo y el backend, sin bloquear el acceso de cuentas existentes.
-- Validación de cédulas de 6 a 20 dígitos y fechas válidas cuando esos datos opcionales se suministran desde administración.
 - Guardado de configuración mediante UPSERT para conservar una sola fila por usuario y responder correctamente ante IDs inválidos o inexistentes.
 - Autoguardado local recuperable durante 7 días, aislado por usuario y eliminado al desactivarlo, cerrar sesión o detectar un respaldo inválido.
 - Auditoría de dependencias de producción sin vulnerabilidades conocidas.
@@ -415,7 +414,7 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-14] Refuerzo de consultas, metadatos y concurrencia en el registro de actividad del editor.
 - [2026-07-14] Protección backend y visual contra la autoeliminación o autodesactivación del administrador.
 - [2026-07-14] Validación uniforme de longitud, mayúscula, minúscula y número para toda contraseña nueva.
-- [2026-07-14] Alineación de cédula, fecha de nacimiento y mensajes de validación entre registro, administración y API.
+- [2026-07-14] Alineación de mensajes de validación entre registro, administración y API.
 - [2026-07-14] Refuerzo del módulo de configuración con validación de identificadores y guardados concurrentes seguros.
 - [2026-07-14] Incorporación de recuperación visible y aislamiento por usuario para el autoguardado local del editor.
 - [2026-07-14] Validación integral del despliegue público, matriz responsive en tres motores de navegador y ajuste del login para portátiles de poca altura.
@@ -431,7 +430,8 @@ CORS_ORIGIN=https://tecno85.github.io
 - [2026-07-19] Retiro del historial persistente del perfil; se conserva el contador de operaciones y el historial local de deshacer y rehacer.
 - [2026-07-20] Implementación completa de “Recordar sesión” con redirección automática por rol, descarte de tokens expirados, términos consultables y mensajes públicos más precisos sobre el procesamiento local de imágenes.
 - [2026-07-21] Incorporación de una sesión continua para filtros con reajustes absolutos, cancelación de vistas previas, confirmaciones accesibles y permanencia en la herramienta después de aplicar; diferenciación entre cambios locales del editor y operaciones registradas en el perfil.
-- [2026-07-21] Simplificación del registro público a los datos necesarios para crear la cuenta; cédula y fecha de nacimiento dejan de recopilarse y pasan a ser datos administrativos opcionales.
+- [2026-07-21] Simplificación del registro público a los datos necesarios para crear la cuenta.
+- [2026-07-23] Aplicación de minimización de datos en todo el sistema: panel, API y esquema almacenan solo nombres, apellidos, correo y datos operativos de la cuenta.
 
 ---
 

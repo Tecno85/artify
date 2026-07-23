@@ -77,9 +77,11 @@ test('errores y notificaciones dinámicas se anuncian sin controles engañosos',
   assert.match(editorScript, /container\.setAttribute\('role', 'status'\)/);
 });
 
-test('el registro público solicita solo los datos necesarios para la cuenta', () => {
+test('el registro y la administración solicitan solo los datos necesarios', () => {
   const registro = leerPagina('registro.html');
+  const administracion = leerPagina('admin.html');
   const registroScript = fs.readFileSync(path.join(scripts, 'registro.js'), 'utf8');
+  const administracionScript = fs.readFileSync(path.join(scripts, 'admin.js'), 'utf8');
 
   for (const campo of [
     'nombres',
@@ -95,4 +97,6 @@ test('el registro público solicita solo los datos necesarios para la cuenta', (
   assert.doesNotMatch(registro, /id="cedula"|id="fechaNacimiento"/);
   assert.doesNotMatch(registro, /id="btnCancelar"/);
   assert.doesNotMatch(registroScript, /cedula|fechaNacimiento/);
+  assert.doesNotMatch(administracion, /modalCedula|modalFechaNac/);
+  assert.doesNotMatch(administracionScript, /cedula|fechaNacimiento/);
 });

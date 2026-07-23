@@ -408,7 +408,6 @@ Actualmente ejecuto 28 pruebas automatizadas que cubren las siguientes validacio
 - Contrato de respuesta de los cuatro endpoints públicos de analytics.
 - Rechazo de login con correo inválido.
 - Rechazo de login con correo no registrado.
-- Rechazo de fechas de nacimiento inexistentes.
 - Registro de usuario temporal.
 - Normalización de nombres y correo.
 - Verificación en PostgreSQL de que la contraseña se guarda como hash bcrypt.

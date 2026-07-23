@@ -85,7 +85,7 @@ La definición completa de campos y restricciones se encuentra en [`../tecnica/b
 | Tabla `IMAGEN_OPERACION` | No existe | Las operaciones se ordenan dentro de una sesión y no requieren una relación muchos a muchos. |
 | Imágenes JPG y PNG | JPG, PNG y WebP | El editor vigente admite los tres formatos. |
 | Almacenar archivos | Conservar metadatos | El procesamiento principal ocurre en Canvas y la base no guarda binarios. |
-| Registro con datos personales amplios | Registro público simplificado | Cédula y fecha de nacimiento son datos administrativos opcionales. |
+| Registro con datos personales amplios | Gestión de cuentas simplificada | El sistema conserva únicamente los datos necesarios para identificar y autenticar la cuenta. |
 
 ## 7. Justificación del Modelo Relacional
 

@@ -505,7 +505,7 @@ const pool = new Pool({
 // Ejemplo recomendado - tomado del backend modular
 return res.status(401).json({ mensaje: 'Credenciales incorrectas' });
 return res.status(500).json({ mensaje: 'Error en el servidor' });
-return res.status(400).json({ mensaje: 'El correo o cédula ya está registrado' });
+return res.status(400).json({ mensaje: 'El correo ya está registrado' });
 res.json({ mensaje: 'Login exitoso', usuario: { ... } });
 res.json({ mensaje: 'Usuario agregado correctamente' });
 res.json({ mensaje: 'Usuario editado correctamente' });
@@ -557,7 +557,6 @@ Cada columna tiene un prefijo de dos o tres letras que identifica a qué tabla p
 usr_id_usuario
 usr_nombres
 usr_apellidos
-usr_cedula
 usr_correo
 usr_contrasena
 usr_fecha_registro
@@ -587,7 +586,7 @@ opr_fecha_hora
 // Ejemplo recomendado para controladores que usan backend/config/db.js
 const query = `
   SELECT usr_id_usuario, usr_nombres, usr_apellidos,
-         usr_cedula, usr_correo, usr_estado_usuario, usr_rol
+         usr_correo, usr_estado_usuario, usr_rol
   FROM USUARIO
   ORDER BY usr_fecha_registro DESC
 `;
@@ -600,7 +599,7 @@ const queryUpdate = `
 `;
 
 // Incorrecto
-const query = 'SELECT usr_id_usuario, usr_nombres, usr_apellidos, usr_cedula, usr_correo, usr_estado_usuario, usr_rol FROM USUARIO ORDER BY usr_fecha_registro DESC';
+const query = 'SELECT usr_id_usuario, usr_nombres, usr_apellidos, usr_correo, usr_estado_usuario, usr_rol FROM USUARIO ORDER BY usr_fecha_registro DESC';
 ```
 
 Estos ejemplos conservan tablas sin comillas porque pasan por `backend/config/db.js`. En SQL directo ejecutado desde `psql`, se deben usar comillas dobles:

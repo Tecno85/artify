@@ -81,40 +81,6 @@ function esPasswordNuevaValida(password) {
   );
 }
 
-function esCedulaValida(cedula) {
-  return typeof cedula === 'string' && /^[0-9]{6,20}$/.test(cedula);
-}
-
-function esFechaNacimientoValida(fechaNacimiento) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimiento)) {
-    return false;
-  }
-
-  const fecha = new Date(`${fechaNacimiento}T00:00:00.000Z`);
-  return (
-    !Number.isNaN(fecha.getTime()) &&
-    fecha.toISOString().slice(0, 10) === fechaNacimiento &&
-    fecha <= new Date()
-  );
-}
-
-function cumpleEdadMinima(fechaNacimiento, edadMinima = 18) {
-  if (!esFechaNacimientoValida(fechaNacimiento)) {
-    return false;
-  }
-
-  const [anio, mes, dia] = fechaNacimiento.split('-').map(Number);
-  const hoy = new Date();
-  let edad = hoy.getFullYear() - anio;
-  const diferenciaMes = hoy.getMonth() + 1 - mes;
-
-  if (diferenciaMes < 0 || (diferenciaMes === 0 && hoy.getDate() < dia)) {
-    edad -= 1;
-  }
-
-  return edad >= edadMinima;
-}
-
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
   const coincidencia = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -167,7 +133,7 @@ function renderizarTabla(usuarios) {
   if (usuarios.length === 0) {
     tbody.innerHTML = `
       <tr class="loading-row">
-        <td colspan="10">No se encontraron usuarios</td>
+        <td colspan="7">No se encontraron usuarios</td>
       </tr>`;
     return;
   }
@@ -205,11 +171,8 @@ function renderizarTabla(usuarios) {
         return `
     <tr>
       <td>${idUsuario}</td>
-      <td>${escaparHtml(u.usr_nombres)}</td>
-      <td>${escaparHtml(u.usr_apellidos)}</td>
-      <td>${escaparHtml(u.usr_cedula || '—')}</td>
+      <td>${escaparHtml(`${u.usr_nombres} ${u.usr_apellidos}`.trim())}</td>
       <td>${escaparHtml(u.usr_correo)}</td>
-      <td>${escaparHtml(formatearFecha(u.usr_fecha_nacimiento))}</td>
       <td>${escaparHtml(formatearFecha(u.usr_fecha_registro))}</td>
       <td>
         <span class="estado-badge estado-${estado}">
@@ -258,8 +221,7 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     (u) =>
       u.usr_nombres.toLowerCase().includes(termino) ||
       u.usr_apellidos.toLowerCase().includes(termino) ||
-      u.usr_correo.toLowerCase().includes(termino) ||
-      String(u.usr_cedula || '').includes(termino)
+      u.usr_correo.toLowerCase().includes(termino)
   );
   renderizarTabla(filtrados);
 });
@@ -288,16 +250,9 @@ window.abrirEditar = function (id) {
   document.getElementById('usuarioId').value = usuario.usr_id_usuario;
   document.getElementById('modalNombres').value = usuario.usr_nombres;
   document.getElementById('modalApellidos').value = usuario.usr_apellidos;
-  document.getElementById('modalCedula').value = usuario.usr_cedula || '';
   document.getElementById('modalCorreo').value = usuario.usr_correo;
   document.getElementById('modalEstado').value = usuario.usr_estado_usuario;
   document.getElementById('modalEstado').disabled = esAdministradorActual(id);
-
-  if (usuario.usr_fecha_nacimiento) {
-    document.getElementById('modalFechaNac').value = String(
-      usuario.usr_fecha_nacimiento
-    ).slice(0, 10);
-  }
 
   document.getElementById('passwordGroup').style.display = 'none';
   document.getElementById('estadoGroup').style.display = 'block';
@@ -314,8 +269,6 @@ document
 
     const nombres = document.getElementById('modalNombres').value.trim();
     const apellidos = document.getElementById('modalApellidos').value.trim();
-    const cedula = document.getElementById('modalCedula').value.trim();
-    const fechaNac = document.getElementById('modalFechaNac').value;
     const correo = document.getElementById('modalCorreo').value.trim();
     const password = document.getElementById('modalPassword').value;
     const estado = document.getElementById('modalEstado').value;
@@ -328,17 +281,6 @@ document
     }
     if (apellidos.length < 2 || apellidos.length > 100) {
       mostrarError('modalApellidos', 'Ingresa apellidos válidos');
-      valido = false;
-    }
-    if (cedula && !esCedulaValida(cedula)) {
-      mostrarError('modalCedula', 'Cédula inválida (6-20 dígitos)');
-      valido = false;
-    }
-    if (fechaNac && !esFechaNacimientoValida(fechaNac)) {
-      mostrarError('modalFechaNac', 'Ingresa una fecha de nacimiento válida');
-      valido = false;
-    } else if (fechaNac && !modoEdicion && !cumpleEdadMinima(fechaNac)) {
-      mostrarError('modalFechaNac', 'Debes tener al menos 18 años');
       valido = false;
     }
     if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
@@ -371,8 +313,6 @@ document
           body: JSON.stringify({
             nombres,
             apellidos,
-            cedula,
-            fechaNacimiento: fechaNac,
             correo,
             estado,
           }),
@@ -386,8 +326,6 @@ document
           body: JSON.stringify({
             nombres,
             apellidos,
-            cedula,
-            fechaNacimiento: fechaNac,
             correo,
             password,
           }),
@@ -483,8 +421,6 @@ function limpiarModal() {
   document.getElementById('usuarioId').value = '';
   document.getElementById('modalNombres').value = '';
   document.getElementById('modalApellidos').value = '';
-  document.getElementById('modalCedula').value = '';
-  document.getElementById('modalFechaNac').value = '';
   document.getElementById('modalCorreo').value = '';
   document.getElementById('modalPassword').value = '';
   document.getElementById('modalEstado').value = 'activo';
