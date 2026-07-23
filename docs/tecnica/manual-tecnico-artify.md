@@ -148,38 +148,51 @@ El frontend no consulta PostgreSQL directamente. Toda operación persistente pas
 
 | Recurso | Función |
 | --- | --- |
-| `scripts/setup.sh` | Instala dependencias y crea `backend/.env` desde la plantilla en macOS o Linux. |
+| `scripts/setup.sh` | Script Bash que instala dependencias y crea `backend/.env` desde la plantilla en macOS o Linux. |
+| PowerShell de Windows | No existe un script `.ps1` en el proyecto; la instalación se realiza con los comandos manuales de la sección 11. |
 | `.env.example` | Define las variables requeridas sin incluir secretos reales. |
 | `database/postgresql/schema.sql` | Crea las cinco tablas, índices, relaciones y vista. |
 | `database/postgresql/seed.sql` | Carga un registro controlado de referencia. |
 | `scripts/ejecutar-migraciones.js` | Aplica migraciones incrementales pendientes. |
 | `database/postgresql/app-role.sql` | Crea o ajusta el rol técnico de menor privilegio. |
 
-`schema.sql` elimina y vuelve a crear los objetos del proyecto. Solo se utiliza para una base nueva o una restauración controlada con respaldo previo.
+`scripts/setup.sh` utiliza Bash, por lo que no se ejecuta directamente desde PowerShell. En Windows realizo los pasos manuales equivalentes que se presentan a continuación y en el [Plan de instalación local](./plan-instalacion-artify.md). `schema.sql` elimina y vuelve a crear los objetos del proyecto; solo se utiliza para una base nueva o una restauración controlada con respaldo previo.
 
 ## 11. Procedimiento Resumido de Instalación
 
-1. Clono el repositorio y entro a su carpeta.
-2. Copio `.env.example` como `backend/.env` y reemplazo los valores de ejemplo.
-3. Instalo las dependencias con `pnpm install` dentro de `backend/`.
-4. Creo `artify_db` y cargo `schema.sql` y `seed.sql`.
-5. Inicio el backend en el puerto `3000`.
-6. Sirvo `frontend/` en el puerto `8080`.
-7. Compruebo salud, disponibilidad y flujo funcional.
+En ambos sistemas operativos clono el repositorio, configuro `backend/.env`, instalo las dependencias, creo `artify_db` y cargo los scripts SQL. Los comandos de copia cambian entre PowerShell y Bash.
 
-```bash
+### 11.1 Windows con PowerShell
+
+Con PostgreSQL incluido en la variable `PATH`, ejecuto:
+
+```powershell
 git clone https://github.com/Tecno85/artify.git
 cd artify
-cp .env.example backend/.env
+Copy-Item .env.example backend/.env
 cd backend
-pnpm install
+pnpm install --frozen-lockfile
 cd ..
 createdb artify_db
 psql -d artify_db -f database/postgresql/schema.sql
 psql -d artify_db -f database/postgresql/seed.sql
 ```
 
-En Windows utilizo los comandos equivalentes de PowerShell documentados en el plan de instalación.
+### 11.2 macOS o Linux con Bash
+
+```bash
+git clone https://github.com/Tecno85/artify.git
+cd artify
+cp .env.example backend/.env
+cd backend
+pnpm install --frozen-lockfile
+cd ..
+createdb artify_db
+psql -d artify_db -f database/postgresql/schema.sql
+psql -d artify_db -f database/postgresql/seed.sql
+```
+
+Después de la preparación, inicio el backend en el puerto `3000`, sirvo `frontend/` en el puerto `8080` y compruebo salud, disponibilidad y flujo funcional. Para la configuración de credenciales, los puertos alternativos y la solución de problemas uso el [Plan de instalación local](./plan-instalacion-artify.md).
 
 ## 12. Variables de Entorno
 
