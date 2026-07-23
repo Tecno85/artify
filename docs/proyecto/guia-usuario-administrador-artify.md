@@ -180,7 +180,7 @@ La búsqueda actúa sobre los usuarios ya cargados en el panel y no modifica nin
 1. Seleccione **Agregar Usuario**.
 2. Escriba nombres y apellidos de al menos dos caracteres válidos.
 3. Escriba un correo válido y no registrado.
-4. Defina una contraseña de 8 a 128 caracteres con al menos una mayúscula, una minúscula y un número.
+4. Defina una contraseña de mínimo 8 caracteres con al menos una mayúscula, una minúscula y un número.
 5. Seleccione **Guardar**.
 6. Espere el mensaje de confirmación y verifique el nuevo registro en la tabla.
 
@@ -248,19 +248,19 @@ La edición no solicita una contraseña nueva y tampoco modifica el rol. Para pr
 ## 9. Flujo de trabajo recomendado
 
 ```text
-Inicio de sesión administrativo
-               ↓
-    Consulta de lista e indicadores
-               ↓
-       Búsqueda del registro
-               ↓
- Verificación de identidad y necesidad
-               ↓
- Crear, editar, cambiar estado o eliminar
-               ↓
- Comprobar mensaje, tabla e indicadores
-               ↓
-          Cerrar sesión
+          Inicio de sesión administrativo
+                        ↓
+          Consulta de lista e indicadores
+                        ↓
+               Búsqueda del registro
+                        ↓
+        Verificación de identidad y necesidad
+                        ↓
+      Crear, editar, cambiar estado o eliminar
+                        ↓
+        Comprobar mensaje, tabla e indicadores
+                        ↓
+                  Cerrar sesión
 ```
 
 Para una restricción temporal, es preferible cambiar el estado a **Suspendido** o **Inactivo**. La eliminación se reserva para casos confirmados donde también deban desaparecer los datos asociados.
@@ -273,7 +273,7 @@ Para una restricción temporal, es preferible cambiar el estado a **Suspendido**
 | Error al cargar usuarios | Backend o base de datos no disponibles | Verifique conectividad y disponibilidad antes de operar. |
 | No se encontraron usuarios | El filtro no coincide con los datos | Borre o modifique el texto de búsqueda. |
 | Correo duplicado | Ya existe una cuenta con el mismo correo | Busque la cuenta existente y corrija el dato. |
-| Contraseña rechazada al crear | No cumple la política | Use 8 a 128 caracteres, mayúscula, minúscula y número. |
+| Contraseña rechazada al crear | No cumple la política | Use mínimo 8 caracteres, una mayúscula, una minúscula y un número. |
 | Estado deshabilitado al editar | Es la propia cuenta administrativa | La protección evita perder el acceso accidentalmente. |
 | Eliminar deshabilitado | Es la cuenta actualmente autenticada | Gestione la cuenta desde un procedimiento técnico autorizado si fuera indispensable. |
 | Cambios no reflejados | La solicitud falló o el listado no se actualizó | Lea la notificación, recargue y verifique antes de repetir. |

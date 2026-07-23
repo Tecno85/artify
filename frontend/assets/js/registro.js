@@ -138,6 +138,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return regex.test(input.value);
   }
 
+  function obtenerErrorPassword(input) {
+    if (input.value.length < 8) {
+      return 'Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número';
+    }
+
+    if (input.value.length > 128) {
+      return 'La contraseña no puede superar 128 caracteres';
+    }
+
+    if (!validarPassword(input)) {
+      return 'Incluye al menos 1 mayúscula, 1 minúscula y 1 número';
+    }
+
+    return null;
+  }
+
   function capitalizarPalabras(input) {
     const palabras = input.value.split(' ');
     const capitalizadas = palabras.map((palabra) => {
@@ -175,11 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('password').addEventListener('blur', function () {
-    if (!validarPassword(this)) {
-      mostrarError(
-        'password',
-        'Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número'
-      );
+    const errorPassword = obtenerErrorPassword(this);
+    if (errorPassword) {
+      mostrarError('password', errorPassword);
     } else {
       limpiarError('password');
     }
@@ -227,11 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const password = document.getElementById('password');
-    if (!validarPassword(password)) {
-      mostrarError(
-        'password',
-        'Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número'
-      );
+    const errorPassword = obtenerErrorPassword(password);
+    if (errorPassword) {
+      mostrarError('password', errorPassword);
       isValid = false;
     }
 

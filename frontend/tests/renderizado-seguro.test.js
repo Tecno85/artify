@@ -113,6 +113,20 @@ test('admin escapa HTML y protege la cuenta administrativa actual', () => {
     ),
     false
   );
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      "obtenerErrorPasswordNueva('solominusculas')"
+    ),
+    'Incluye al menos 1 mayúscula, 1 minúscula y 1 número'
+  );
+  assert.equal(
+    evaluar(
+      contextoFrontend.contexto,
+      `obtenerErrorPasswordNueva('A1${'a'.repeat(127)}')`
+    ),
+    'La contraseña no puede superar 128 caracteres'
+  );
   evaluar(contextoFrontend.contexto, 'renderizarTabla([])');
   assert.match(elementos.get('tablaBody').innerHTML, /colspan="7"/);
 });

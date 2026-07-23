@@ -45,7 +45,14 @@ test('creación y edición comparten normalización y reglas personales', () => 
   );
   assert.equal(
     validarUsuario({ ...datosNormalizados, password: 'aaaaaaaa' }),
-    'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
+    'La contraseña debe incluir al menos una mayúscula, una minúscula y un número'
+  );
+  assert.equal(
+    validarUsuario({
+      ...datosNormalizados,
+      password: `A1${'a'.repeat(127)}`,
+    }),
+    'La contraseña no puede superar 128 caracteres'
   );
 
   const casosPersonalesInvalidos = [

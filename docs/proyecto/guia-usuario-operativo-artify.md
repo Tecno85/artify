@@ -111,7 +111,7 @@ El usuario operativo no puede entrar al panel administrativo ni consultar, crear
 1. Abra Artify y seleccione la opción para registrarse.
 2. Escriba sus nombres y apellidos.
 3. Ingrese un correo electrónico válido que no esté registrado.
-4. Cree una contraseña de 8 a 128 caracteres con al menos una mayúscula, una minúscula y un número.
+4. Cree una contraseña de mínimo 8 caracteres con al menos una mayúscula, una minúscula y un número.
 5. Repita exactamente la contraseña.
 6. Lea y acepte los términos y condiciones.
 7. Seleccione **Registrarse**.

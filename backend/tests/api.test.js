@@ -539,7 +539,7 @@ test('registro rechaza contraseñas nuevas débiles', async () => {
   assert.equal(passwordDebil.response.status, 400);
   assert.equal(
     passwordDebil.body.mensaje,
-    'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
+    'La contraseña debe incluir al menos una mayúscula, una minúscula y un número'
   );
 });
 
@@ -1171,7 +1171,7 @@ test('admin puede crear, consultar, editar y eliminar un usuario', async () => {
   assert.equal(creacionConPasswordDebil.response.status, 400);
   assert.equal(
     creacionConPasswordDebil.body.mensaje,
-    'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número'
+    'La contraseña debe incluir al menos una mayúscula, una minúscula y un número'
   );
 
   const creacion = await request('/api/admin/usuario', {

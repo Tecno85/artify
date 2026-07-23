@@ -99,4 +99,8 @@ test('el registro y la administración solicitan solo los datos necesarios', () 
   assert.doesNotMatch(registroScript, /cedula|fechaNacimiento/);
   assert.doesNotMatch(administracion, /modalCedula|modalFechaNac/);
   assert.doesNotMatch(administracionScript, /cedula|fechaNacimiento/);
+  assert.match(registro, /Mínimo 8 caracteres/);
+  assert.match(administracion, /Mínimo 8 caracteres/);
+  assert.doesNotMatch(registro, /Entre 8 y 128 caracteres/);
+  assert.doesNotMatch(administracion, /Entre 8 y 128 caracteres/);
 });

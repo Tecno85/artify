@@ -81,6 +81,22 @@ function esPasswordNuevaValida(password) {
   );
 }
 
+function obtenerErrorPasswordNueva(password) {
+  if (typeof password !== 'string' || password.length < 8) {
+    return 'Mínimo 8 caracteres, 1 mayúscula, 1 minúscula y 1 número';
+  }
+
+  if (password.length > 128) {
+    return 'La contraseña no puede superar 128 caracteres';
+  }
+
+  if (!esPasswordNuevaValida(password)) {
+    return 'Incluye al menos 1 mayúscula, 1 minúscula y 1 número';
+  }
+
+  return null;
+}
+
 function formatearFecha(fechaStr) {
   if (!fechaStr) return '—';
   const coincidencia = String(fechaStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -287,11 +303,11 @@ document
       mostrarError('modalCorreo', 'Correo inválido');
       valido = false;
     }
-    if (!modoEdicion && !esPasswordNuevaValida(password)) {
-      mostrarError(
-        'modalPassword',
-        'Entre 8 y 128 caracteres, 1 mayúscula, 1 minúscula y 1 número'
-      );
+    const errorPassword = modoEdicion
+      ? null
+      : obtenerErrorPasswordNueva(password);
+    if (errorPassword) {
+      mostrarError('modalPassword', errorPassword);
       valido = false;
     }
 

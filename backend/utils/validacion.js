@@ -33,6 +33,18 @@ function esPassword(valor) {
   return typeof valor === 'string' && valor.length >= 8 && valor.length <= 128;
 }
 
+function obtenerErrorLongitudPassword(valor) {
+  if (typeof valor !== 'string' || valor.length < 8) {
+    return 'La contraseña debe tener mínimo 8 caracteres';
+  }
+
+  if (valor.length > 128) {
+    return 'La contraseña no puede superar 128 caracteres';
+  }
+
+  return null;
+}
+
 function esPasswordNuevaSegura(valor) {
   return (
     esPassword(valor) &&
@@ -60,8 +72,9 @@ function validarCredenciales({ correo, password }) {
     return 'Ingresa un correo válido';
   }
 
-  if (!esPassword(password)) {
-    return 'La contraseña debe tener entre 8 y 128 caracteres';
+  const errorLongitudPassword = obtenerErrorLongitudPassword(password);
+  if (errorLongitudPassword) {
+    return errorLongitudPassword;
   }
 
   return null;
@@ -94,8 +107,13 @@ function validarUsuario({
     return 'Ingresa un correo válido';
   }
 
+  const errorLongitudPassword = obtenerErrorLongitudPassword(password);
+  if (errorLongitudPassword) {
+    return errorLongitudPassword;
+  }
+
   if (!esPasswordNuevaSegura(password)) {
-    return 'La contraseña debe tener entre 8 y 128 caracteres, una mayúscula, una minúscula y un número';
+    return 'La contraseña debe incluir al menos una mayúscula, una minúscula y un número';
   }
 
   return null;

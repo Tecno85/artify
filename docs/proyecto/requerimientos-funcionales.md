@@ -64,7 +64,7 @@ El sistema debe permitir que un visitante cree una cuenta ingresando nombres, ap
 - El sistema solicita solamente los datos necesarios para crear y autenticar la cuenta.
 - El sistema rechaza correos duplicados.
 - La confirmación debe coincidir con la contraseña y el visitante debe aceptar los términos.
-- Las contraseñas nuevas tienen entre 8 y 128 caracteres e incluyen, como mínimo, una mayúscula, una minúscula y un número.
+- Las contraseñas nuevas tienen como mínimo 8 caracteres e incluyen una mayúscula, una minúscula y un número. El límite técnico es de 128 caracteres.
 - La contraseña se almacena en la base de datos como hash generado con `bcrypt`.
 - Al finalizar el registro correctamente, el sistema crea el usuario y permite continuar el flujo autenticado.
 
