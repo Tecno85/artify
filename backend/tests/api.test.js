@@ -134,6 +134,7 @@ async function obtenerUsuarioTemporal() {
   try {
     const { rows } = await db.query(
       `SELECT usr_id_usuario, usr_correo, usr_contrasena,
+              usr_cedula, usr_fecha_nacimiento,
               usr_ultimo_acceso, usr_sesion_activa
        FROM "USUARIO"
        WHERE usr_id_usuario = $1`,
